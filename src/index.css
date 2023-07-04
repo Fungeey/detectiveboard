@@ -24,12 +24,16 @@ code {
 }
 
 .note{
-  background:var(--green);
+  background:var(--yellow);
   padding:1rem;
   position:absolute;
   user-select: none;
-  box-shadow: 0px 0px 10px #777777;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   border-radius: 0.2rem;
+}
+
+.note:hover{
+  outline: 3px solid var(--darkergrey);
 }
 
 .board{

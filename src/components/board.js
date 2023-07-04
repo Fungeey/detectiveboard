@@ -124,7 +124,7 @@ const Board = () => {
     return <div className='boardWrapper' onMouseDown = {onMouseDown}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
             <ContextMenu/>
-            <p style = {{position:'absolute'}}>board</p>
+            <p style = {{position:'absolute'}}></p>
 
             {isCreating ? 
                 <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
