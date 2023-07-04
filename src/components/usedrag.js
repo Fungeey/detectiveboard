@@ -1,6 +1,14 @@
 import { useState, useRef, useLayoutEffect } from "react";
 
 const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
+
+    // when implementing useDrag, doStartDrag must return start position
+    function defaultDoStartDrag(mousePos, e){
+        // return object's start position
+    }
+
+    // doOnDrag and doEndDrag can be empty
+
     const[pos, setPos] = useState({x:0, y:0});
     const[offset, setOffset] = useState({x:0, y:0});
     const[startPos, setStartPos] = useState({x:0, y:0});
@@ -17,27 +25,26 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         document.addEventListener('mouseup', endDrag);
     }, [offset]);
 
-    const startDrag = (e) => {
+    function startDrag(e){
         e.stopPropagation();
         setDragButton(e.button);
 
         let p = getPos(e);
-        let newStartPos;
-        newStartPos = doStartDrag(p, e);
+        let newStartPos = doStartDrag(p, e);
 
         setPos(newStartPos);
         setOffset(subPos(newStartPos, p));
         setStartPos(p);
     }
 
-    const onDrag = (e) => {
+    function onDrag(e){
         let newPos = addPos(getPos(e), offset);
         setPos(newPos);
 
         if(doOnDrag) doOnDrag(newPos, e);
     }
 
-    const endDrag = (e) => {
+    function endDrag(e){
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('mouseup', endDrag);
 

@@ -1,73 +1,50 @@
-import { useState, useCallback, useContext } from "react";
+import { useState} from "react";
 import useDrag from "./usedrag";
 import util from "./util";
 
 let hoverUUID = "";
 
 const Note = (props) => {
-    // const {hoverUUID, setHoverUUID} = useContext(HoverContext);
-    function startDrag(mousePos, e){
+    function onStartDrag(mousePos, e){
         return pos;
     }
 
     function onDrag(dragPos){
-        if(dragButton === 0)    // drag
+        if(dragButton === util.LMB){
+            // move the note to the drag position.
             setPos(dragPos);
-        // if(dragButton === 2) // draw line
-        //     props.line.dragLine(dragPos);
-
-        props.update(props.uuid, dragPos, dragButton);
+            props.update(props.note.uuid, dragPos, dragButton);
+        }
     }
 
-    const endDrag = (dist, e) => {
-        if(dragButton === 2)
-            props.makeLine(props.uuid, hoverUUID);
-            // props.line.endLine(util.subPos({x:e.clientX, y:e.clientY}, props.boardPos()));
+    const onEndDrag = (dist, e) => {
+        if(dragButton === util.RMB){
+            // line connecting this note to the hovered (destination) note.
+            props.makeLine(props.note.uuid, hoverUUID);
+        }
     }
 
-    const [pos, setPos] = useState(props.pos);
-    const [dragPos, onMouseDown, dragButton] = useDrag(startDrag, onDrag, endDrag);
+    const [pos, setPos] = useState(props.note.pos);
+    const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
 
-    const enter = () => {
-        hoverUUID = props.uuid; //setHoverUUID(props.uuid);
-    }
+    function enter(){ hoverUUID = props.note.uuid; }
+    function exit(){ hoverUUID = ""; }
 
-    const leave = () => {
-        hoverUUID = "";
-        // setHoverUUID("");
-    }
+    function getStyle(){
+        return {
+        ...util.posStyle(props.note.pos),
+        ...util.sizeStyle(200, 200)
+        }
+    }     
 
     return (
-        <div onMouseEnter={enter} onMouseLeave={leave}>
-            {props.render(pos, onMouseDown)}
+        <div className = "note" style={getStyle()}
+            onMouseDown={startDrag} 
+            onMouseEnter={enter} 
+            onMouseLeave={exit}>
+            {props.note.text}
         </div>
     )
-
-    return (
-    <div className = "note" style = {util.posStyle(pos)} onMouseDown={onMouseDown}
-        onMouseEnter={() => props.enter(props.uuid)} onMouseLeave={props.exit}>
-        {props.text}
-    </div>
-    )
 }
-
-// const useMakeLine = (uuid) => {
-//     const [hoverNote, setHoverNote] = useState(""); //hold uuid
-
-//     function onHover(){
-//         setHoverNote(uuid);
-        
-
-//         // this isn't really a static function though
-//         // each useMakeLine hook on each note obj is independent and has its own state.
-
-//         //need a static function so one note can listen to another note object's hover event
-
-//         //1. move state upwards so board handles this
-//         //2. singleton ??
-//     }
-//     return onHover
-// }
-
 
 export default Note;

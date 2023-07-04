@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect} from 'react';
+import { useState, useRef} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ContextMenu from './contextmenu';
 import useDrag from './usedrag';
+import useKeyDown from './usekeydown'
 import util from './util';
 import Line from './line';
 import Note from './note';
@@ -18,19 +19,6 @@ const Board = () => {
         return {x:rect.left, y:rect.top};
     }
 
-    // console.log(input.text);
-
-    // useEffect(
-    //     () => {
-    //         console.log("text changed: " + input.text);
-    //         if(input.finished){
-    //             console.log(input);
-    //             addNote(input.pos);
-    //         }
-    //     },
-    //     [input.text]
-    // );
-
     // Panning Board
     function startPan() {
         return pos;
@@ -38,48 +26,48 @@ const Board = () => {
 
     function endPan(dist, e) {
         if(dist < 2 && e.button === 0){
-            onClick(e, setInput, getBoardPos, input);
+            onClick(e);
         }
     }
 
-    function onClick(e, setInput, getBoardPos, input) {
+    function onClick(e) {
+        // cancel out of creating, if clicked elsewhere
+        if(isCreating && input.text == ""){
+            setIsCreating(false);
+            return;
+        }
+
+        // open text window, then 
         let pos = { x: e.clientX, y: e.clientY };
         setInput({
             pos: util.subPos(pos, getBoardPos()),
             text: ""
         });
+
         setIsCreating(true);
-    
-        const createNote = (e) => {
-            if (e.key === "Enter") {
-                // addnote is using the old value of input.text
-                // useEffect to listen for the new value?
-                // setState with callback?
-                addNote(pos, input.text);
-                setIsCreating(false);
-                document.removeEventListener("keydown", createNote);
-            }
-    
-            if (e.key === "Escape") {
-                setIsCreating(false);
-                document.removeEventListener("keydown", createNote);
-            }
-        };
-    
-        document.addEventListener("keydown", createNote);
     }
 
+    useKeyDown(() => {
+        addNote();
+        setInput({pos:{}, text:""});
+        setIsCreating(false);
+    }, ["Enter"]);
+
+    useKeyDown(() => {
+        setIsCreating(false);
+    }, ["Escape"]);
+
     // Add a new note
-    function addNote(mouse, text){
-        let pos = util.subPos(mouse, getBoardPos());
+    function addNote(){
+        if(input.text === "" || input.pos == {})
+            return;
 
         let uuid = uuidv4();
         let noteCopy = {...notes};
-        noteCopy[uuid] = {text:input.text, pos, uuid:uuid};
+        noteCopy[uuid] = {text:input.text, pos:input.pos, uuid:uuid};
         setNotes(noteCopy);
-        console.log("Created note: " + uuid);
     }
-    
+
     const [pos, onMouseDown] = useDrag(startPan, null, endPan);
 
     function makeLine(uuid, endUuid){
@@ -115,8 +103,13 @@ const Board = () => {
         newNotes[uuid] = {...newNotes[uuid], pos:pos};
         setNotes(newNotes);
 
-        if(button !== 0) return;
+        // the note is being dragged, update the lines
+        if(button === util.LMB) 
+            updateLines(uuid, pos);    
+    }
 
+    // update the line to match the new note positions
+    function updateLines(uuid, pos){
         let newLines = [...lines];
         newLines.forEach(line => {
             if(line.startRef === uuid)
@@ -134,41 +127,29 @@ const Board = () => {
             <p style = {{position:'absolute'}}>board</p>
 
             {isCreating ? 
-            <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} 
-                onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
-            </input>
+                <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
+                </input>
             : <></>}
 
-            {renderNotes(notes)}
+            {renderNotes()}
 
             {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
         </div>
     </div>
 
-    // currently Board has all note data
-    // each note should hold its own data.
+    function renderNotes(){
+        const noteHTML = [];
 
-    function renderNotes(map){
-        const notes = [];
+        for(const uuid in notes){
+            let note = notes[uuid];
 
-        for(const uuid in map){
-            let note = map[uuid];
-
-            // TODO: change the render prop based upon what item it is.
-            const render = (pos, onMouseDown) => (
-                <div className = "note" style = {util.posStyle(pos)} onMouseDown={onMouseDown}
-                /*onMouseEnter={() => onNoteEnter(note.uuid)} onMouseLeave={onNoteExit}*/>
-                    {note.text}
-                </div>
-            );
-
-            notes.push(
-                <Note key={note.uuid} pos={note.pos} uuid={note.uuid} boardPos={getBoardPos} 
-                update={updateNote} render={render} makeLine={makeLine}/>
+            // note: pos, text, uuid
+            noteHTML.push(
+                <Note key={note.uuid} note={note} boardPos={getBoardPos} update={updateNote} makeLine={makeLine}/>
             );
         }
 
-        return notes;
+        return noteHTML;
     }
 }
 
