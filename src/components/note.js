@@ -37,12 +37,26 @@ const Note = (props) => {
         }
     }     
 
+    const imgSize = 50;
+    const offset = 10;
+
     return (
-        <div className = "note" style={getStyle()}
+        <div>
+            <div className = "note" style={getStyle()}
             onMouseDown={startDrag} 
             onMouseEnter={enter} 
             onMouseLeave={exit}>
             {props.note.text}
+        </div>
+            {props.note.isConnected ? 
+                <img className="pin" src={require('../img/pin.png')} 
+                style={{
+                    position:'absolute', 
+                    width:imgSize, height:imgSize, 
+                    left:props.note.pos.x-imgSize/2+offset, 
+                    top:props.note.pos.y-imgSize/2+offset, zIndex:100
+                }}/>
+            : <></>}
         </div>
     )
 }

@@ -6,6 +6,10 @@
   --darkgrey: #e1e1e1;
   --darkergrey: #c0c0c0;
   --radius: 1rem;
+
+  --layer-pin: 5;
+  --layer-lines: 3;
+  --layer-note: 0;
 }
 
 body {
@@ -30,6 +34,7 @@ code {
   user-select: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   border-radius: 0.2rem;
+  z-index: var(--layer-note);
 }
 
 .note:hover{
@@ -56,6 +61,10 @@ p{
 .svgHolder{
   position:absolute;
   pointer-events: none;
-  /* border:1px solid black; */
-  opacity:0.5;
+  opacity:0.65;
+  z-index: var(--layer-lines);
+}
+
+.pin{
+  z-index: var(--layer-pin);
 }

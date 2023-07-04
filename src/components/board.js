@@ -64,7 +64,8 @@ const Board = () => {
 
         let uuid = uuidv4();
         let noteCopy = {...notes};
-        noteCopy[uuid] = {text:input.text, pos:input.pos, uuid:uuid};
+        noteCopy[uuid] = {text:input.text, pos:input.pos, uuid:uuid, isConnected:false};
+
         setNotes(noteCopy);
     }
 
@@ -95,16 +96,23 @@ const Board = () => {
                 return;
             }
         }
+
+        modifyNote(line.startRef, note => note.isConnected = true);
+        modifyNote(line.endRef, note => note.isConnected = true);
         setLines([...lines, line]);
     }
 
-    function updateNote(uuid, pos, button){
+    function modifyNote(uuid, modify){
         let newNotes = {...notes};
-        newNotes[uuid] = {...newNotes[uuid], pos:pos};
+        modify(newNotes[uuid]);
         setNotes(newNotes);
+    }
+
+    function updateNote(uuid, pos, button){
+        modifyNote(uuid, note => {note.pos = pos;});
 
         // the note is being dragged, update the lines
-        if(button === util.LMB) 
+        if(button !== util.LMB) return;
             updateLines(uuid, pos);    
     }
 
@@ -112,10 +120,11 @@ const Board = () => {
     function updateLines(uuid, pos){
         let newLines = [...lines];
         newLines.forEach(line => {
-            if(line.startRef === uuid)
+            if(line.startRef === uuid){
                 line.start = pos;
-            if(line.endRef === uuid)
+            }else if(line.endRef === uuid){
                 line.end = pos;
+            }
         })
         setLines(newLines);
     }
