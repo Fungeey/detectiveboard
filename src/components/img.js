@@ -21,7 +21,8 @@ const Img = (props) => {
     const onEndDrag = (dist, e) => {
         if(dragButton === util.RMB){
             // line connecting this item to the hovered (destination) item.
-            props.makeLine(props.item.uuid, hoverUUID);
+            if(props.item.uuid !== hoverUUID)
+                props.makeLine(props.item.uuid, hoverUUID);
         }
     }
 
@@ -29,19 +30,12 @@ const Img = (props) => {
     const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
 
     function enter(){ hoverUUID = props.item.uuid; }
-    function exit(){ hoverUUID = ""; }
-
-    function getStyle(){
-        return {
-        ...util.posStyle(props.item.pos)
-        // ...util.sizeStyle(200, 200)
-        }
-    }     
+    function exit(){ hoverUUID = ""; }   
 
     return (
-        <div>
+        <div style={util.posStyle(props.item.pos)} className="itemWrapper">
             <img src={props.item.src}
-                style={getStyle()}
+                style={util.sizeStyle(400, null)}
                 className="imgItem"
                 draggable={false}
                 onMouseDown={startDrag}
@@ -50,7 +44,7 @@ const Img = (props) => {
             />
 
             {props.item.isConnected ? 
-                <Pin pos={props.item.pos}/>
+                <Pin/>
             : <></>}
         </div>
     )

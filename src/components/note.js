@@ -30,21 +30,11 @@ const Note = (props) => {
     const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
 
     function enter(){ hoverUUID = props.item.uuid; }
-    function exit(){ hoverUUID = ""; }
-
-    function getStyle(){
-        return {
-        ...util.posStyle(props.item.pos),
-        ...util.sizeStyle(200, 130)
-        }
-    }     
-
-    const imgSize = 50;
-    const offset = 10;
+    function exit(){ hoverUUID = ""; }   
 
     return (
-        <div>
-            <div className = "noteItem" style={getStyle()}
+        <div style={util.posStyle(props.item.pos)} className="itemWrapper">
+            <div className = "noteItem" style={util.sizeStyle(200, 130)}
             onMouseDown={startDrag} 
             onMouseEnter={enter} 
             onMouseLeave={exit}>
@@ -52,7 +42,7 @@ const Note = (props) => {
             </div>
 
             {props.item.isConnected ? 
-                <Pin pos={props.item.pos}/>
+                <Pin/>
             : <></>}
         </div>
     )

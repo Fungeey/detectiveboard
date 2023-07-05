@@ -11,8 +11,8 @@ const pin = (props) => {
         style={{
             position:'absolute', 
             width:pinSize, height:pinSize, 
-            left:props.pos.x-pinSize/2+offset, 
-            top:props.pos.y-pinSize/2+offset
+            left:-pinSize/2+offset, 
+            top:-pinSize/2+offset
         }}/>
     )
 }
