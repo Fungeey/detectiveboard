@@ -31,7 +31,7 @@ code {
 .itemWrapper{
   z-index: var(--layer-note); 
   /* this doesn't do antyhing. the layers are still broken esp when 
-  an item can overlap a pin. */
+  an item can overlap a pin. it broke after moving position style out into the wrapper class, instead of in the individual pin / img / note classes */
 }
 
 .noteItem{

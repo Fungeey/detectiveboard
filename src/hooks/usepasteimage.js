@@ -35,3 +35,9 @@ const usePasteImage = (onPasteImage) => {
 }
     
 export default usePasteImage;
+
+// https://stackoverflow.com/questions/21227078/convert-base64-to-image-in-javascript-jquery
+
+// in order to save the layout with pictures:
+// 1. convert to binary
+// 2. save as file (in cache?)
