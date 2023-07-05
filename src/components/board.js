@@ -1,18 +1,28 @@
 import { useState, useRef} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ContextMenu from './contextmenu';
-import useDrag from './usedrag';
-import useKeyDown from './usekeydown'
+import useDrag from '../hooks/usedrag';
+import useKeyDown from '../hooks/usekeydown'
+import usePasteImage from '../hooks/usepasteimage'
+import useMousePos from '../hooks/usemousepos'
 import util from './util';
 import Line from './line';
 import Note from './note';
+import Img from './img';
+
+const noteType = "note";
+const imgType = "img";
 
 const Board = () => {
-    const [notes, setNotes] = useState({});
+    const [items, setItems] = useState({});
+    const itemsRef = useRef();
+    itemsRef.current = items;
+
     const [lines, setLines] = useState([]);
     const boardRef = useRef(null);
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
+    const mousePos = useMousePos();
 
     const getBoardPos = () => {
         let rect = boardRef.current.getBoundingClientRect();
@@ -63,10 +73,16 @@ const Board = () => {
             return;
 
         let uuid = uuidv4();
-        let noteCopy = {...notes};
-        noteCopy[uuid] = {text:input.text, pos:input.pos, uuid:uuid, isConnected:false};
+        let noteCopy = {...items};
+        noteCopy[uuid] = {
+            type:"note",
+            uuid:uuid,
+            pos:input.pos, 
+            isConnected:false,
+            text:input.text
+            };
 
-        setNotes(noteCopy);
+        setItems(noteCopy);
     }
 
     const [pos, onMouseDown] = useDrag(startPan, null, endPan);
@@ -76,7 +92,7 @@ const Board = () => {
             return;
 
         let line = {startRef:uuid, endRef:endUuid,
-            start:notes[uuid].pos, end:notes[endUuid].pos,
+            start:items[uuid].pos, end:items[endUuid].pos,
             uuid:uuidv4()
         };
 
@@ -97,19 +113,19 @@ const Board = () => {
             }
         }
 
-        modifyNote(line.startRef, note => note.isConnected = true);
-        modifyNote(line.endRef, note => note.isConnected = true);
+        modifyItem(line.startRef, note => note.isConnected = true);
+        modifyItem(line.endRef, note => note.isConnected = true);
         setLines([...lines, line]);
     }
 
-    function modifyNote(uuid, modify){
-        let newNotes = {...notes};
+    function modifyItem(uuid, modify){
+        let newNotes = {...items};
         modify(newNotes[uuid]);
-        setNotes(newNotes);
+        setItems(newNotes);
     }
 
     function updateNote(uuid, pos, button){
-        modifyNote(uuid, note => {note.pos = pos;});
+        modifyItem(uuid, note => {note.pos = pos;});
 
         // the note is being dragged, update the lines
         if(button !== util.LMB) return;
@@ -129,36 +145,67 @@ const Board = () => {
         setLines(newLines);
     }
 
+    // the first value (null) of mousePos is being passed through
+    // how to pass the updated value ???
+
+    // https://stackoverflow.com/questions/62647970/how-to-get-the-updated-value-of-a-state-from-a-callback-method
+
+    // make paste images
+    usePasteImage((src) => {
+
+        // make a new img item 
+        let uuid = uuidv4();
+        let itemsCopy = {...itemsRef.current};
+
+        itemsCopy[uuid] = {
+            type:"img",
+            uuid:uuid,
+            pos:util.subPos(mousePos.current, getBoardPos()),
+            isConnected:false,
+            src:src
+        };
+
+        setItems(itemsCopy);
+    });
+
+    // console
+
     // Render
     return <div className='boardWrapper' onMouseDown = {onMouseDown}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
             <ContextMenu/>
-            <p style = {{position:'absolute'}}></p>
+            <p style = {{position:'absolute'}}>board</p>
 
             {isCreating ? 
                 <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
                 </input>
             : <></>}
 
-            {renderNotes()}
+            {renderItems()}
 
             {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
         </div>
     </div>
 
-    function renderNotes(){
-        const noteHTML = [];
+    function renderItems(){
+        const itemHTML = [];
 
-        for(const uuid in notes){
-            let note = notes[uuid];
+        for(const uuid in items){
+            let item = items[uuid];
 
             // note: pos, text, uuid
-            noteHTML.push(
-                <Note key={note.uuid} note={note} boardPos={getBoardPos} update={updateNote} makeLine={makeLine}/>
-            );
+            if(item.type === noteType)
+                itemHTML.push(
+                    <Note key={item.uuid} item={item} boardPos={getBoardPos} update={updateNote} makeLine={makeLine}/>
+                );
+            else if(item.type === imgType)
+                itemHTML.push(
+                    <Img key={item.uuid} item={item} boardPos={getBoardPos}
+                    update={updateNote} makeLine={makeLine}/>
+                );
         }
 
-        return noteHTML;
+        return itemHTML;
     }
 }
 

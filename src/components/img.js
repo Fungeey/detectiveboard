@@ -5,7 +5,7 @@ import Pin from "./pin";
 
 let hoverUUID = "";
 
-const Note = (props) => {
+const Img = (props) => {
     function onStartDrag(mousePos, e){
         return pos;
     }
@@ -38,17 +38,16 @@ const Note = (props) => {
         }
     }     
 
-    const imgSize = 50;
-    const offset = 10;
-
     return (
         <div>
-            <div className = "noteItem" style={getStyle()}
-            onMouseDown={startDrag} 
-            onMouseEnter={enter} 
-            onMouseLeave={exit}>
-            {props.item.text}
-            </div>
+            <img src={props.item.src}
+                style={getStyle()}
+                className="imgItem"
+                draggable={false}
+                onMouseDown={startDrag}
+                onMouseEnter={enter}
+                onMouseLeave={exit}
+            />
 
             {props.item.isConnected ? 
                 <Pin pos={props.item.pos}/>
@@ -57,5 +56,5 @@ const Note = (props) => {
     )
 }
 
-export default Note;
+export default Img;
     

@@ -27,17 +27,31 @@ code {
     monospace;
 }
 
-.note{
-  background:var(--yellow);
-  padding:1rem;
+.noteItem{
   position:absolute;
   user-select: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   border-radius: 0.2rem;
   z-index: var(--layer-note);
+
+  background:var(--yellow);
+  padding:1rem;
 }
 
-.note:hover{
+.noteItem:hover{
+  outline: 3px solid var(--darkergrey);
+}
+
+.imgItem{
+  position:absolute;
+  /* pointer-events:none; */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
+  border-radius: 0.2rem;
+  border: 20px solid white;
+  z-index: var(--layer-note);
+}
+
+.imgItem:hover{
   outline: 3px solid var(--darkergrey);
 }
 

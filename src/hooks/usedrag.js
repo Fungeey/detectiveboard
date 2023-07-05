@@ -58,7 +58,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     ]
 }
 
-export default useDrag;
+export default useDrag; 
 
 const distance = (a, b) => Math.sqrt(Math.abs(a.x - b.x) + Math.abs(a.y - b.y) ^ 2);
 const getPos = (e) => ({x:e.clientX, y:e.clientY});
