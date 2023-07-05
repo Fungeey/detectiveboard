@@ -1,7 +1,7 @@
 import { useState } from "react";
-import useDrag from "../hooks/usedrag";
-import util from "./util";
-import Pin from "./pin";
+import useDrag from "./usedrag";
+import util from "../util";
+import Pin from "../components/pin";
 
 let hoverUUID = "";
 
@@ -32,10 +32,13 @@ const useItemBehavior = (props) => {
     function enter(){ hoverUUID = props.item.uuid; }
     function exit(){ hoverUUID = ""; }   
 
-    function render(){
-        return <div style={util.posStyle(props.item.pos)} className="itemWrapper">
-            {props.render()}
-
+    function render(renderItem){
+        return <div style={util.posStyle(props.item.pos)}className="itemWrapper" 
+            onMouseDown={startDrag}
+            onMouseEnter={enter}
+            onMouseLeave={exit}>
+            
+            {renderItem()}
             {props.item.isConnected ? 
                 <Pin/>
             : <></>}

@@ -5,7 +5,7 @@ import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown'
 import usePasteImage from '../hooks/usepasteimage'
 import useMousePos from '../hooks/usemousepos'
-import util from './util';
+import util from '../util';
 import Line from './line';
 import Note from './note';
 import Img from './img';
