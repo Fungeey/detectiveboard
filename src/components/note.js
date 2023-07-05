@@ -21,7 +21,8 @@ const Note = (props) => {
     const onEndDrag = (dist, e) => {
         if(dragButton === util.RMB){
             // line connecting this item to the hovered (destination) item.
-            props.makeLine(props.item.uuid, hoverUUID);
+            if(props.item.uuid !== hoverUUID)
+                props.makeLine(props.item.uuid, hoverUUID);
         }
     }
 
@@ -34,7 +35,7 @@ const Note = (props) => {
     function getStyle(){
         return {
         ...util.posStyle(props.item.pos),
-        ...util.sizeStyle(200, 200)
+        ...util.sizeStyle(200, 130)
         }
     }     
 

@@ -33,8 +33,8 @@ const Img = (props) => {
 
     function getStyle(){
         return {
-        ...util.posStyle(props.item.pos),
-        ...util.sizeStyle(200, 200)
+        ...util.posStyle(props.item.pos)
+        // ...util.sizeStyle(200, 200)
         }
     }     
 

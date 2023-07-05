@@ -6,6 +6,8 @@ const usePasteImage = (onPasteImage) => {
     }, []);
 
     // https://stackoverflow.com/questions/6333814/how-does-the-paste-image-from-clipboard-functionality-work-in-gmail-and-google-c
+
+    //http://jsfiddle.net/bt7BU/225/
     function onPaste(event) {
         // use event.originalEvent.clipboard for newer chrome versions
         var items = (event.clipboardData || event.originalEvent.clipboardData).items;
