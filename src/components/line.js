@@ -11,8 +11,8 @@ const Line = (props) => {
         x: Math.min(start.x, end.x) - buffer, 
         y:Math.min(start.y, end.y) - buffer});
         
-    const svgWidth = () => Math.max(start.x, end.x) - Math.min(start.x, end.x) + buffer * 2;
-    const svgHeight = () => Math.max(start.y, end.y) - Math.min(start.y, end.y) + buffer * 2;
+    const svgWidth = () => Math.round(Math.max(start.x, end.x) - Math.min(start.x, end.x) + buffer * 2);
+    const svgHeight = () => Math.round(Math.max(start.y, end.y) - Math.min(start.y, end.y) + buffer * 2);
     
     const lineStyle = () => ({
         stroke:"rgb(255,0,0, 1)", 
@@ -30,7 +30,7 @@ const Line = (props) => {
     let m2 = Math.max(y1,y2)*tension;
 
     return (
-        <svg className='svgHolder' key = {props.uuid} width={svgWidth()}height={svgHeight()}
+        <svg className='svgHolder' key = {props.uuid} width={svgWidth()} height={svgHeight()}
         style = {util.posStyle(topLeft())}>
             <path d={`M ${x1} ${y1} Q ${m1} ${m2} ${x2} ${y2}`} 
             style={lineStyle()}/>

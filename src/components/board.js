@@ -38,11 +38,13 @@ const Board = ({board}) => {
 
     function endPan(dist, e) {
         if(dist < 2 && e.button === 0){
-            onClick(e);
+            reset();
         }
     }
 
-    function onClick(e) {
+    function onDoubleLClick(e) {
+        if(e.button !== util.LMB) return;
+
         // cancel out of creating, if clicked elsewhere
         if(isCreating && input.text == ""){
             setIsCreating(false);
@@ -57,6 +59,10 @@ const Board = ({board}) => {
         });
 
         setIsCreating(true);
+    }
+
+    function reset(){
+        setIsCreating(false);
     }
 
     useKeyDown(() => {
@@ -147,11 +153,6 @@ const Board = ({board}) => {
         setLines(newLines);
     }
 
-    // the first value (null) of mousePos is being passed through
-    // how to pass the updated value ???
-
-    // https://stackoverflow.com/questions/62647970/how-to-get-the-updated-value-of-a-state-from-a-callback-method
-
     // make paste images
     usePasteImage((src) => {
 
@@ -170,13 +171,11 @@ const Board = ({board}) => {
         setItems(itemsCopy);
     });
 
-    // console
-
     // Render
-    return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}>        
+    return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}onDoubleClick={onDoubleLClick}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
             <ContextMenu boardPos={getBoardPos}/>
-            <p style = {{position:'absolute'}}>board</p>
+            <p style = {{position:'absolute'}}></p>
 
             {isCreating ? 
                 <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
@@ -195,7 +194,6 @@ const Board = ({board}) => {
         for(const uuid in items){
             let item = items[uuid];
 
-            // note: pos, text, uuid
             if(item.type === noteType)
                 itemHTML.push(
                     <Note key={item.uuid} item={item} update={updateNote} makeLine={makeLine}/>
