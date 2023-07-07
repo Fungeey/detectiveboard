@@ -40,6 +40,7 @@ const Note = (props) => {
                 background: color
             }} onDoubleClick={doubleClick} ref={noteRef}>
             {props.item.text}
+            {props.debug ? <><br/><br/>{props.item.uuid.substring(0, 4)}</> : <></>}
             </div>
         )
     }

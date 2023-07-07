@@ -115,8 +115,11 @@ const Board = ({board}) => {
         if(endUuid == null || endUuid === "")
             return;
 
-        let line = {startRef:uuid, endRef:endUuid,
-            start:items[uuid].pos, end:items[endUuid].pos,
+        let line = {
+            startRef:uuid, 
+            endRef:endUuid,
+            start:items[uuid].pos, 
+            end:items[endUuid].pos,
             uuid:uuidv4()
         };
 
@@ -131,7 +134,7 @@ const Board = ({board}) => {
                 console.log("That line already exists");
                 return;
             }
-            if(other.startRef === line.endRef && other.startRef === line.endRef){
+            if(other.startRef === line.endRef && other.endRef === line.startRef){
                 console.log("That line already exists (backwards)");
                 return;
             }
