@@ -13,12 +13,14 @@ import Img from './img';
 const noteType = "note";
 const imgType = "img";
 
-const Board = () => {
+const Board = ({board}) => {
     const [items, setItems] = useState({});
-    const itemsRef = useRef();
-    itemsRef.current = items;
-
     const [lines, setLines] = useState([]);
+    board.current = {
+        data: {items:items, lines:lines}, 
+        onLoad:(data) => { setItems(data.items); setLines(data.lines)}
+    };
+
     const boardRef = useRef(null);
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
@@ -155,7 +157,7 @@ const Board = () => {
 
         // make a new img item 
         let uuid = uuidv4();
-        let itemsCopy = {...itemsRef.current};
+        let itemsCopy = {...board.current.data.items};
 
         itemsCopy[uuid] = {
             type:"img",
@@ -171,9 +173,9 @@ const Board = () => {
     // console
 
     // Render
-    return <div className='boardWrapper' onMouseDown = {onMouseDown}>        
+    return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
-            <ContextMenu/>
+            <ContextMenu boardPos={getBoardPos}/>
             <p style = {{position:'absolute'}}>board</p>
 
             {isCreating ? 
@@ -196,12 +198,11 @@ const Board = () => {
             // note: pos, text, uuid
             if(item.type === noteType)
                 itemHTML.push(
-                    <Note key={item.uuid} item={item} boardPos={getBoardPos} update={updateNote} makeLine={makeLine}/>
+                    <Note key={item.uuid} item={item} update={updateNote} makeLine={makeLine}/>
                 );
             else if(item.type === imgType)
                 itemHTML.push(
-                    <Img key={item.uuid} item={item} boardPos={getBoardPos}
-                    update={updateNote} makeLine={makeLine}/>
+                    <Img key={item.uuid} item={item} update={updateNote} makeLine={makeLine}/>
                 );
         }
 

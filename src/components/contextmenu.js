@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import util from "../util";
 
-export default () => {
+const ContextMenu = (props) => {
   const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
   const [isVisible, setIsVisible] = useState(false);
 
@@ -13,7 +14,7 @@ export default () => {
   )
 
   const closeContextMenu = useCallback((e) => {
-      if(e.button === 2)
+      if(e.button === util.RMB)
         return;
       e.preventDefault()
       setIsVisible(false);
@@ -35,8 +36,10 @@ export default () => {
   return (
     <div></div>
   );
-
-  // <div style = {{display:isVisible ? 'initial' : 'none', position:'absolute', left:anchorPoint.x + 'px', top:anchorPoint.y + 'px'}}>
-  //     <p>this is a context menu</p>
+  
+  // <div style={util.posStyle(util.subPos(anchorPoint, props.boardPos))}>
+  //     hello
   //   </div>
-} 
+}
+
+export default ContextMenu;

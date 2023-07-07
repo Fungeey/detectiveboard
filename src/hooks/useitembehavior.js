@@ -39,9 +39,7 @@ const useItemBehavior = (props) => {
             onMouseLeave={exit}>
             
             {renderItem()}
-            {props.item.isConnected ? 
-                <Pin/>
-            : <></>}
+            {props.item.isConnected ? <Pin/> : <></>}
         </div>
     }
   

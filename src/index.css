@@ -7,9 +7,11 @@
   --darkergrey: #c0c0c0;
   --radius: 1rem;
 
+  /* higher values = on top */
+  --layer-ui: 99999;
   --layer-pin: 5;
   --layer-lines: 3;
-  --layer-note: 0;
+  --layer-item: 0;
 }
 
 body {
@@ -17,7 +19,6 @@ body {
   font-family: 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  /* font-family: 'Caveat', cursive; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: beige;
@@ -29,7 +30,7 @@ code {
 }
 
 .itemWrapper{
-  z-index: var(--layer-note); 
+  z-index: var(--layer-item); 
   /* this doesn't do antyhing. the layers are still broken esp when 
   an item can overlap a pin. it broke after moving position style out into the wrapper class, instead of in the individual pin / img / note classes */
 }
@@ -39,7 +40,7 @@ code {
   user-select: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   border-radius: 0.2rem;
-  z-index: var(--layer-note);
+  z-index: var(--layer-item);
 
   background:var(--yellow);
   padding:1rem;
@@ -51,10 +52,11 @@ code {
 
 .imgItem{
   position:absolute;
+  user-select: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   border-radius: 0.2rem;
   border: 20px solid white;
-  z-index: var(--layer-note);
+  z-index: var(--layer-item);
 }
 
 .imgItem:hover{
@@ -88,4 +90,11 @@ p{
 .pin{
   position:absolute;
   z-index: var(--layer-pin);
+}
+
+#ui{
+  position:fixed;
+  left:0;
+  top:0;
+  z-index: var(--layer-ui);
 }

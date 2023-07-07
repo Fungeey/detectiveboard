@@ -6,7 +6,7 @@ const Note = (props) => {
 
     function render(){
         return (
-            <div className = "noteItem" style={util.sizeStyle(200, 130)}>
+            <div className = "noteItem" style={util.sizeStyle(150, 100)}>
             {props.item.text}
             </div>)
     }
