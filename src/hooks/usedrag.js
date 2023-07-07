@@ -50,7 +50,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
         if(doEndDrag) doEndDrag(distance(startPos, getPos(e)), e);
     }
-
+    
     return[
         pos,
         startDrag,

@@ -17,9 +17,13 @@ const debug = false;
 const Board = ({board}) => {
     const [items, setItems] = useState({});
     const [lines, setLines] = useState([]);
+
     board.current = {
         data: {items:items, lines:lines}, 
-        onLoad:(data) => { setItems(data.items); setLines(data.lines)}
+        onLoad:(data) => { 
+            setItems(data.items); 
+            setLines(data.lines);
+        }
     };
 
     const boardRef = useRef(null);
@@ -44,7 +48,7 @@ const Board = ({board}) => {
 
     // Panning Board
     function startPan() {
-        return pos;
+        return boardPos;
     }
 
     function endPan(dist, e) {
@@ -105,7 +109,7 @@ const Board = ({board}) => {
         setItems(noteCopy);
     }
 
-    const [pos, onMouseDown] = useDrag(startPan, null, endPan);
+    const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
 
     function makeLine(uuid, endUuid){
         if(endUuid == null || endUuid === "")
@@ -191,7 +195,7 @@ const Board = ({board}) => {
 
     // Render
     return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}onDoubleClick={onDoubleLClick}>        
-        <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
+        <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
             <ContextMenu boardPos={getBoardPos}/>
             <p style = {{position:'absolute'}}></p>
 

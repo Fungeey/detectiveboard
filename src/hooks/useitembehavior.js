@@ -1,30 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import useDrag from "./usedrag";
-import useMouseEvents from "./usemouseevents";
-import useKeyDown from '../hooks/usekeydown';
 import util from "../util";
 import Pin from "../components/pin";
+import useSelectionBehavior from "./useselectionbehavior";
 
 let hoverUUID = "";
-let selectUUID = "";
 
 const useItemBehavior = (props) => {
-    const [isSelected, setIsSelected] = useState(false);
-
-    useEffect(() => {
-        document.addEventListener('click', onClickDocument);
-        return () => document.removeEventListener('click', onClickDocument);
-    }, []);
-
-    function onClickDocument(e){
-        // if(!e.target.parentElement) return;
-        // deselect if click anywhere other than this note.
-        if(e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid){
-            deSelect();
-        }
-
-        // deselect if you click it again and it's already selected
-    }
+    const [isSelected, select, renderSelection] = useSelectionBehavior(props);
 
     function onStartDrag(mousePos, e){
         return pos;
@@ -54,28 +37,7 @@ const useItemBehavior = (props) => {
     function enter(){ hoverUUID = props.item.uuid; }
     function exit(){ hoverUUID = ""; }   
 
-    function select(){
-        selectUUID = props.item.uuid;
-        setIsSelected(true);
-    }
-
-    function deSelect(){
-        selectUUID = "";
-        setIsSelected(false);
-    }
-
-    useKeyDown(deSelect, ["Enter", "Escape"]);
-
     const itemRef = useRef(null);
-
-    function getStyle(){
-        if(isSelected && props.debug)
-            return {
-                outline: "2px solid red"
-            }
-        else 
-            return {};
-    }
 
     function render(renderItem, renderItemSelection){
         return (
@@ -84,7 +46,7 @@ const useItemBehavior = (props) => {
                     onMouseDown={startDrag}
                     onMouseEnter={enter}
                     onMouseLeave={exit}
-                    uuid={props.item.uuid} ref={itemRef} style={getStyle()}>
+                    uuid={props.item.uuid} ref={itemRef}>
 
                     <div className="itemHolder">
                     {renderItem()}
@@ -93,26 +55,6 @@ const useItemBehavior = (props) => {
                 </div>
 
                 {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
-            </div>
-        )
-    }
-
-    function deleteItem(){
-        props.deleteItem(props.item.uuid);
-    }
-
-    function renderSelection(itemRef, renderItemSelection){
-        return (
-            <div>
-                <img src={require('../img/delete.png')} style={{
-                    width: 20,
-                    height: 20,
-                    top:itemRef.current.clientHeight + 5,
-                    left:itemRef.current.clientWidth - 20,
-                    position:"absolute"
-                }} onClick={deleteItem}/>
-
-                {renderItemSelection ? renderItemSelection(itemRef) : <></>} 
             </div>
         )
     }

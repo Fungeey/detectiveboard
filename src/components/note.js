@@ -17,11 +17,21 @@ const Note = (props) => {
     function doubleClick(e){
         e.stopPropagation();
         noteRef.current.contentEditable = true;
+        noteRef.current.focus();
+
+        document.addEventListener('keydown', stopEditing);
     }
 
-    useKeyDown(() => {
+    function stopEditing(e){
+        if(e.key !== "Enter" && e.key !== "Escape") return;
+        e.preventDefault();
+
         noteRef.current.contentEditable = false;
-    }, ["Enter", "Escape"]);
+        props.update(props.item.uuid, 
+            item => {item.text = noteRef.current.innerHTML});
+
+        document.removeEventListener('keydown', stopEditing);
+    }
 
     function render(){
         return (
