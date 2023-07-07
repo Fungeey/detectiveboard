@@ -34,7 +34,7 @@ const useItemBehavior = (props) => {
         if(dragButton === util.LMB){
             // move the item to the drag position.
             setPos(dragPos);
-            props.update(props.item.uuid, dragPos, dragButton);
+            props.update(props.item.uuid, item => {item.pos = dragPos});
         }
     }
 
@@ -108,7 +108,7 @@ const useItemBehavior = (props) => {
                     width: 20,
                     height: 20,
                     top:itemRef.current.clientHeight + 5,
-                    left:itemRef.current.clientWidth - 10 -5,
+                    left:itemRef.current.clientWidth - 20,
                     position:"absolute"
                 }} onClick={deleteItem}/>
 

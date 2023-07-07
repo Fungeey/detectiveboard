@@ -12,7 +12,7 @@ let red = "#ff9c9c";
 const Note = (props) => {
     const [renderItem] = useItemBehavior(props);
     const noteRef = useRef(null);
-    const [color, setColor] = useState(yellow);
+    const [color, setColor] = useState(props.item.color);
 
     function doubleClick(e){
         e.stopPropagation();
@@ -34,13 +34,18 @@ const Note = (props) => {
         )
     }
 
+    function changeColor(color){
+        setColor(color);
+        props.update(props.item.uuid, item => {item.color = color});
+    }
+
     function renderSelection(itemRef){
         function colorSelect(color){
             return <div style={{
                 width: 20 + "px",
                 height: 20 + "px",
                 background: color,
-            }} onClick={() => setColor(color)}/>
+            }} onClick={() => changeColor(color)}/>
         }
 
         return(

@@ -12,7 +12,7 @@ import Img from './img';
 
 const noteType = "note";
 const imgType = "img";
-const debug = true;
+const debug = false;
 
 const Board = ({board}) => {
     const [items, setItems] = useState({});
@@ -98,6 +98,7 @@ const Board = ({board}) => {
             uuid:uuid,
             pos:input.pos, 
             isConnected:false,
+            color:"#feff9c",
             text:input.text
             };
 
@@ -143,12 +144,9 @@ const Board = ({board}) => {
         setItems(newItems);
     }
 
-    function updateItem(uuid, pos, button){
-        modifyItem(uuid, item => {item.pos = pos;});
-
-        // the item is being dragged, update the lines
-        if(button !== util.LMB) return;
-            updateLines(uuid, pos);    
+    function updateItem(uuid, update){
+        modifyItem(uuid, update);
+        updateLines(uuid);    
     }
 
     // update the line to match the new item positions
@@ -156,9 +154,9 @@ const Board = ({board}) => {
         let newLines = [...lines];
         newLines.forEach(line => {
             if(line.startRef === uuid){
-                line.start = pos;
+                line.start = items[uuid].pos;
             }else if(line.endRef === uuid){
-                line.end = pos;
+                line.end = items[uuid].pos;
             }
         })
         setLines(newLines);
