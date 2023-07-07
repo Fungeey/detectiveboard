@@ -11,7 +11,8 @@ const Img = (props) => {
             style={util.sizeStyle(400, null)}
             className="imgItem"
             draggable={false}
-            />)
+            />
+        )
     }
 
     return renderItem(render);

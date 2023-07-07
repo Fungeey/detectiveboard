@@ -1,6 +1,3 @@
-
-
-
 const pin = (props) => {
     
     const pinSize = 50;

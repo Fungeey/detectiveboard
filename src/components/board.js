@@ -12,6 +12,7 @@ import Img from './img';
 
 const noteType = "note";
 const imgType = "img";
+const debug = true;
 
 const Board = ({board}) => {
     const [items, setItems] = useState({});
@@ -215,11 +216,11 @@ const Board = ({board}) => {
 
             if(item.type === noteType)
                 itemHTML.push(
-                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem}/>
+                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem} debug={debug}/>
                 );
             else if(item.type === imgType)
                 itemHTML.push(
-                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem}/>
+                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem} debug={debug}/>
                 );
         }
 

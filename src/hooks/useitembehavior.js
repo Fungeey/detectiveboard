@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useDrag from "./usedrag";
 import useMouseEvents from "./usemouseevents";
 import useKeyDown from '../hooks/usekeydown';
@@ -17,13 +17,13 @@ const useItemBehavior = (props) => {
     }, []);
 
     function onClickDocument(e){
+        // if(!e.target.parentElement) return;
         // deselect if click anywhere other than this note.
-        if(e.target.parentElement.getAttribute("uuid") !== props.item.uuid){
+        if(e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid){
             deSelect();
         }
 
-        if(e.target.parentElement.getAttribute("uuid") === props.item.uuid && isSelected)
-            deSelect();
+        // deselect if you click it again and it's already selected
     }
 
     function onStartDrag(mousePos, e){
@@ -66,41 +66,54 @@ const useItemBehavior = (props) => {
 
     useKeyDown(deSelect, ["Enter", "Escape"]);
 
+    const itemRef = useRef(null);
+
     function getStyle(){
-        if(isSelected)
+        if(isSelected && props.debug)
             return {
-                ...util.posStyle(props.item.pos),
-                outline: "3px solid red"
+                outline: "2px solid red"
             }
         else 
-            return util.posStyle(props.item.pos);
+            return {};
     }
 
-    function render(renderItem){
-        return <div style={getStyle()} className="itemWrapper" 
-            onMouseDown={startDrag}
-            onMouseEnter={enter}
-            onMouseLeave={exit}
-            uuid={props.item.uuid}>
+    function render(renderItem, renderItemSelection){
+        return (
+            <div style = {util.posStyle(props.item.pos)}>
+                <div className="itemWrapper" 
+                    onMouseDown={startDrag}
+                    onMouseEnter={enter}
+                    onMouseLeave={exit}
+                    uuid={props.item.uuid} ref={itemRef} style={getStyle()}>
 
-            {renderItem()}
-            {props.item.isConnected ? <Pin/> : <></>}
-            {isSelected ? renderSelection() : <></>}
-        </div>
+                    <div className="itemHolder">
+                    {renderItem()}
+                    </div>
+                    {props.item.isConnected ? <Pin/> : <></>}           
+                </div>
+
+                {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+            </div>
+        )
     }
 
     function deleteItem(){
         props.deleteItem(props.item.uuid);
     }
 
-    function renderSelection(){
+    function renderSelection(itemRef, renderItemSelection){
         return (
-            <img src={require('../img/delete.png')} style={{
-                width: 20 + "px",
-                height: 20 + "px",
-                position:"absolute",
-                bottom: -30 + "px"
-            }} onClick={deleteItem}/>
+            <div>
+                <img src={require('../img/delete.png')} style={{
+                    width: 20,
+                    height: 20,
+                    top:itemRef.current.clientHeight + 5,
+                    left:itemRef.current.clientWidth - 10 -5,
+                    position:"absolute"
+                }} onClick={deleteItem}/>
+
+                {renderItemSelection ? renderItemSelection(itemRef) : <></>} 
+            </div>
         )
     }
   
