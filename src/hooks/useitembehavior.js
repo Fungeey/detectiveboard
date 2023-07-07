@@ -70,7 +70,7 @@ const useItemBehavior = (props) => {
         if(isSelected)
             return {
                 ...util.posStyle(props.item.pos),
-                outline: "5px solid red"
+                outline: "3px solid red"
             }
         else 
             return util.posStyle(props.item.pos);
@@ -85,7 +85,23 @@ const useItemBehavior = (props) => {
 
             {renderItem()}
             {props.item.isConnected ? <Pin/> : <></>}
+            {isSelected ? renderSelection() : <></>}
         </div>
+    }
+
+    function deleteItem(){
+        props.deleteItem(props.item.uuid);
+    }
+
+    function renderSelection(){
+        return (
+            <img src={require('../img/delete.png')} style={{
+                width: 20 + "px",
+                height: 20 + "px",
+                position:"absolute",
+                bottom: -30 + "px"
+            }} onClick={deleteItem}/>
+        )
     }
   
     return [

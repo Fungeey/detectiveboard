@@ -1,4 +1,4 @@
-import { useState, useRef} from 'react';
+import { useState, useRef, useEffect} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ContextMenu from './contextmenu';
 import useDrag from '../hooks/usedrag';
@@ -25,6 +25,16 @@ const Board = ({board}) => {
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
     const mousePos = useMousePos();
+
+    useEffect(() => {
+        // unconnect the hanging items
+        for(const uuid in items){
+            let item = items[uuid];
+
+            if(lines.filter(l => l.startRef === uuid || l.endRef === uuid).length == 0)
+                modifyItem(uuid, item => item.isConnected = false);
+        }
+    }, [lines])
 
     const getBoardPos = () => {
         let rect = boardRef.current.getBoundingClientRect();
@@ -121,26 +131,26 @@ const Board = ({board}) => {
             }
         }
 
-        modifyItem(line.startRef, note => note.isConnected = true);
-        modifyItem(line.endRef, note => note.isConnected = true);
+        modifyItem(line.startRef, item => item.isConnected = true);
+        modifyItem(line.endRef, item => item.isConnected = true);
         setLines([...lines, line]);
     }
 
     function modifyItem(uuid, modify){
-        let newNotes = {...items};
-        modify(newNotes[uuid]);
-        setItems(newNotes);
+        let newItems = {...items};
+        modify(newItems[uuid]);
+        setItems(newItems);
     }
 
-    function updateNote(uuid, pos, button){
-        modifyItem(uuid, note => {note.pos = pos;});
+    function updateItem(uuid, pos, button){
+        modifyItem(uuid, item => {item.pos = pos;});
 
-        // the note is being dragged, update the lines
+        // the item is being dragged, update the lines
         if(button !== util.LMB) return;
             updateLines(uuid, pos);    
     }
 
-    // update the line to match the new note positions
+    // update the line to match the new item positions
     function updateLines(uuid, pos){
         let newLines = [...lines];
         newLines.forEach(line => {
@@ -171,6 +181,15 @@ const Board = ({board}) => {
         setItems(itemsCopy);
     });
 
+    function deleteItem(uuid){
+        let newItems = {...items};
+        delete newItems[uuid];
+        setItems(newItems);
+
+        let newLines = lines.filter(l => l.startRef !== uuid && l.endRef !== uuid);
+        setLines(newLines);
+    }
+
     // Render
     return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}onDoubleClick={onDoubleLClick}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(pos)}>
@@ -196,11 +215,11 @@ const Board = ({board}) => {
 
             if(item.type === noteType)
                 itemHTML.push(
-                    <Note key={item.uuid} item={item} update={updateNote} makeLine={makeLine}/>
+                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem}/>
                 );
             else if(item.type === imgType)
                 itemHTML.push(
-                    <Img key={item.uuid} item={item} update={updateNote} makeLine={makeLine}/>
+                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem}/>
                 );
         }
 
