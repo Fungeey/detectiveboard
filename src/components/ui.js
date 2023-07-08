@@ -14,8 +14,7 @@ const UI = ({boardRef}) => {
         <div id={"ui"}>
         <br></br>
             <button className={"UIButton"} onClick={save}>save</button>
-            {/* <button className={"UIButton"} onClick={onLoad}>load</button> */}
-            <input type="file" className={"UIButton"} onChange={load}></input>
+            <button className={"UIButton"} onClick={load}>load</button>
         </div>
     )
 }

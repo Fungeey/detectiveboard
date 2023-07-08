@@ -1,5 +1,22 @@
-
+import { useEffect } from "react";
 const useSaveLoad = (ref) => {
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleCtrlS);
+        return () => document.removeEventListener('keydown', handleCtrlS);
+    }, []);
+
+    function handleCtrlS(e){
+        if (e.ctrlKey && e.key === 's') {
+            // Prevent the Save dialog open
+            e.preventDefault();
+            save();
+        }else if (e.ctrlKey && e.key === 'o') {
+            // Prevent the open dialog open
+            e.preventDefault();
+            forceLoad();
+        }
+    }
 
     function save(){
         let data = ref.current.data;
@@ -17,6 +34,13 @@ const useSaveLoad = (ref) => {
         a.click();
     }
 
+    function forceLoad(){
+        let i = document.createElement("input");
+        i.type = "file";
+        i.onchange = load;
+        i.click();
+    }
+
     async function load(ev){
         console.log("chose file");
         const file = ev.target.files.item(0);
@@ -26,7 +50,7 @@ const useSaveLoad = (ref) => {
         ref.current.onLoad(data);
     }
 
-    return [save, load];
+    return [save, forceLoad];
 }
 
 export default useSaveLoad;

@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import useDrag from "./usedrag";
 import util from "../util";
 import Pin from "../components/pin";
-import Line from "../components/line";
 import useSelectionBehavior from "./useselectionbehavior";
 
 let hoverUUID = "";
