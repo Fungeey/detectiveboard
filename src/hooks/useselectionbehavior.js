@@ -44,7 +44,7 @@ function useSelectionBehavior(props){
                     width: 20,
                     height: 20,
                     top:itemRef.current.clientHeight + 5,
-                    left:itemRef.current.clientWidth - 20,
+                    left: 0,
                     position:"absolute"
                 }} onClick={deleteItem}/>
 

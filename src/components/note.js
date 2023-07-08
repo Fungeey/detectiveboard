@@ -60,8 +60,8 @@ const Note = (props) => {
     function renderSelection(itemRef){
         function colorSelect(color){
             return <div style={{
-                width: 20 + "px",
-                height: 20 + "px",
+                width: 20,
+                height: 20,
                 background: color,
             }} onClick={() => changeColor(color)}/>
         }
@@ -69,6 +69,7 @@ const Note = (props) => {
         return(
             <div className="itemSelection" style={{
                 top:itemRef.current.clientHeight,
+                left:itemRef.current.clientWidth - 20*4 - 5*4
             }}>
                 {colorSelect(yellow)}
                 {colorSelect(green)}
