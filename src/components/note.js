@@ -1,7 +1,6 @@
 import { useState } from "react";
 import useItemBehavior from "../hooks/useitembehavior";
 import { useRef} from 'react';
-import useKeyDown from '../hooks/usekeydown';
 import util from "../util";
 
 let green = "#C4FF9C";
@@ -10,7 +9,7 @@ let blue = "#9cccff";
 let red = "#ff9c9c";
 
 const Note = (props) => {
-    const [renderItem] = useItemBehavior(props);
+    const [render] = useItemBehavior(props);
     const noteRef = useRef(null);
     const [color, setColor] = useState(props.item.color);
 
@@ -33,11 +32,19 @@ const Note = (props) => {
         document.removeEventListener('keydown', stopEditing);
     }
 
-    function render(){
+    function getSize(){
+        if(props.item.size)
+            return util.sizeStyle(props.item.size.width, props.item.size.height);
+        else 
+            return util.sizeStyle(150, 100);
+    }
+
+    function renderItem(isSelected){
         return (
             <div className = "noteItem" style={{
-                ...util.sizeStyle(150, 100),
-                background: color
+                ...getSize(),
+                background: color,
+                resize: isSelected ? "both" : "none"
             }} onDoubleClick={doubleClick} ref={noteRef}>
             {props.item.text}
             {props.debug ? <><br/><br/>{props.item.uuid.substring(0, 4)}</> : <></>}
@@ -72,7 +79,7 @@ const Note = (props) => {
         )
     }
 
-    return renderItem(render, renderSelection);
+    return render(renderItem, renderSelection);
 }
 
 export default Note;

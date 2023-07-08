@@ -1,4 +1,5 @@
 import { useState, useRef, useLayoutEffect } from "react";
+import util from "../util";
 
 const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
@@ -29,16 +30,16 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         e.stopPropagation();
         setDragButton(e.button);
 
-        let p = getPos(e);
+        let p = util.getMousePos(e);
         let newStartPos = doStartDrag(p, e);
 
         setPos(newStartPos);
-        setOffset(subPos(newStartPos, p));
+        setOffset(util.subPos(newStartPos, p));
         setStartPos(p);
     }
 
     function onDrag(e){
-        let newPos = addPos(getPos(e), offset);
+        let newPos = util.addPos(util.getMousePos(e), offset);
         setPos(newPos);
 
         if(doOnDrag) doOnDrag(newPos, e);
@@ -48,7 +49,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('mouseup', endDrag);
 
-        if(doEndDrag) doEndDrag(distance(startPos, getPos(e)), e);
+        if(doEndDrag) doEndDrag(util.distance(startPos, util.getMousePos(e)), e);
     }
     
     return[
@@ -59,8 +60,3 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 }
 
 export default useDrag; 
-
-const distance = (a, b) => Math.sqrt(Math.abs(a.x - b.x) + Math.abs(a.y - b.y) ^ 2);
-const getPos = (e) => ({x:e.clientX, y:e.clientY});
-const addPos = (a, b) => ({x:a.x+b.x, y:a.y+b.y});
-const subPos = (a, b) => ({x:a.x-b.x, y:a.y-b.y});

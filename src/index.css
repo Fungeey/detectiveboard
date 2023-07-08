@@ -61,11 +61,23 @@ code {
   z-index: var(--layer-item);
   background:var(--yellow);
   padding:1rem;
+
+  resize: both;
+  background-size: contain;
+  background-repeat: no-repeat;
+  overflow:auto;
+  overflow:hidden;
 }
 
 .imgItem{
-  border: 20px solid white;
+  /* border: 20px solid white; */
   z-index: var(--layer-item);
+  
+  resize: both;
+  background-size: contain;
+  background-repeat: no-repeat;
+  overflow:auto;
+  overflow:hidden;
 }
 
 .board{

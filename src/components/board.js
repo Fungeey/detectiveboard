@@ -103,6 +103,7 @@ const Board = ({board}) => {
             pos:input.pos, 
             isConnected:false,
             color:"#feff9c",
+            size:{width:200, height:100},
             text:input.text
             };
 
@@ -181,6 +182,7 @@ const Board = ({board}) => {
             uuid:uuid,
             pos:util.subPos(mousePos.current, getBoardPos()),
             isConnected:false,
+            size:{width:200, height:100},
             src:src
         };
 
@@ -221,11 +223,11 @@ const Board = ({board}) => {
 
             if(item.type === noteType)
                 itemHTML.push(
-                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem} debug={debug}/>
+                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
                 );
             else if(item.type === imgType)
                 itemHTML.push(
-                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} deleteItem={deleteItem} debug={debug}/>
+                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
                 );
         }
 
