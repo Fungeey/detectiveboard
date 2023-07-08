@@ -15,7 +15,7 @@ const Line = (props) => {
     const svgHeight = () => Math.round(Math.max(start.y, end.y) - Math.min(start.y, end.y) + buffer * 2);
     
     const lineStyle = () => ({
-        stroke:"rgb(255,0,0, 1)", 
+        stroke:"red", 
         strokeWidth:lineWidth, 
         fill:"transparent"
     });

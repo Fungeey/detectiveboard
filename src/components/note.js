@@ -3,13 +3,16 @@ import useItemBehavior from "../hooks/useitembehavior";
 import { useRef} from 'react';
 import util from "../util";
 
-let green = "#C4FF9C";
-let yellow = "#feff9c";
-let blue = "#9cccff";
-let red = "#ff9c9c";
+let colors = [
+    "#feff9c",      //yellow
+    "#FFD09C",       //orange
+    "#ff9c9c",      //red
+    "#9cccff",      //blue
+    "#C4FF9C"      //green
+]
 
 const Note = (props) => {
-    const [render] = useItemBehavior(props);
+    const [render] = useItemBehavior(props);    
     const noteRef = useRef(null);
     const [color, setColor] = useState(props.item.color);
 
@@ -63,18 +66,16 @@ const Note = (props) => {
                 width: 20,
                 height: 20,
                 background: color,
-            }} onClick={() => changeColor(color)}/>
+            }} key={color}
+            onClick={() => changeColor(color)}/>
         }
 
         return(
             <div className="itemSelection" style={{
                 top:itemRef.current.clientHeight,
-                left:itemRef.current.clientWidth - 20*4 - 5*4
+                left:itemRef.current.clientWidth - 20*5 - 5*5
             }}>
-                {colorSelect(yellow)}
-                {colorSelect(green)}
-                {colorSelect(blue)}
-                {colorSelect(red)}
+                {colors.map(c => colorSelect(c))}
             </div>
             
         )

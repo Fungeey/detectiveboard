@@ -103,7 +103,7 @@ const Board = ({board}) => {
             pos:input.pos, 
             isConnected:false,
             color:"#feff9c",
-            size:{width:200, height:100},
+            size:{width:150, height:100},
             text:input.text
             };
 

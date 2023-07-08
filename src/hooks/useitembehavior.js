@@ -54,8 +54,8 @@ const useItemBehavior = (props) => {
 
             let itemElement = itemRef.current.childNodes[0].childNodes[0];
             props.update(props.item.uuid, item => {item.size={
-                width: itemElement.width,
-                height: itemElement.height,
+                width: itemElement.clientWidth,
+                height: itemElement.clientHeight,
             }});
         }else if(dragButton === util.LMB && dist < 2){
             select();
