@@ -131,12 +131,10 @@ const Board = ({board}) => {
         for(let i = 0; i < lines.length; i++){
             let other = lines[i];
 
-            if(other.startRef === line.startRef && other.endRef === line.endRef){
-                console.log("That line already exists");
-                return;
-            }
-            if(other.startRef === line.endRef && other.endRef === line.startRef){
-                console.log("That line already exists (backwards)");
+            if(other.startRef === line.startRef && other.endRef === line.endRef
+            || other.startRef === line.endRef && other.endRef === line.startRef){
+                // if the line exists already, remove it
+                setLines(lines.filter(l => l.uuid !== other.uuid));
                 return;
             }
         }
@@ -202,7 +200,7 @@ const Board = ({board}) => {
     return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}onDoubleClick={onDoubleLClick}>        
         <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
             <ContextMenu boardPos={getBoardPos}/>
-            <p style = {{position:'absolute'}}></p>
+            <p style = {{position:'absolute'}}>board</p>
 
             {isCreating ? 
                 <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>

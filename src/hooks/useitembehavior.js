@@ -2,14 +2,14 @@ import { useState, useRef } from "react";
 import useDrag from "./usedrag";
 import util from "../util";
 import Pin from "../components/pin";
+import Line from "../components/line";
 import useSelectionBehavior from "./useselectionbehavior";
 
 let hoverUUID = "";
 
 const useItemBehavior = (props) => {
-    const [isSelected, select, renderSelection] = useSelectionBehavior(props);
-    const [isMakingLine, setIsMakingLine] = useState(false);
-    const [line, setLine] = useState({});
+    const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
+    const [previewLine, setPreviewLine] = useState({});
 
     const [isResizing, setIsResizing] = useState(false);
 
@@ -36,15 +36,23 @@ const useItemBehavior = (props) => {
             setPos(dragPos);
             props.update(props.item.uuid, item => {item.pos = dragPos});
         }else if(dragButton === util.RMB){
-            // // is dragging
-            // if(hoverUUID){
-            //     console.log("asdf");
-            //     setIsMakingLine(true);
-            //     setLine({
-            //         start:props.item.pos,
-            //         end:{x:0, y:0}
-            //     })
-            // }
+            drawPreviewLine(e);
+        }
+    }
+
+    function drawPreviewLine(e) {
+        if (hoverUUID && props.item.uuid !== hoverUUID) {
+            // snap to any item
+            setPreviewLine({
+                start: props.item.pos,
+                end: props.items[hoverUUID].pos
+            });
+        } else {
+            // otherwise go to mouse position
+            setPreviewLine({
+                start: props.item.pos,
+                end: util.subPos(util.getMousePos(e), props.boardPos())
+            });
         }
     }
 
@@ -52,12 +60,14 @@ const useItemBehavior = (props) => {
         if(isResizing){
             setIsResizing(false);
 
+            // save new width
             let itemElement = itemRef.current.childNodes[0].childNodes[0];
             props.update(props.item.uuid, item => {item.size={
                 width: itemElement.clientWidth,
                 height: itemElement.clientHeight,
             }});
         }else if(dragButton === util.LMB && dist < 2){
+            // lmb click = select
             select();
         }else if(dragButton === util.RMB){
             // line connecting this item to the hovered (destination) item.
@@ -65,8 +75,7 @@ const useItemBehavior = (props) => {
                 props.makeLine(props.item.uuid, hoverUUID);
         }
 
-        setIsMakingLine(false);
-        setLine({});
+        setPreviewLine({});
     }
 
     const [pos, setPos] = useState(props.item.pos);
@@ -80,7 +89,7 @@ const useItemBehavior = (props) => {
     function render(renderItem, renderItemSelection){
         return (
             <>
-                {/* {isMakingLine ? <Line start={line.start} end={line.end} key={line.uuid}/> : <></>} */}
+                {previewLine.start ? <Line start={previewLine.start} end={previewLine.end} key={previewLine.uuid}/> : <></>}
                 <div style = {util.posStyle(props.item.pos)}>
                     <div className="itemWrapper" 
                         onMouseDown={startDrag}

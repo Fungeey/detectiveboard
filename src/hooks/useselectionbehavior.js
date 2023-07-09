@@ -56,6 +56,7 @@ function useSelectionBehavior(props){
     return[
         isSelected,
         select,
+        deSelect,
         renderSelection
     ]
 }
