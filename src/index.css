@@ -111,6 +111,7 @@ p{
 }
 
 .previewLine{
+  position:absolute;
   opacity:0.5;
   animation-name:blink;
   animation-duration:2s;
