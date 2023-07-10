@@ -97,7 +97,9 @@ const useItemBehavior = (props) => {
                     </div>
                 :<></>}
 
-                <div style = {util.posStyle(props.item.pos)}>
+                {props.item.isConnected ? <Pin pos={props.item.pos}/> : <></>}   
+
+                <div style = {{...util.posStyle(props.item.pos)}}>
                     <div className="itemWrapper" 
                         onMouseDown={startDrag}
                         onMouseEnter={enter}
@@ -107,7 +109,6 @@ const useItemBehavior = (props) => {
                         <div className="itemHolder">
                             {renderItem(isSelected)}
                         </div>
-                        {props.item.isConnected ? <Pin/> : <></>}           
                     </div>
 
                     {itemRef.current !== null && props.debug ? 

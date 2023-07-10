@@ -38,12 +38,10 @@ code {
   position:absolute;
   user-select: none;
   width:fit-content;
-  z-index: var(--layer-item); 
-  /* this doesn't do antyhing. the layers are still broken esp when 
-  an item can overlap a pin. it broke after moving position style out into the wrapper class, instead of in the individual pin / img / note classes */
 }
 
 .itemHolder{
+  position:relative;
   border-radius: .2rem;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.125);
   overflow:hidden;
@@ -87,7 +85,7 @@ code {
 }
 
 .boardWrapper{
-  display:flex;
+  position:relative;
   overflow:hidden;
   width:100vw;
   height:100vh;
@@ -123,7 +121,7 @@ p{
   position:absolute;
   user-select: none;
   pointer-events: none;
-  z-index: var(--layer-pin);
+  z-index: var(--layer-ui);
 }
 
 #ui{
