@@ -8,7 +8,8 @@ const util = {
     subPos: (a, b) =>  ({x:a.x-b.x, y:a.y-b.y}),
     LMB: 0,
     MMB: 1,
-    RMB: 2
+    RMB: 2,
+    clickDist:2
 }
 
 export default util;

@@ -10,7 +10,6 @@ let hoverUUID = "";
 const useItemBehavior = (props) => {
     const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
     const [previewLine, setPreviewLine] = useState({});
-
     const [isResizing, setIsResizing] = useState(false);
 
     function onStartDrag(mousePos, e){
@@ -61,12 +60,15 @@ const useItemBehavior = (props) => {
             setIsResizing(false);
 
             // save new width
+            //clientWidth includes padding, so need to subtract it away
+            const pad = "1rem"; 
             let itemElement = itemRef.current.childNodes[0].childNodes[0];
             props.update(props.item.uuid, item => {item.size={
-                width: itemElement.clientWidth,
-                height: itemElement.clientHeight,
+                width: itemElement.clientWidth - pad,
+                height: itemElement.clientHeight - pad,
             }});
-        }else if(dragButton === util.LMB && dist < 2){
+
+        }else if(dragButton === util.LMB && dist < util.clickDist){
             // lmb click = select
             select();
         }else if(dragButton === util.RMB){
@@ -86,47 +88,46 @@ const useItemBehavior = (props) => {
 
     const itemRef = useRef(null);
 
-    function render(renderItem, renderItemSelection){
-        return (
-            <>
-                {previewLine.start ? 
-                    <div className="previewLine">
-                        <Line start={previewLine.start} end={previewLine.end} key={previewLine.uuid}/>
-                        <Pin pos={previewLine.end}/>
-                        {!props.item.isConnected ? <Pin pos={previewLine.start}/> : <></>}
-                    </div>
-                :<></>}
+    function render(renderItem, renderItemSelection){ return (<>
+        {previewLine.start ? 
+            <div className="previewLine blink">
+                <Line start={previewLine.start} end={previewLine.end} 
+                key={previewLine.uuid}/>
+                <Pin pos={previewLine.end}/>
 
-                {props.item.isConnected ? <Pin pos={props.item.pos}/> : <></>}   
+                {!props.item.isConnected ? 
+                <Pin pos={previewLine.start}/> : <></>}
+            </div>
+        :<></>}
 
-                <div style = {{...util.posStyle(props.item.pos)}}>
-                    <div className="itemWrapper" 
-                        onMouseDown={startDrag}
-                        onMouseEnter={enter}
-                        onMouseLeave={exit}
-                        uuid={props.item.uuid} ref={itemRef}>
+        {props.item.isConnected ? <Pin pos={props.item.pos}/> : <></>}   
 
-                        <div className="itemHolder">
-                            {renderItem(isSelected)}
-                        </div>
-                    </div>
+        <div style = {{...util.posStyle(props.item.pos)}}>
+            <div className="itemWrapper" 
+                onMouseDown={startDrag}
+                onMouseEnter={enter}
+                onMouseLeave={exit}
+                uuid={props.item.uuid} ref={itemRef}>
 
-                    {itemRef.current !== null && props.debug ? 
-                    <div style={{
-                        position:"absolute",
-                        width:20,
-                        height:20,
-                        top:itemRef.current.clientHeight - 10,
-                        left:itemRef.current.clientWidth - 10,
-                        background:"blue"
-                    }}> </div> : <></>
-                    }
-
-                    {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+                <div className={`itemHolder${isSelected?' selected':''}`}>
+                    {renderItem(isSelected)}
                 </div>
-            </>
-        )
-    }
+            </div>
+
+            {itemRef.current !== null && props.debug ? 
+            <div style={{
+                position:"absolute",
+                width:20,
+                height:20,
+                top:itemRef.current.clientHeight - 10,
+                left:itemRef.current.clientWidth - 10,
+                background:"blue"
+            }}> </div> : <></>
+            }
+
+            {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+        </div>
+    </>)}
   
     return [
         render

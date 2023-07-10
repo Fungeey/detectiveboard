@@ -17,8 +17,6 @@ function useSelectionBehavior(props){
         if(e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid){
             deSelect();
         }
-
-        // deselect if you click it again and it's already selected
     }
 
     function select(){

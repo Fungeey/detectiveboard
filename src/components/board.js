@@ -156,7 +156,7 @@ const Board = ({board}) => {
     }
 
     // update the line to match the new item positions
-    function updateLines(uuid, pos){
+    function updateLines(uuid){
         let newLines = [...lines];
         newLines.forEach(line => {
             if(line.startRef === uuid){

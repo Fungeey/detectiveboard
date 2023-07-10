@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useItemBehavior from "../hooks/useitembehavior";
 import { useRef} from 'react';
 import util from "../util";
@@ -21,18 +21,27 @@ const Note = (props) => {
         noteRef.current.contentEditable = true;
         noteRef.current.focus();
 
-        document.addEventListener('keydown', stopEditing);
+        document.addEventListener('focusout', unfocus);
+        document.addEventListener('keydown', finishEditing);
     }
 
-    function stopEditing(e){
+    function unfocus(e){
+        stopEditing();
+        document.removeEventListener('focusout', unfocus);
+    }
+
+    function finishEditing(e){
         if(e.key !== "Enter" && e.key !== "Escape") return;
         e.preventDefault();
+        
+        stopEditing();
+        document.removeEventListener('keydown', finishEditing);
+    }
 
+    function stopEditing(){
         noteRef.current.contentEditable = false;
         props.update(props.item.uuid, 
-            item => {item.text = noteRef.current.innerHTML});
-
-        document.removeEventListener('keydown', stopEditing);
+            item => item.text = noteRef.current.innerText);
     }
 
     function getSize(){
@@ -57,7 +66,7 @@ const Note = (props) => {
 
     function changeColor(color){
         setColor(color);
-        props.update(props.item.uuid, item => {item.color = color});
+        props.update(props.item.uuid, item => item.color = color);
     }
 
     function renderSelection(itemRef){

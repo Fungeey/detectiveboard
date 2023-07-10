@@ -19,6 +19,12 @@
   --layer-item: 0;
 }
 
+@keyframes blink {
+  0% {opacity: .25;}
+  50% {opacity: .75;}
+  100% {opacity: .25;}
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', 'Roboto', 'Oxygen',
@@ -47,6 +53,12 @@ code {
   overflow:hidden;
 }
 
+/* styling for itemHolder when selected*/
+.selected{
+  outline: 3px solid rgb(255, 0, 0, 0.5);
+}
+
+/* selection ui for an item ie the color boxes on notes*/
 .itemSelection{
   position:absolute;
   display: flex;
@@ -59,6 +71,8 @@ code {
   z-index: var(--layer-item);
   background:var(--yellow);
   padding:1rem;
+  min-width: 120px;
+  min-height:25px;
 
   resize: both;
   background-size: contain;
@@ -102,19 +116,16 @@ p{
   z-index: var(--layer-lines);
 }
 
-@keyframes blink {
-  0% {opacity: .25;}
-  50% {opacity: .75;}
-  100% {opacity: .25;}
-}
-
 .previewLine{
   position:absolute;
-  opacity:0.5;
+  z-index: var(--layer-ui);
+}
+
+.blink{
+  opacity:1;
   animation-name:blink;
   animation-duration:2s;
   animation-iteration-count: infinite;
-  z-index: var(--layer-ui);
 }
 
 .pin{
