@@ -89,7 +89,14 @@ const useItemBehavior = (props) => {
     function render(renderItem, renderItemSelection){
         return (
             <>
-                {previewLine.start ? <Line start={previewLine.start} end={previewLine.end} key={previewLine.uuid}/> : <></>}
+                {previewLine.start ? 
+                    <div className="previewLine">
+                        <Line start={previewLine.start} end={previewLine.end} key={previewLine.uuid}/>
+                        <Pin pos={previewLine.end}/>
+                        {!props.item.isConnected ? <Pin pos={previewLine.start}/> : <></>}
+                    </div>
+                :<></>}
+
                 <div style = {util.posStyle(props.item.pos)}>
                     <div className="itemWrapper" 
                         onMouseDown={startDrag}

@@ -104,9 +104,24 @@ p{
   z-index: var(--layer-lines);
 }
 
+@keyframes blink {
+  0% {opacity: .25;}
+  50% {opacity: .75;}
+  100% {opacity: .25;}
+}
+
+.previewLine{
+  opacity:0.5;
+  animation-name:blink;
+  animation-duration:2s;
+  animation-iteration-count: infinite;
+  z-index: var(--layer-ui);
+}
+
 .pin{
   position:absolute;
   user-select: none;
+  pointer-events: none;
   z-index: var(--layer-pin);
 }
 
