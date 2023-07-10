@@ -180,7 +180,7 @@ const Board = ({board}) => {
             uuid:uuid,
             pos:util.subPos(mousePos.current, getBoardPos()),
             isConnected:false,
-            size:{width:200, height:100},
+            size:{width:300, height:300},
             src:src
         };
 

@@ -9,7 +9,7 @@ const Img = (props) => {
         if(props.item.size)
             return util.sizeStyle(props.item.size.width, props.item.size.height);
         else 
-            return util.sizeStyle(200, 150);
+            return util.sizeStyle(300, 300);
     }
 
     function renderItem(isSelected){

@@ -74,7 +74,6 @@ code {
   min-width: 120px;
   min-height:25px;
 
-  resize: both;
   background-size: contain;
   background-repeat: no-repeat;
   overflow:auto;
@@ -85,11 +84,12 @@ code {
   /* border: 20px solid white; */
   z-index: var(--layer-item);
   
-  resize: both;
-  background-size: contain;
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   overflow:auto;
   overflow:hidden;
+  aspect-ratio: 1/1;
 }
 
 .board{
