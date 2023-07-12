@@ -64,13 +64,22 @@ const useItemBehavior = (props) => {
             const pad = "1rem"; 
             let itemElement = itemRef.current.childNodes[0].childNodes[0];
             props.update(props.item.uuid, item => {item.size={
-                width: itemElement.clientWidth - pad,
-                height: itemElement.clientHeight - pad,
+                width: itemElement.clientWidth,
+                height: itemElement.clientHeight,
             }});
 
-        }else if(dragButton === util.LMB && dist < util.clickDist){
+            // console.log(itemElement.clientWidth);
+
+        }else if(dragButton === util.LMB){
             // lmb click = select
-            select();
+            if(dist < util.clickDist){
+                select();
+                return;
+            }
+            
+            // round position 
+            props.update(props.item.uuid, item => item.pos = util.roundPos(item.pos))
+            
         }else if(dragButton === util.RMB){
             // line connecting this item to the hovered (destination) item.
             if(props.item.uuid !== hoverUUID)

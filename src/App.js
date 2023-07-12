@@ -7,7 +7,7 @@ const App = () => {
   const boardRef = useRef({});
 
   return <div>
-      <UI boardRef={boardRef}/>
+      {/* <UI boardRef={boardRef}/> */}
       <Board board={boardRef}/>
   </div>
 }

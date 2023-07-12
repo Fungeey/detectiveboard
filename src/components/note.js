@@ -3,13 +3,15 @@ import useItemBehavior from "../hooks/useitembehavior";
 import { useRef} from 'react';
 import util from "../util";
 
-let colors = [
+const colors = [
     "#feff9c",      //yellow
     "#FFD09C",       //orange
     "#ff9c9c",      //red
     "#9cccff",      //blue
     "#C4FF9C"      //green
 ]
+
+const padding = 20; // px;
 
 const Note = (props) => {
     const [render] = useItemBehavior(props);    
@@ -46,7 +48,10 @@ const Note = (props) => {
 
     function getSize(){
         if(props.item.size)
-            return util.sizeStyle(props.item.size.width, props.item.size.height);
+            return util.sizeStyle({
+                width:props.item.size.width-padding*2,
+                height:props.item.size.height-padding*2,
+            });
         else 
             return util.sizeStyle(150, 100);
     }

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-const useSaveLoad = (ref) => {
+const useSaveLoad = (props) => {
 
     useEffect(() => {
         document.addEventListener('keydown', handleCtrlS);
@@ -19,8 +19,8 @@ const useSaveLoad = (ref) => {
     }
 
     function save(){
-        let data = ref.current.data;
-        let jsonData = JSON.stringify(data);
+        checkData(props.data);
+        let jsonData = JSON.stringify(props.data);
 
         download(jsonData, 'data.json', 'application/json');
     }
@@ -42,12 +42,34 @@ const useSaveLoad = (ref) => {
     }
 
     async function load(ev){
-        console.log("chose file");
         const file = ev.target.files.item(0);
         const jsonData = await file.text();
 
         let data = JSON.parse(jsonData);
-        ref.current.onLoad(data);
+        checkData(data);
+        props.onLoad(data);
+    }
+
+    function checkData(data){
+        if(!data["items"]) e("items obj is missing");
+        if(!data["lines"]) e("lines obj is missing");
+
+        for(const uuid in data["items"]){
+            let item = data["items"][uuid];
+
+            if(!item.pos) e(item, "pos is missing");
+            if(!item.size.width || !item.size.height){
+                e("size is broken, reset to default");
+                item.size = {
+                    width:200,
+                    height:200
+                }
+            }
+        }
+    }
+
+    function e(msg){
+        console.log(msg);
     }
 
     return [save, forceLoad];

@@ -32,7 +32,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: beige;
+  background-color: floralwhite;
 }
 
 code {
@@ -70,7 +70,7 @@ code {
 .noteItem{
   z-index: var(--layer-item);
   background:var(--yellow);
-  padding:1rem;
+  padding:20px;
   min-width: 120px;
   min-height:25px;
 

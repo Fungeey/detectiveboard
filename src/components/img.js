@@ -7,7 +7,7 @@ const Img = (props) => {
 
     function getSize(){
         if(props.item.size)
-            return util.sizeStyle(props.item.size.width, props.item.size.height);
+            return util.sizeStyle(props.item.size);
         else 
             return util.sizeStyle(300, 300);
     }

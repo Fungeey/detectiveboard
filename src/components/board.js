@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect} from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import ContextMenu from './contextmenu';
+import UI from './ui';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown'
 import usePasteImage from '../hooks/usepasteimage'
@@ -12,21 +13,16 @@ import Img from './img';
 
 const noteType = "note";
 const imgType = "img";
+const lineType = "line";
 const debug = false;
 
-const Board = ({board}) => {
+const Board = () => {
     const [items, setItems] = useState({});
     const [lines, setLines] = useState([]);
 
-    board.current = {
-        data: {items:items, lines:lines}, 
-        onLoad:(data) => { 
-            setItems(data.items); 
-            setLines(data.lines);
-        }
-    };
-
     const boardRef = useRef(null);
+    // boardRef.current.data.items = items;
+
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
     const mousePos = useMousePos();
@@ -90,14 +86,18 @@ const Board = ({board}) => {
         setIsCreating(false);
     }, ["Escape"]);
 
+    function getUUID(type){
+        return type + "_" + uuid().substring(0, 5);
+    }
+
     // Add a new note
     function addNote(){
         if(input.text === "" || input.pos == {})
             return;
 
-        let uuid = uuidv4();
-        let noteCopy = {...items};
-        noteCopy[uuid] = {
+        let uuid = getUUID(noteType);
+        let itemCopy = {...items};
+        itemCopy[uuid] = {
             type:"note",
             uuid:uuid,
             pos:input.pos, 
@@ -107,7 +107,7 @@ const Board = ({board}) => {
             text:input.text
             };
 
-        setItems(noteCopy);
+        setItems(itemCopy);
     }
 
     const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
@@ -121,7 +121,7 @@ const Board = ({board}) => {
             endRef:endUuid,
             start:items[uuid].pos, 
             end:items[endUuid].pos,
-            uuid:uuidv4()
+            uuid:getUUID(lineType)
         };
 
         addLine(line);
@@ -160,9 +160,9 @@ const Board = ({board}) => {
         let newLines = [...lines];
         newLines.forEach(line => {
             if(line.startRef === uuid){
-                line.start = items[uuid].pos;
+                line.start = util.roundPos(items[uuid].pos);
             }else if(line.endRef === uuid){
-                line.end = items[uuid].pos;
+                line.end = util.roundPos(items[uuid].pos);
             }
         })
         setLines(newLines);
@@ -172,8 +172,8 @@ const Board = ({board}) => {
     usePasteImage((src) => {
 
         // make a new img item 
-        let uuid = uuidv4();
-        let itemsCopy = {...board.current.data.items};
+        let uuid = getUUID(imgType);
+        let itemsCopy = {...boardRef.current.data.items};
 
         itemsCopy[uuid] = {
             type:"img",
@@ -196,22 +196,36 @@ const Board = ({board}) => {
         setLines(newLines);
     }
 
+    function onLoad(data){ 
+        setItems(data.items); 
+        setLines(data.lines);
+    }
+
     // Render
-    return <div className='boardWrapper' onMouseDown = {onMouseDown} ref={board}onDoubleClick={onDoubleLClick}>        
-        <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
-            <ContextMenu boardPos={getBoardPos}/>
-            <p style = {{position:'absolute'}}>board</p>
-
-            {isCreating ? 
-                <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
-                </input>
-            : <></>}
-
-            {renderItems()}
-
-            {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
+    return <>
+        <div style={{
+            position:'fixed',
+            zIndex:99
+        }}>
+            <UI data={{items:items, lines:lines}} onLoad={onLoad}/>
         </div>
-    </div>
+
+        <div className='boardWrapper' onMouseDown = {onMouseDown} onDoubleClick={onDoubleLClick}>
+            <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
+                <ContextMenu boardPos={getBoardPos}/>
+                <p style = {{position:'absolute'}}>board</p>
+
+                {isCreating ? 
+                    <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
+                    </input>
+                : <></>}
+
+                {renderItems()}
+
+                {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
+            </div>
+        </div>
+    </>
 
     function renderItems(){
         const itemHTML = [];

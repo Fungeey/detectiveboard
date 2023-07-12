@@ -1,14 +1,9 @@
 import useSaveLoad from '../hooks/usesaveload';
 
-const UI = ({boardRef}) => {
+const UI = (props) => {
 
     // boardref is null when first run, since it it takes a bit for it to be set by Board.
-    const [save, load] = useSaveLoad(boardRef);
-
-    // pop up the load screen
-    function onLoad(){
-
-    }
+    const [save, load] = useSaveLoad(props);
 
     return(
         <div id={"ui"}>
