@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import useKeyDown from '../hooks/usekeydown';
 
-let selectUUID = "";
-
 function useSelectionBehavior(props){
     const [isSelected, setIsSelected] = useState(false);
 
@@ -20,12 +18,10 @@ function useSelectionBehavior(props){
     }
 
     function select(){
-        selectUUID = props.item.uuid;
         setIsSelected(true);
     }
 
     function deSelect(){
-        selectUUID = "";
         setIsSelected(false);
     }
 
@@ -38,7 +34,8 @@ function useSelectionBehavior(props){
     function renderSelection(itemRef, renderItemSelection){
         return (
             <div>
-                <img src={require('../img/delete.png')} style={{
+                <img src={require('../img/delete.png')} alt="delete icon" 
+                style={{
                     width: 20,
                     height: 20,
                     top:itemRef.current.clientHeight + 5,

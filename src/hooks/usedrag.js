@@ -5,9 +5,9 @@ import useScale from '../hooks/usescale';
 const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     // when implementing useDrag, doStartDrag must return start position
-    function defaultDoStartDrag(mousePos, e){
+    // function defaultDoStartDrag(mousePos, e){
         // return object's start position
-    }
+    // }
 
     // doOnDrag and doEndDrag can be empty
 

@@ -16,11 +16,6 @@ const useItemBehavior = (props) => {
 
     function onStartDrag(mousePos, e){
         setStartSize(getSize());
-
-        const tgt = e.target;
-        const inline = tgt.style.cursor || "Not defined"
-        const computed = window.getComputedStyle(tgt)["cursor"];
-
         return pos;
     }
 

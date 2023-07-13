@@ -16,12 +16,7 @@ const useKeyDown = (callback, keys) => {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [onKeyDown]);
+  });
 };
 
 export default useKeyDown;
-
-// Example usage:
-// useKeyDown(() => {
-//   someCallback();
-// }, ["Escape"]);

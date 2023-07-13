@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import util from "../util";
 
 const useScale = () => {
-    const[scaleRef, setScaleRef] = useState(null);
     const[scale, setScale] = useState(1);
 
     useEffect(() => {
         let board = document.getElementById("boardWrapper");
-        setScaleRef(board);
         setScale(board.getAttribute("scale"));
     }, [])
 

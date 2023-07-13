@@ -32,9 +32,7 @@ const Board = () => {
     useEffect(() => {
         // unconnect the hanging items
         for(const uuid in items){
-            let item = items[uuid];
-
-            if(lines.filter(l => l.startRef === uuid || l.endRef === uuid).length == 0)
+            if(lines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0)
                 modifyItem(uuid, item => item.isConnected = false);
         }
     }, [lines])
@@ -59,7 +57,7 @@ const Board = () => {
         if(e.button !== util.LMB) return;
 
         // cancel out of creating, if clicked elsewhere
-        if(isCreating && input.text == ""){
+        if(isCreating && input.text === ""){
             setIsCreating(false);
             return;
         }
@@ -95,7 +93,7 @@ const Board = () => {
 
     // Add a new note
     function addNote(){
-        if(input.text === "" || input.pos == {})
+        if(input.text === "" || input.pos === {})
             return;
 
         let uuid = getUUID(noteType);
@@ -134,8 +132,13 @@ const Board = () => {
         for(let i = 0; i < lines.length; i++){
             let other = lines[i];
 
-            if(other.startRef === line.startRef && other.endRef === line.endRef
-            || other.startRef === line.endRef && other.endRef === line.startRef){
+            let exists = other.startRef === line.startRef 
+            && other.endRef === line.endRef;
+
+            let existsBackwards = other.startRef === line.endRef 
+            && other.endRef === line.startRef;
+
+            if(exists || existsBackwards){
                 // if the line exists already, remove it
                 setLines(lines.filter(l => l.uuid !== other.uuid));
                 return;

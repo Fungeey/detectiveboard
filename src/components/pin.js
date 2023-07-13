@@ -11,7 +11,7 @@ const pin = (props) => {
     }
 
     return (
-        <img className="pin" src={require('../img/pin.png')} 
+        <img className="pin" alt="thumbtack" src={require('../img/pin.png')} 
         style={{
             ...util.posStyle(getPos()),
             width:pinSize, height:pinSize,
