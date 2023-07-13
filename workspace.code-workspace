@@ -1,15 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "react-test",
-		"files.associations": {
-			"stdio.h": "c",
-			"mysort.h": "c",
-			"towers.h": "c"
-		}
-	}
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
 }
