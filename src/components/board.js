@@ -19,6 +19,7 @@ const debug = false;
 const Board = () => {
     const [items, setItems] = useState({});
     const [lines, setLines] = useState([]);
+    const [scale, setScale] = useState(1);
 
     const boardRef = useRef(null);
     // boardRef.current.data.items = items;
@@ -36,6 +37,19 @@ const Board = () => {
                 modifyItem(uuid, item => item.isConnected = false);
         }
     }, [lines])
+
+    useEffect(() => {
+        document.addEventListener('wheel', onWheel);
+        return () => document.removeEventListener('wheel', onWheel);
+    }, [scale])
+
+    function onWheel(e){
+        const spd = 1.25;
+        if(e.deltaY < 0)
+            setScale(util.round(Math.min(scale * spd, 5), 4));
+        else if(e.deltaY > 0)
+            setScale(util.round(Math.max(scale * (1/spd), 0.0625), 4));
+    }
 
     const getBoardPos = () => {
         let rect = boardRef.current.getBoundingClientRect();
@@ -202,18 +216,13 @@ const Board = () => {
     }
 
     // Render
-    return <>
-        <div style={{
-            position:'fixed',
-            zIndex:99
-        }}>
-            <UI data={{items:items, lines:lines}} onLoad={onLoad}/>
-        </div>
+    return <div onMouseDown = {onMouseDown} onDoubleClick={onDoubleLClick} style={{overflow:'hidden'}}>
+        <UI data={{items:items, lines:lines}} onLoad={onLoad}/>
 
-        <div className='boardWrapper' onMouseDown = {onMouseDown} onDoubleClick={onDoubleLClick}>
+        <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
             <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
                 <ContextMenu boardPos={getBoardPos}/>
-                <p style = {{position:'absolute'}}>board</p>
+                <p style = {{position:'absolute'}}></p>
 
                 {isCreating ? 
                     <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
@@ -225,7 +234,7 @@ const Board = () => {
                 {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
             </div>
         </div>
-    </>
+    </div>
 
     function renderItems(){
         const itemHTML = [];

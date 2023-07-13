@@ -4,7 +4,7 @@ const useSaveLoad = (props) => {
     useEffect(() => {
         document.addEventListener('keydown', handleCtrlS);
         return () => document.removeEventListener('keydown', handleCtrlS);
-    }, []);
+    }, [props.data]);
 
     function handleCtrlS(e){
         if (e.ctrlKey && e.key === 's') {
@@ -58,7 +58,7 @@ const useSaveLoad = (props) => {
             let item = data["items"][uuid];
 
             if(!item.pos) e(item, "pos is missing");
-            if(!item.size.width || !item.size.height){
+            if(item.size && (!item.size.width || !item.size.height)){
                 e("size is broken, reset to default");
                 item.size = {
                     width:200,

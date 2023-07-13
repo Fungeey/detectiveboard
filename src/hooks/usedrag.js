@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import util from "../util";
 
 const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
@@ -17,14 +17,22 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     // replace with useCallback?
     const firstUpdate = useRef(true);
+    const[scaleRef, setScaleRef] = useState(null);
+
     useLayoutEffect(() => {
         if (firstUpdate.current) {
             firstUpdate.current = false;
             return;
         }
+
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', endDrag);
     }, [offset]);
+
+    useEffect(() => {
+        let b = document.getElementById("boardWrapper");
+        setScaleRef(b);
+    }, [])
 
     function startDrag(e){
         e.stopPropagation();
@@ -39,9 +47,21 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     }
 
     function onDrag(e){
-        let newPos = util.addPos(util.getMousePos(e), offset);
-        setPos(newPos);
+        // console.log(e);
+        let s = 1/scaleRef.getAttribute("scale");
 
+        let scaleOff = util.mulPos(offset, 1/s)
+        let newPos = util.addPos(util.getMousePos(e), scaleOff);
+
+        // newpos - oldpos to get direction
+        // multiply by scale factor
+
+        let vec = util.subPos(newPos, startPos);
+        vec = util.mulPos(vec, s);
+        newPos = util.addPos(startPos, vec);
+        newPos = util.roundPos(newPos);
+
+        setPos(newPos);
         if(doOnDrag) doOnDrag(newPos, e);
     }
 

@@ -93,14 +93,10 @@ code {
 }
 
 .board{
-  position:relative;
-  width:100%;
-  height:100%;
+
 }
 
-.boardWrapper{
-  position:relative;
-  overflow:hidden;
+#boardWrapper{
   width:100vw;
   height:100vh;
 }
@@ -140,4 +136,11 @@ p{
   left:0;
   top:0;
   z-index: var(--layer-ui);
+}
+
+.UIButton{
+  border:none;
+  padding:10px;
+  background:#c0c0c0;
+  margin:10px;
 }

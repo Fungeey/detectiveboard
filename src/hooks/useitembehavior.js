@@ -11,6 +11,7 @@ const useItemBehavior = (props) => {
     const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
     const [previewLine, setPreviewLine] = useState({});
     const [isResizing, setIsResizing] = useState(false);
+    const [startSize, setStartSize] = useState({});
 
     function onStartDrag(mousePos, e){
         let resizePoint = util.addPos(props.item.pos, {
@@ -20,15 +21,26 @@ const useItemBehavior = (props) => {
 
         let mouseWorldPos = util.subPos(util.getMousePos(e), props.boardPos());
 
-        if(util.distance(mouseWorldPos, resizePoint) < 6){
-            setIsResizing(true);
-        }
+        setStartSize(getSize());
+        // if(util.distance(mouseWorldPos, resizePoint) < 10){
+        //     // console.log(e);
+        //     setIsResizing(true);
+        // }
 
         return pos;
     }
 
     function onDrag(dragPos, e){
         if(dragButton === util.LMB){
+            // console.log(getSize().width + " " + startSize.width);
+            // console.log("asdf");
+            // console.log(startSize);
+            if(!util.eqlSize(getSize(), startSize)){
+                setIsResizing(true);
+                console.log("resiizng");
+                return;
+            }
+
             if(isResizing) return;
 
             // move the item to the drag position.
@@ -55,21 +67,21 @@ const useItemBehavior = (props) => {
         }
     }
 
+    function getSize(){
+        let itemElement = itemRef.current.childNodes[0].childNodes[0];
+        return {
+            width: itemElement.clientWidth,
+            height: itemElement.clientHeight,
+        }
+    }
+
     const onEndDrag = (dist, e) => {
         if(isResizing){
             setIsResizing(false);
 
             // save new width
             //clientWidth includes padding, so need to subtract it away
-            const pad = "1rem"; 
-            let itemElement = itemRef.current.childNodes[0].childNodes[0];
-            props.update(props.item.uuid, item => {item.size={
-                width: itemElement.clientWidth,
-                height: itemElement.clientHeight,
-            }});
-
-            // console.log(itemElement.clientWidth);
-
+            props.update(props.item.uuid, item => item.size=getSize());
         }else if(dragButton === util.LMB){
             // lmb click = select
             if(dist < util.clickDist){

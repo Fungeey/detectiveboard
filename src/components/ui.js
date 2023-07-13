@@ -7,9 +7,13 @@ const UI = (props) => {
 
     return(
         <div id={"ui"}>
-        <br></br>
-            <button className={"UIButton"} onClick={save}>save</button>
-            <button className={"UIButton"} onClick={load}>load</button>
+            <div style={{
+                display:"flex",
+                flexDirection:"column"
+            }}>
+                <button className={"UIButton"} onClick={load}>import</button>
+                <button className={"UIButton"} onClick={save}>export</button>
+            </div>
         </div>
     )
 }
