@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-const usePasteImage = (onPasteImage) => {
+const usePasteImage = (onPasteImage, key) => {
     useEffect(() => {
         document.onpaste = onPaste;
-    }, []);
+    }, [key]);
 
     // https://stackoverflow.com/questions/6333814/how-does-the-paste-image-from-clipboard-functionality-work-in-gmail-and-google-c
 

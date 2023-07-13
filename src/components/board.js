@@ -3,9 +3,10 @@ import { v4 as uuid } from 'uuid';
 import ContextMenu from './contextmenu';
 import UI from './ui';
 import useDrag from '../hooks/usedrag';
-import useKeyDown from '../hooks/usekeydown'
-import usePasteImage from '../hooks/usepasteimage'
-import useMousePos from '../hooks/usemousepos'
+import useKeyDown from '../hooks/usekeydown';
+import usePasteImage from '../hooks/usepasteimage';
+import useMousePos from '../hooks/usemousepos';
+import useScale from '../hooks/usescale';
 import util from '../util';
 import Line from './line';
 import Note from './note';
@@ -19,10 +20,10 @@ const debug = false;
 const Board = () => {
     const [items, setItems] = useState({});
     const [lines, setLines] = useState([]);
-    const [scale, setScale] = useState(1);
+    const scale = useScale();
 
     const boardRef = useRef(null);
-    // boardRef.current.data.items = items;
+    if(boardRef.current) boardRef.current.items = items;
 
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
@@ -37,19 +38,6 @@ const Board = () => {
                 modifyItem(uuid, item => item.isConnected = false);
         }
     }, [lines])
-
-    useEffect(() => {
-        document.addEventListener('wheel', onWheel);
-        return () => document.removeEventListener('wheel', onWheel);
-    }, [scale])
-
-    function onWheel(e){
-        const spd = 1.25;
-        if(e.deltaY < 0)
-            setScale(util.round(Math.min(scale * spd, 5), 4));
-        else if(e.deltaY > 0)
-            setScale(util.round(Math.max(scale * (1/spd), 0.0625), 4));
-    }
 
     const getBoardPos = () => {
         let rect = boardRef.current.getBoundingClientRect();
@@ -78,8 +66,9 @@ const Board = () => {
 
         // open text window, then 
         let pos = { x: e.clientX, y: e.clientY };
+        let boardPos = util.subPos(pos, getBoardPos());
         setInput({
-            pos: util.subPos(pos, getBoardPos()),
+            pos: util.mulPos(boardPos, 1/scale),
             text: ""
         });
 
@@ -187,19 +176,20 @@ const Board = () => {
 
         // make a new img item 
         let uuid = getUUID(imgType);
-        let itemsCopy = {...boardRef.current.data.items};
+        let itemsCopy = {...boardRef.current.items};
 
+        let boardPos = util.subPos(mousePos.current, getBoardPos());
         itemsCopy[uuid] = {
             type:"img",
             uuid:uuid,
-            pos:util.subPos(mousePos.current, getBoardPos()),
+            pos:util.mulPos(boardPos, 1/scale),
             isConnected:false,
             size:{width:300, height:300},
             src:src
         };
 
         setItems(itemsCopy);
-    });
+    }, scale);
 
     function deleteItem(uuid){
         let newItems = {...items};

@@ -4,6 +4,7 @@ import util from "../util";
 import Pin from "../components/pin";
 import Line from "../components/line";
 import useSelectionBehavior from "./useselectionbehavior";
+import useScale from '../hooks/usescale';
 
 let hoverUUID = "";
 
@@ -12,32 +13,17 @@ const useItemBehavior = (props) => {
     const [previewLine, setPreviewLine] = useState({});
     const [isResizing, setIsResizing] = useState(false);
     const [startSize, setStartSize] = useState({});
+    const scale = useScale();
 
     function onStartDrag(mousePos, e){
-        let resizePoint = util.addPos(props.item.pos, {
-            x: itemRef.current.clientWidth,
-            y: itemRef.current.clientHeight,
-        });
-
-        let mouseWorldPos = util.subPos(util.getMousePos(e), props.boardPos());
-
         setStartSize(getSize());
-        // if(util.distance(mouseWorldPos, resizePoint) < 10){
-        //     // console.log(e);
-        //     setIsResizing(true);
-        // }
-
         return pos;
     }
 
     function onDrag(dragPos, e){
         if(dragButton === util.LMB){
-            // console.log(getSize().width + " " + startSize.width);
-            // console.log("asdf");
-            // console.log(startSize);
             if(!util.eqlSize(getSize(), startSize)){
                 setIsResizing(true);
-                console.log("resiizng");
                 return;
             }
 
@@ -59,10 +45,12 @@ const useItemBehavior = (props) => {
                 end: props.items[hoverUUID].pos
             });
         } else {
+
             // otherwise go to mouse position
+            let boardPos = util.subPos(util.getMousePos(e), props.boardPos());
             setPreviewLine({
                 start: props.item.pos,
-                end: util.subPos(util.getMousePos(e), props.boardPos())
+                end: util.mulPos(boardPos, 1/scale)
             });
         }
     }

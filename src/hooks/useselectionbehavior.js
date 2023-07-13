@@ -12,7 +12,7 @@ function useSelectionBehavior(props){
     }, []);
 
     function onClickDocument(e){
-        // if(!e.target.parentElement) return;
+        if(!e.target.parentElement) return;
         // deselect if click anywhere other than this note.
         if(e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid){
             deSelect();
