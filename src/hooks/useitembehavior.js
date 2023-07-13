@@ -11,23 +11,28 @@ let hoverUUID = "";
 const useItemBehavior = (props) => {
     const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
     const [previewLine, setPreviewLine] = useState({});
-    const [isResizing, setIsResizing] = useState(false);
     const [startSize, setStartSize] = useState({});
     const scale = useScale();
 
     function onStartDrag(mousePos, e){
         setStartSize(getSize());
+
+        const tgt = e.target;
+        const inline = tgt.style.cursor || "Not defined"
+        const computed = window.getComputedStyle(tgt)["cursor"];
+
         return pos;
     }
+
+    // initially, isResizing would be set to true right at the beginning
+    // that way ondrag and onenddrag would have the correct ones
+    // but now isresizing starts as false, but is set to true.
 
     function onDrag(dragPos, e){
         if(dragButton === util.LMB){
             if(!util.eqlSize(getSize(), startSize)){
-                setIsResizing(true);
                 return;
             }
-
-            if(isResizing) return;
 
             // move the item to the drag position.
             setPos(dragPos);
@@ -64,12 +69,10 @@ const useItemBehavior = (props) => {
     }
 
     const onEndDrag = (dist, e) => {
-        if(isResizing){
-            setIsResizing(false);
-
+        if(!util.eqlSize(getSize(), startSize)){
             // save new width
             //clientWidth includes padding, so need to subtract it away
-            props.update(props.item.uuid, item => item.size=getSize());
+            props.update(props.item.uuid, item => item.size = getSize());
         }else if(dragButton === util.LMB){
             // lmb click = select
             if(dist < util.clickDist){
@@ -79,7 +82,6 @@ const useItemBehavior = (props) => {
             
             // round position 
             props.update(props.item.uuid, item => item.pos = util.roundPos(item.pos))
-            
         }else if(dragButton === util.RMB){
             // line connecting this item to the hovered (destination) item.
             if(props.item.uuid !== hoverUUID)
