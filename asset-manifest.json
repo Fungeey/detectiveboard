@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/DetectiveBoard/static/css/main.ae0f066e.css",
-    "main.js": "/DetectiveBoard/static/js/main.1404f9b5.js",
+    "main.js": "/DetectiveBoard/static/js/main.9899bf44.js",
     "static/js/787.223550ad.chunk.js": "/DetectiveBoard/static/js/787.223550ad.chunk.js",
     "static/media/pin.png": "/DetectiveBoard/static/media/pin.ae15f9322865325c0ee4.png",
     "static/media/delete.png": "/DetectiveBoard/static/media/delete.3c662b752278fc52f408.png",
     "index.html": "/DetectiveBoard/index.html",
     "main.ae0f066e.css.map": "/DetectiveBoard/static/css/main.ae0f066e.css.map",
-    "main.1404f9b5.js.map": "/DetectiveBoard/static/js/main.1404f9b5.js.map",
+    "main.9899bf44.js.map": "/DetectiveBoard/static/js/main.9899bf44.js.map",
     "787.223550ad.chunk.js.map": "/DetectiveBoard/static/js/787.223550ad.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ae0f066e.css",
-    "static/js/main.1404f9b5.js"
+    "static/js/main.9899bf44.js"
   ]
 }
