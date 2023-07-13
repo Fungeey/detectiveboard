@@ -1,10 +1,18 @@
 import { useEffect } from "react";
+import tutorial from '../tutorial.json';
+
 const useSaveLoad = (props) => {
 
     useEffect(() => {
         document.addEventListener('keydown', handleCtrlS);
+
         return () => document.removeEventListener('keydown', handleCtrlS);
     }, [props.data]);
+
+
+    useEffect(() => {
+        loadTutorial();
+    }, [])
 
     function handleCtrlS(e){
         if (e.ctrlKey && e.key === 's') {
@@ -32,6 +40,10 @@ const useSaveLoad = (props) => {
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
+    }
+
+    function loadTutorial(){
+        props.onLoad(tutorial);
     }
 
     function forceLoad(){
