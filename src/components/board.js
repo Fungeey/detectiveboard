@@ -11,9 +11,11 @@ import util from '../util';
 import Line from './line';
 import Note from './note';
 import Img from './img';
+import Scrap from './scrap';
 
 const noteType = "note";
 const imgType = "img";
+const scrapType = "scrap";
 const lineType = "line";
 const debug = false;
 
@@ -98,8 +100,9 @@ const Board = () => {
 
         let uuid = getUUID(noteType);
         let itemCopy = {...items};
+
         itemCopy[uuid] = {
-            type:"note",
+            type:input.text.length < 20 ? scrapType : noteType,
             uuid:uuid,
             pos:input.pos, 
             isConnected:false,
@@ -242,6 +245,10 @@ const Board = () => {
             else if(item.type === imgType)
                 itemHTML.push(
                     <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
+                );
+            else if(item.type === scrapType)
+                itemHTML.push(
+                    <Scrap key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
                 );
         }
 

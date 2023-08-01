@@ -92,6 +92,12 @@ code {
   aspect-ratio: 1/1;
 }
 
+.scrapItem{
+  background-color: white;
+  font-size: xx-large;
+  padding: 20px;
+}
+
 .board{
 
 }
