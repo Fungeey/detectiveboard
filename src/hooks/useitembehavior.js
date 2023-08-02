@@ -19,13 +19,10 @@ const useItemBehavior = (props) => {
         return pos;
     }
 
-    // initially, isResizing would be set to true right at the beginning
-    // that way ondrag and onenddrag would have the correct ones
-    // but now isresizing starts as false, but is set to true.
-
     function onDrag(dragPos, e){
         if(dragButton === util.LMB){
             if(!util.eqlSize(getSize(), startSize)){
+                // resizing, don't change position
                 return;
             }
 

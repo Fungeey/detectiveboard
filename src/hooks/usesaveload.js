@@ -5,7 +5,6 @@ const useSaveLoad = (props) => {
 
     useEffect(() => {
         document.addEventListener('keydown', handleCtrlS);
-
         return () => document.removeEventListener('keydown', handleCtrlS);
     }, [props.data]);
 

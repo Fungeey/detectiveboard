@@ -7,6 +7,7 @@ import useKeyDown from '../hooks/usekeydown';
 import usePasteImage from '../hooks/usepasteimage';
 import useMousePos from '../hooks/usemousepos';
 import useScale from '../hooks/usescale';
+import useUndoStack from '../hooks/useundostack';
 import util from '../util';
 import Line from './line';
 import Note from './note';
@@ -30,6 +31,8 @@ const Board = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [input, setInput] = useState({pos:{}, text:""});
     const mousePos = useMousePos();
+
+    const doAction = useUndoStack();
 
     useEffect(() => {
         // unconnect the hanging items
@@ -99,19 +102,28 @@ const Board = () => {
             return;
 
         let uuid = getUUID(noteType);
-        let itemCopy = {...items};
 
-        itemCopy[uuid] = {
-            type:input.text.length < 20 ? scrapType : noteType,
-            uuid:uuid,
-            pos:input.pos, 
-            isConnected:false,
-            color:"#feff9c",
-            size:{width:150, height:100},
-            text:input.text
-            };
+        doAction({
+            id: "make " + uuid,
+            do: createNoteItem,
+            undo: () => deleteItem(uuid)
+        })
 
-        setItems(itemCopy);
+        function createNoteItem(){
+            let itemCopy = {...items};
+
+            itemCopy[uuid] = {
+                type:input.text.length < 20 ? scrapType : noteType,
+                uuid:uuid,
+                pos:input.pos, 
+                isConnected:false,
+                color:"#feff9c",
+                size:{width:150, height:100},
+                text:input.text
+                };
+
+            setItems(itemCopy);
+        }
     }
 
     const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
