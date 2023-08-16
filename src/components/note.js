@@ -13,7 +13,7 @@ const colors = [
 
 const padding = 20; // px;
 
-const Note = (props) => {
+const Note = ({props}) => {
     const [render] = useItemBehavior(props);    
     const noteRef = useRef(null);
     const [color, setColor] = useState(props.item.color);

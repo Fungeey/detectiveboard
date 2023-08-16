@@ -254,24 +254,25 @@ const Board = () => {
         for(const uuid in items){
             let item = items[uuid];
 
-            // TODO: Clean up props
-
             let props = {
-                key: item.uuid
+                update:updateItem,
+                makeLine:makeLine,
+                items:items,
+                boardPos:getBoardPos,
+                deleteItem:deleteItem,
+                debug:debug,
+                item:item
             }
 
+            let newItemHtml;
             if(item.type === noteType)
-                itemHTML.push(
-                    <Note key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
-                );
+                newItemHtml = <Note key={item.uuid} props={props}/>
             else if(item.type === imgType)
-                itemHTML.push(
-                    <Img key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
-                );
+                newItemHtml = <Img key={item.uuid} props={props}/>
             else if(item.type === scrapType)
-                itemHTML.push(
-                    <Scrap key={item.uuid} item={item} update={updateItem} makeLine={makeLine} items={items} boardPos={getBoardPos} deleteItem={deleteItem} debug={debug}/>
-                );
+                newItemHtml = <Scrap key={item.uuid} props={props}/>
+            
+            itemHTML.push(newItemHtml);
         }
 
         return itemHTML;

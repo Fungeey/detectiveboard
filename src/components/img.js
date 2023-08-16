@@ -1,7 +1,7 @@
 import useItemBehavior from "../hooks/useitembehavior";
 import util from "../util";
 
-const Img = (props) => {
+const Img = ({props}) => {
 
     const [render] = useItemBehavior(props);
 

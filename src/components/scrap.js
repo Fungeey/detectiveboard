@@ -15,7 +15,7 @@ const style = [
     {textDecoration:"underline"}
 ]
 
-const Scrap = (props) => {
+const Scrap = ({props}) => {
     const [render] = useItemBehavior(props);
     const [font, setFont] = useState(getFont());
     const [effect, setEffect] = useState(getEffect());
