@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 
 const util = {
     posStyle: (pos) => ({transform:`translateX(${pos.x}px) translateY(${pos.y}px)`}),
@@ -7,9 +8,10 @@ const util = {
     distance:(a, b) => Math.sqrt(Math.abs(a.x - b.x) + Math.abs(a.y - b.y) ^ 2),
     getMousePos: (e) => ({x:e.clientX, y:e.clientY}),
 
-    round:(num, decimals) => {
-        return Math.round(num * Math.pow(10, decimals))/Math.pow(10, decimals)
-    },
+    round:(num, decimals) => 
+        Math.round(num * Math.pow(10, decimals))/Math.pow(10, decimals),
+
+    getUUID: type => type + "_" + uuid().substring(0, 5),
 
     addPos: (a, b) => ({x:a.x+b.x, y:a.y+b.y}),
     subPos: (a, b) =>  ({x:a.x-b.x, y:a.y-b.y}),

@@ -42,7 +42,7 @@ const useSaveLoad = (props) => {
     }
 
     function loadTutorial(){
-        props.onLoad(tutorial);
+        // props.onLoad(tutorial);
     }
 
     function forceLoad(){

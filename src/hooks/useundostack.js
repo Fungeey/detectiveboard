@@ -62,6 +62,17 @@ const useUndoStack = () => {
         setUndoSpot(newStack.length);
     }
 
+
+    // create item                      inside board
+    // delete item                      from item
+    // create / delete lines            inside board
+    // move item                        from item
+    // resize item                      from item
+    // recolor note                     from item
+
+    // have to pass in a method to edit the item.
+    // 
+
     return doAction;
 }
 
