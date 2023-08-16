@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import util from "../util";
 import useScale from '../hooks/usescale';
 
@@ -15,20 +15,25 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     const[offset, setOffset] = useState({x:0, y:0});
     const[startPos, setStartPos] = useState({x:0, y:0});
     const[dragButton, setDragButton] = useState(0);
-
-    // replace with useCallback?
-    const firstUpdate = useRef(true);
     const scale = useScale();
 
-    useLayoutEffect(() => {
-        if (firstUpdate.current) {
-            firstUpdate.current = false;
-            return;
-        }
-
+    useEffect(() => {
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('mouseup', endDrag);
+        
+        window.addEventListener('blur', loseFocus, false);
+
+        return () => {
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            window.removeEventListener('blur', loseFocus);
+        }
     }, [offset]);
+
+    function loseFocus(){
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', endDrag);
+    }
 
     function startDrag(e){
         e.stopPropagation();

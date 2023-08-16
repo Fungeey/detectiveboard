@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect} from 'react';
+import { useState, useRef } from 'react';
 import ContextMenu from './contextmenu';
 import UI from './ui';
 import useDrag from '../hooks/usedrag';
@@ -255,6 +255,10 @@ const Board = () => {
             let item = items[uuid];
 
             // TODO: Clean up props
+
+            let props = {
+                key: item.uuid
+            }
 
             if(item.type === noteType)
                 itemHTML.push(
