@@ -11,8 +11,15 @@ const UI = (props) => {
                 display:"flex",
                 flexDirection:"column"
             }}>
-                <button className={"UIButton"} onClick={load}>import</button>
-                <button className={"UIButton"} onClick={save}>export</button>
+                
+                <div className={"UIButton"} onClick={load}>
+                    <span class="material-symbols-outlined">download</span>
+                    Import
+                </div>
+                <div className={"UIButton"} onClick={save}>
+                    <span class="material-symbols-outlined">upload</span>
+                    Export
+                </div>
             </div>
         </div>
     )
