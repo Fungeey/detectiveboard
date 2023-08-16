@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useDrag from "./usedrag";
 import util from "../util";
 import Pin from "../components/pin";
@@ -59,6 +59,12 @@ const useItemBehavior = (props) => {
             height: itemElement.clientHeight,
         }
     }
+
+    useEffect(() => {
+        window.addEventListener('blur', () => setPreviewLine({}), false);
+        return () => 
+            window.removeEventListener('blur', () => setPreviewLine({}), false);
+    }, []);
 
     const onEndDrag = (dist, e) => {
         if(!util.eqlSize(getSize(), startSize)){
