@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import useDrag from "./usedrag";
-import util from "../util";
-import Pin from "../components/pin";
+import { useEffect, useRef, useState } from "react";
 import Line from "../components/line";
-import useSelectionBehavior from "./useselectionbehavior";
-import useScale from '../hooks/usescale';
+import Pin from "../components/pin";
 import useCopyPaste from '../hooks/usecopypaste';
 import useMousePos from '../hooks/usemousepos';
+import useScale from '../hooks/usescale';
+import util from "../util";
+import useDrag from "./usedrag";
+import useSelectionBehavior from "./useselectionbehavior";
 
 let hoverUUID = "";
 
@@ -20,42 +20,42 @@ const useItemBehavior = (props) => {
     const [copiedItem, setCopiedItem] = useState(null);
 
     // shouldn't be able to copy when editing
-    function copy(){
-        if(!isSelected){
+    function copy() {
+        if (!isSelected) {
             setCopiedItem(null); // throw away previously copied item
             return;
         }
         setCopiedItem(props.item);
     }
 
-    function paste(){
-        if(copiedItem == null) return;
-        
-        let itemCopy = {...copiedItem};
+    function paste() {
+        if (copiedItem == null) return;
+
+        let itemCopy = { ...copiedItem };
         let boardPos = util.subPos(mousePos.current, props.boardPos());
-        itemCopy.pos = util.mulPos(boardPos, 1/scale);
+        itemCopy.pos = util.mulPos(boardPos, 1 / scale);
 
         props.addItem(itemCopy);
     }
-    
+
     useCopyPaste(copy, paste);
 
-    function onStartDrag(mousePos, e){
+    function onStartDrag(mousePos, e) {
         setStartSize(getSize());
         return pos;
     }
 
-    function onDrag(dragPos, e){
-        if(dragButton === util.LMB){
-            if(!util.eqlSize(getSize(), startSize)){
+    function onDrag(dragPos, e) {
+        if (dragButton === util.LMB) {
+            if (!util.eqlSize(getSize(), startSize)) {
                 // resizing, don't change position
                 return;
             }
 
             // move the item to the drag position.
             setPos(dragPos);
-            props.update(props.item.uuid, item => {item.pos = dragPos});
-        }else if(dragButton === util.RMB){
+            props.update(props.item.uuid, item => { item.pos = dragPos });
+        } else if (dragButton === util.RMB) {
             drawPreviewLine(e);
         }
     }
@@ -73,12 +73,12 @@ const useItemBehavior = (props) => {
             let boardPos = util.subPos(util.getMousePos(e), props.boardPos());
             setPreviewLine({
                 start: props.item.pos,
-                end: util.mulPos(boardPos, 1/scale)
+                end: util.mulPos(boardPos, 1 / scale)
             });
         }
     }
 
-    function getSize(){
+    function getSize() {
         let itemElement = itemRef.current.childNodes[0].childNodes[0];
         return {
             width: itemElement.clientWidth,
@@ -89,27 +89,27 @@ const useItemBehavior = (props) => {
     // cancel preview line on window unfocus
     useEffect(() => {
         window.addEventListener('blur', () => setPreviewLine({}), false);
-        return () => 
+        return () =>
             window.removeEventListener('blur', () => setPreviewLine({}), false);
     }, []);
 
     const onEndDrag = (dist, e) => {
-        if(!util.eqlSize(getSize(), startSize)){
+        if (!util.eqlSize(getSize(), startSize)) {
             // save new width
             //clientWidth includes padding, so need to subtract it away
             props.update(props.item.uuid, item => item.size = getSize());
-        }else if(dragButton === util.LMB){
+        } else if (dragButton === util.LMB) {
             // lmb click = select
-            if(dist < util.clickDist){
+            if (dist < util.clickDist) {
                 select();
                 return;
             }
-            
+
             // round position 
             props.update(props.item.uuid, item => item.pos = util.roundPos(item.pos))
-        }else if(dragButton === util.RMB){
+        } else if (dragButton === util.RMB) {
             // line connecting this item to the hovered (destination) item.
-            if(props.item.uuid !== hoverUUID)
+            if (props.item.uuid !== hoverUUID)
                 props.makeLine(props.item.uuid, hoverUUID);
         }
 
@@ -119,56 +119,61 @@ const useItemBehavior = (props) => {
     const [pos, setPos] = useState(props.item.pos);
     const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
 
-    function enter(){ hoverUUID = props.item.uuid; }
-    function exit(){ hoverUUID = ""; }   
+    function enter() { hoverUUID = props.item.uuid; }
+    function exit() { hoverUUID = ""; }
 
     const itemRef = useRef(null);
 
-    function render(renderItem, renderItemSelection){ return (<>
-        {previewLine.start ? 
-            <div className="previewLine blink">
-                <Line start={previewLine.start} end={previewLine.end} 
-                key={previewLine.uuid}/>
-                <Pin pos={previewLine.end}/>
+    function renderPreviewLine() {
+        if (!previewLine.start) return null;
 
-                {!props.item.isConnected ? 
-                <Pin pos={previewLine.start}/> : <></>}
-            </div>
-        :<></>}
+        return <div className="previewLine blink">
+            <Line start={previewLine.start} end={previewLine.end}
+                key={previewLine.uuid} />
+            <Pin pos={previewLine.end} />
 
-        {props.item.isConnected ? <Pin pos={props.item.pos}/> : <></>}   
-
-        <div style = {{...util.posStyle(props.item.pos)}}>
-            <div className="itemWrapper" 
-                onMouseDown={startDrag}
-                onMouseEnter={enter}
-                onMouseLeave={exit}
-                uuid={props.item.uuid} ref={itemRef}>
-
-                <div className={`itemHolder${isSelected?' selected':''}`}>
-                    {renderItem(isSelected)}
-                </div>
-            </div>
-
-            {itemRef.current !== null && props.debug ? 
-            <div style={{
-                position:"absolute",
-                width:20,
-                height:20,
-                top:itemRef.current.clientHeight - 10,
-                left:itemRef.current.clientWidth - 10,
-                background:"blue"
-            }}> </div> : <></>
-            }
-
-            {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+            {!props.item.isConnected ?
+                <Pin pos={previewLine.start} /> : <></>}
         </div>
-    </>)}
-  
+    }
+
+    function render(renderItem, renderItemSelection) {
+        return (<>
+            {renderPreviewLine()}
+            {props.item.isConnected ? <Pin pos={props.item.pos} /> : <></>}
+
+            <div style={{ ...util.posStyle(props.item.pos) }}>
+                <div className="itemWrapper"
+                    onMouseDown={startDrag}
+                    onMouseEnter={enter}
+                    onMouseLeave={exit}
+                    uuid={props.item.uuid} ref={itemRef}>
+
+                    <div className={`itemHolder${isSelected ? ' selected' : ''}`}>
+                        {renderItem(isSelected)}
+                    </div>
+                </div>
+
+                {itemRef.current !== null && props.debug ?
+                    <div style={{
+                        position: "absolute",
+                        width: 20,
+                        height: 20,
+                        top: itemRef.current.clientHeight - 10,
+                        left: itemRef.current.clientWidth - 10,
+                        background: "blue"
+                    }}> </div> : <></>
+                }
+
+                {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+            </div>
+        </>)
+    }
+
     return [
         render
     ]
 }
 
 export default useItemBehavior;
-    
+

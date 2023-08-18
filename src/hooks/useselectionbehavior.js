@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useKeyDown from '../hooks/usekeydown';
 
-function useSelectionBehavior(props){
+function useSelectionBehavior(props) {
     const [isSelected, setIsSelected] = useState(false);
 
     useEffect(() => {
@@ -9,46 +9,46 @@ function useSelectionBehavior(props){
         return () => document.removeEventListener('click', onClickDocument);
     }, []);
 
-    function onClickDocument(e){
-        if(!e.target.parentElement) return;
+    function onClickDocument(e) {
+        if (!e.target.parentElement) return;
         // deselect if click anywhere other than this note.
-        if(e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid){
+        if (e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid) {
             deSelect();
         }
     }
 
-    function select(){
+    function select() {
         setIsSelected(true);
     }
 
-    function deSelect(){
+    function deSelect() {
         setIsSelected(false);
     }
 
     useKeyDown(deSelect, ["Enter", "Escape"]);
 
-    function deleteItem(){
+    function deleteItem() {
         props.deleteItem(props.item.uuid);
     }
 
-    function renderSelection(itemRef, renderItemSelection){
+    function renderSelection(itemRef, renderItemSelection) {
         return (
             <div>
-                <img src={require('../img/delete.png')} alt="delete icon" 
-                style={{
-                    width: 20,
-                    height: 20,
-                    top:itemRef.current.clientHeight + 5,
-                    left: 0,
-                    position:"absolute"
-                }} onClick={deleteItem}/>
+                <img src={require('../img/delete.png')} alt="delete icon"
+                    style={{
+                        width: 20,
+                        height: 20,
+                        top: itemRef.current.clientHeight + 5,
+                        left: 0,
+                        position: "absolute"
+                    }} onClick={deleteItem} />
 
-                {renderItemSelection ? renderItemSelection(itemRef) : <></>} 
+                {renderItemSelection ? renderItemSelection(itemRef) : <></>}
             </div>
         )
     }
 
-    return[
+    return [
         isSelected,
         select,
         deSelect,

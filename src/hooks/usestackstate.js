@@ -6,7 +6,7 @@ const useStackState = () => {
     let [stack, setStack] = useState([]);
 
     // adds a newest item
-    function push(item){
+    function push(item) {
         // if(stack.length >= maxSize)
         //     shift();
 
@@ -16,16 +16,16 @@ const useStackState = () => {
     }
 
     // pops from the front (oldest item)
-    function shift(){
+    function shift() {
         let newStack = [...stack];
-        
+
         // the oldest item is returned, but forgotten
-        newStack.shift();               
+        newStack.shift();
         setStack(newStack);
     }
 
     // returns the newest item
-    function pop(){
+    function pop() {
         let newStack = [...stack];
         let popped = newStack.pop();
 

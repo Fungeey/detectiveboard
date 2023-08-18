@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useItemBehavior from "../hooks/useitembehavior";
 import util from "../util";
 
@@ -10,12 +10,12 @@ const fonts = [
 ]
 
 const style = [
-    {fontStyle:"italic"},
-    {fontWeight:"bold"},
-    {textDecoration:"underline"}
+    { fontStyle: "italic" },
+    { fontWeight: "bold" },
+    { textDecoration: "underline" }
 ]
 
-const Scrap = ({props}) => {
+const Scrap = ({ props }) => {
     const [render] = useItemBehavior(props);
     const [font, setFont] = useState(getFont());
     const [effect, setEffect] = useState(getEffect());
@@ -24,20 +24,20 @@ const Scrap = ({props}) => {
         // timer();
     }, []);
 
-    function getSize(){
-        if(props.item.size)
+    function getSize() {
+        if (props.item.size)
             return util.sizeStyle(props.item.size);
-        else 
+        else
             return util.sizeStyle(300, 100);
     }
 
-    function getFont(){
-        let ind = Math.round(Math.random()*fonts.length) - 1;
+    function getFont() {
+        let ind = Math.round(Math.random() * fonts.length) - 1;
         return fonts[ind];
     }
 
-    function getEffect(){
-        let ind = Math.round(Math.random()*style.length) - 1;
+    function getEffect() {
+        let ind = Math.round(Math.random() * style.length) - 1;
         return style[ind];
     }
 
@@ -48,15 +48,15 @@ const Scrap = ({props}) => {
         timer();
     }
 
-    function renderItem(isSelected){
+    function renderItem(isSelected) {
         return (
             <div
-            style={{
-                fontFamily:font,
-                ...effect
+                style={{
+                    fontFamily: font,
+                    ...effect
                 }}
-            className="scrapItem">
-            {props.item.text}
+                className="scrapItem">
+                {props.item.text}
             </div>
         )
     }

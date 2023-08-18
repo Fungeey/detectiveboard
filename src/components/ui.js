@@ -7,13 +7,13 @@ const UI = (props) => {
 
     // Icons source: https://fonts.google.com/icons
 
-    return(
+    return (
         <div id={"ui"}>
             <div style={{
-                display:"flex",
-                flexDirection:"column"
+                display: "flex",
+                flexDirection: "column"
             }}>
-                
+
                 <div className={"UIButton"} onClick={load}>
                     <span className={"material-symbols-outlined"}>download</span>
                     Import

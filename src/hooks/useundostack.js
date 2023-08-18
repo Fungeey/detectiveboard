@@ -6,39 +6,39 @@ const useUndoStack = () => {
 
     useEffect(() => {
         document.addEventListener('keydown', handleUndoRedo);
-        
+
         return () => document.removeEventListener('keydown', handleUndoRedo);
     }, [stack, undoSpot]);
 
-    function handleUndoRedo(e){
+    function handleUndoRedo(e) {
         if (e.ctrlKey && e.key === 'z') {
             e.preventDefault();
             undoAction();
-        }else if (e.ctrlKey && e.key === 'y') {
+        } else if (e.ctrlKey && e.key === 'y') {
             e.preventDefault();
             redoAction();
         }
     }
 
     // action
-        // do: {}
-        // undo: {}
+    // do: {}
+    // undo: {}
 
-    function redoAction(){
+    function redoAction() {
         //stack.length - undoSpot
         let action = stack[undoSpot];
-        if(!action) return;
-        
+        if (!action) return;
+
         // redo the action
         action.do();
 
         setUndoSpot(undoSpot + 1);
     }
 
-    function undoAction(){
+    function undoAction() {
         // pop most recent action from stack
         let action = stack[undoSpot - 1];
-        if(!action) return;
+        if (!action) return;
 
         setUndoSpot(undoSpot - 1);
 
@@ -46,10 +46,10 @@ const useUndoStack = () => {
         action.undo();
     }
 
-    function doAction(action){
+    function doAction(action) {
         // clear all redos (replace with this new action)
         let newStack = [];
-        for(let i = 0; i < undoSpot; i++){
+        for (let i = 0; i < undoSpot; i++) {
             newStack.push(stack[i]);
         }
         newStack.push(action);
@@ -57,7 +57,7 @@ const useUndoStack = () => {
 
         // execute the given action
         action.do();
-        
+
         // add it to the undo stack
         setUndoSpot(newStack.length);
     }

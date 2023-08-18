@@ -2,23 +2,23 @@ import { useCallback, useEffect, useState } from "react";
 import util from "../util";
 
 const ContextMenu = (props) => {
-  const [anchorPoint, setAnchorPoint] = useState({x:0, y:0});
+  const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
 
   const openContextMenu = useCallback((e) => {
-      e.preventDefault()
-      setAnchorPoint({ x: e.pageX, y: e.pageY });
-      setIsVisible(true);
-    }, 
+    e.preventDefault()
+    setAnchorPoint({ x: e.pageX, y: e.pageY });
+    setIsVisible(true);
+  },
     [setAnchorPoint, setIsVisible]
   )
 
   const closeContextMenu = useCallback((e) => {
-      if(e.button === util.RMB)
-        return;
-      e.preventDefault()
-      setIsVisible(false);
-    }, 
+    if (e.button === util.RMB)
+      return;
+    e.preventDefault()
+    setIsVisible(false);
+  },
     [setAnchorPoint, setIsVisible]
   )
 
@@ -36,7 +36,7 @@ const ContextMenu = (props) => {
   return (
     <div></div>
   );
-  
+
   // <div style={util.posStyle(util.subPos(anchorPoint, props.boardPos))}>
   //     hello
   //   </div>

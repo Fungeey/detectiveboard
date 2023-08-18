@@ -1,20 +1,20 @@
-import { useState, useRef, useEffect } from "react";
-import util from "../util";
+import { useEffect, useRef, useState } from "react";
 import useScale from '../hooks/usescale';
+import util from "../util";
 
 const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     // when implementing useDrag, doStartDrag must return start position
     // function defaultDoStartDrag(mousePos, e){
-        // return object's start position
+    // return object's start position
     // }
 
     // doOnDrag and doEndDrag can be empty
 
-    const[pos, setPos] = useState({x:0, y:0});
-    const[offset, setOffset] = useState({x:0, y:0});
-    const[startPos, setStartPos] = useState({x:0, y:0});
-    const[dragButton, setDragButton] = useState(0);
+    const [pos, setPos] = useState({ x: 0, y: 0 });
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+    const [dragButton, setDragButton] = useState(0);
 
     // replace with useCallback?
     const firstUpdate = useRef(true);
@@ -38,12 +38,12 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     }, [offset]);
 
-    function loseFocus(){
+    function loseFocus() {
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('mouseup', endDrag);
     }
 
-    function startDrag(e){
+    function startDrag(e) {
         e.stopPropagation();
         setDragButton(e.button);
 
@@ -55,7 +55,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         setStartPos(p);
     }
 
-    function onDrag(e){
+    function onDrag(e) {
         let scaleOff = util.mulPos(offset, scale)
         let newPos = util.addPos(util.getMousePos(e), scaleOff);
 
@@ -63,23 +63,23 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         // multiply by scale factor
 
         let vec = util.subPos(newPos, startPos);
-        vec = util.mulPos(vec, 1/scale);
+        vec = util.mulPos(vec, 1 / scale);
         newPos = util.addPos(startPos, vec);
         newPos = util.roundPos(newPos);
 
         setPos(newPos);
-        if(doOnDrag) doOnDrag(newPos, e);
+        if (doOnDrag) doOnDrag(newPos, e);
     }
 
-    function endDrag(e){
+    function endDrag(e) {
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('mouseup', endDrag);
 
         let dist = util.distance(startPos, util.getMousePos(e));
-        if(doEndDrag) doEndDrag(dist, e);
+        if (doEndDrag) doEndDrag(dist, e);
     }
-    
-    return[
+
+    return [
         pos,
         startDrag,
         dragButton      //remove?

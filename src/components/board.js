@@ -1,17 +1,17 @@
-import { useState, useRef } from 'react';
-import ContextMenu from './contextmenu';
-import UI from './ui';
+import { useRef, useState } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
-import usePasteImage from '../hooks/usepasteimage';
 import useMousePos from '../hooks/usemousepos';
+import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
 import useUndoStack from '../hooks/useundostack';
 import util from '../util';
+import ContextMenu from './contextmenu';
+import Img from './img';
 import Line from './line';
 import Note from './note';
-import Img from './img';
 import Scrap from './scrap';
+import UI from './ui';
 
 const noteType = "note";
 const imgType = "img";
@@ -27,14 +27,14 @@ const Board = () => {
     const boardRef = useRef(null);
 
     const [isCreating, setIsCreating] = useState(false);
-    const [input, setInput] = useState({pos:{}, text:""});
+    const [input, setInput] = useState({ pos: {}, text: "" });
     const mousePos = useMousePos();
 
     const doAction = useUndoStack();
 
     const getBoardPos = () => {
         let rect = boardRef.current.getBoundingClientRect();
-        return {x:rect.left, y:rect.top};
+        return { x: rect.left, y: rect.top };
     }
 
     // Panning Board
@@ -43,16 +43,16 @@ const Board = () => {
     }
 
     function endPan(dist, e) {
-        if(dist < 2 && e.button === 0){
+        if (dist < 2 && e.button === 0) {
             setIsCreating(false);
         }
     }
 
     function onDoubleLClick(e) {
-        if(e.button !== util.LMB) return;
+        if (e.button !== util.LMB) return;
 
         // cancel out of creating, if clicked elsewhere
-        if(isCreating && input.text === ""){
+        if (isCreating && input.text === "") {
             setIsCreating(false);
             return;
         }
@@ -61,7 +61,7 @@ const Board = () => {
         let pos = { x: e.clientX, y: e.clientY };
         let boardPos = util.subPos(pos, getBoardPos());
         setInput({
-            pos: util.mulPos(boardPos, 1/scale),
+            pos: util.mulPos(boardPos, 1 / scale),
             text: ""
         });
 
@@ -70,7 +70,7 @@ const Board = () => {
 
     useKeyDown(() => {
         addNote();
-        setInput({pos:{}, text:""});
+        setInput({ pos: {}, text: "" });
         setIsCreating(false);
     }, ["Enter"]);
 
@@ -80,28 +80,28 @@ const Board = () => {
 
     const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
 
-    function makeLine(uuid, endUuid){
-        if(endUuid == null || endUuid === "")
+    function makeLine(uuid, endUuid) {
+        if (endUuid == null || endUuid === "")
             return;
 
         let line = {
-            startRef:uuid, 
-            endRef:endUuid,
-            start:items[uuid].pos, 
-            end:items[endUuid].pos,
-            uuid:util.getUUID(lineType)
+            startRef: uuid,
+            endRef: endUuid,
+            start: items[uuid].pos,
+            end: items[endUuid].pos,
+            uuid: util.getUUID(lineType)
         };
 
-        for(let i = 0; i < lines.length; i++){
+        for (let i = 0; i < lines.length; i++) {
             let other = lines[i];
 
-            let exists = other.startRef === line.startRef 
-            && other.endRef === line.endRef;
+            let exists = other.startRef === line.startRef
+                && other.endRef === line.endRef;
 
-            let existsBackwards = other.startRef === line.endRef 
-            && other.endRef === line.startRef;
+            let existsBackwards = other.startRef === line.endRef
+                && other.endRef === line.startRef;
 
-            if(exists || existsBackwards){
+            if (exists || existsBackwards) {
                 // if the line exists already, remove it
                 doAction({
                     do: () => removeLine(other),
@@ -117,59 +117,59 @@ const Board = () => {
         })
     }
 
-    function removeLine(line){
+    function removeLine(line) {
         let newLines = lines.filter(l => l.uuid !== line.uuid);
         setLines(newLines);
 
-        for(const uuid in items){
-            if(newLines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0)
+        for (const uuid in items) {
+            if (newLines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0)
                 modifyItem(uuid, item => item.isConnected = false);
-        }   
+        }
     }
 
-    function addLine(line){
+    function addLine(line) {
         modifyItem(line.startRef, item => item.isConnected = true);
         modifyItem(line.endRef, item => item.isConnected = true);
         setLines(lines => [...lines, line]);
     }
 
-    function modifyItem(uuid, modify){
-        let newItems = {...items};
+    function modifyItem(uuid, modify) {
+        let newItems = { ...items };
         modify(newItems[uuid]);
         setItems(newItems);
     }
 
-    function updateItem(uuid, update){
+    function updateItem(uuid, update) {
         modifyItem(uuid, update);
-        updateLines(uuid);    
+        updateLines(uuid);
     }
 
     // update the line to match the new item positions
-    function updateLines(uuid){
+    function updateLines(uuid) {
         let newLines = [...lines];
         newLines.forEach(line => {
-            if(line.startRef === uuid)
+            if (line.startRef === uuid)
                 line.start = util.roundPos(items[uuid].pos);
-            else if(line.endRef === uuid)
+            else if (line.endRef === uuid)
                 line.end = util.roundPos(items[uuid].pos);
         })
         setLines(newLines);
     }
 
     // Add a new note
-    function addNote(){
-        if(input.text === "" || input.pos === {})
+    function addNote() {
+        if (input.text === "" || input.pos === {})
             return;
 
         let type = input.text.substring(0, 1) === '/' ? scrapType : noteType;
-        if(type == scrapType) input.text = input.text.substring(1);
+        if (type == scrapType) input.text = input.text.substring(1);
 
         createItem({
-            type:type,
-            pos:input.pos,
-            color:"#feff9c",
-            size:{width:150, height:100},
-            text:input.text
+            type: type,
+            pos: input.pos,
+            color: "#feff9c",
+            size: { width: 150, height: 100 },
+            text: input.text
         });
     }
 
@@ -177,14 +177,14 @@ const Board = () => {
     usePasteImage((src) => {
         let boardPos = util.subPos(mousePos.current, getBoardPos());
         createItem({
-            type:imgType,
-            pos:util.mulPos(boardPos, 1/scale),
-            size:{width:300, height:300},
-            src:src
+            type: imgType,
+            pos: util.mulPos(boardPos, 1 / scale),
+            size: { width: 300, height: 300 },
+            src: src
         });
     });
 
-    function createItem(item){
+    function createItem(item) {
         item.uuid = util.getUUID(item.type);
 
         doAction({
@@ -194,23 +194,23 @@ const Board = () => {
         })
     }
 
-    function modifyItemAction(doAction, undoAction){
+    function modifyItemAction(doAction, undoAction) {
         doAction({
-            do:modifyItem(doAction), 
-            undo:modifyItem(undoAction)
+            do: modifyItem(doAction),
+            undo: modifyItem(undoAction)
         });
     }
 
-    function addItem(item){
+    function addItem(item) {
         item.isConnected = false;
 
-        let itemsCopy = {...items};
+        let itemsCopy = { ...items };
         itemsCopy[item.uuid] = item;
         setItems(itemsCopy);
     }
 
-    function deleteItem(uuid){
-        let newItems = {...items};
+    function deleteItem(uuid) {
+        let newItems = { ...items };
         delete newItems[uuid];
         setItems(newItems);
 
@@ -218,64 +218,64 @@ const Board = () => {
         setLines(newLines);
     }
 
-    function onLoad(data){ 
-        setItems(data.items); 
+    function onLoad(data) {
+        setItems(data.items);
         setLines(data.lines);
     }
 
     // UI's version of data is updating every frame, following the board.
 
     // 1. Board's data model 
-        // should update every frame, to display the notes moving incrementally
+    // should update every frame, to display the notes moving incrementally
     // 2. UI / Save's data model
-        // should update every action, ie move from a to b.
+    // should update every action, ie move from a to b.
 
     // Render
-    return <div onMouseDown = {onMouseDown} onDoubleClick={onDoubleLClick} style={{overflow:'hidden'}}>
-        <UI data={{items:items, lines:lines}} onLoad={onLoad}/>
+    return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
+        <UI data={{ items: items, lines: lines }} onLoad={onLoad} />
 
         <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
-            <div className='board' ref = {boardRef} style = {util.posStyle(boardPos)}>
-                <ContextMenu boardPos={getBoardPos}/>
-                <p style = {{position:'absolute'}}></p>
+            <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
+                <ContextMenu boardPos={getBoardPos} />
+                <p style={{ position: 'absolute' }}></p>
 
-                {isCreating ? 
-                    <input style = {{...util.posStyle(input.pos), position:'absolute'}} autoFocus={true} onChange={(e) => setInput({pos: input.pos, text:e.target.value})}>
+                {isCreating ?
+                    <input style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
                     </input>
-                : <></>}
+                    : <></>}
 
                 {renderItems()}
 
-                {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid}/>)}
+                {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid} />)}
             </div>
         </div>
     </div>
 
-    function renderItems(){
+    function renderItems() {
         let itemHTML = [];
 
-        for(const uuid in items){
+        for (const uuid in items) {
             let item = items[uuid];
 
             let props = {
-                update:updateItem,
-                makeLine:makeLine,
-                items:items,
-                boardPos:getBoardPos,
-                addItem:createItem,
-                deleteItem:deleteItem,
-                debug:debug,
-                item:item
+                update: updateItem,
+                makeLine: makeLine,
+                items: items,
+                boardPos: getBoardPos,
+                addItem: createItem,
+                deleteItem: deleteItem,
+                debug: debug,
+                item: item
             }
 
             let newItemHtml;
-            if(item.type === noteType)
-                newItemHtml = <Note key={item.uuid} props={props}/>
-            else if(item.type === imgType)
-                newItemHtml = <Img key={item.uuid} props={props}/>
-            else if(item.type === scrapType)
-                newItemHtml = <Scrap key={item.uuid} props={props}/>
-            
+            if (item.type === noteType)
+                newItemHtml = <Note key={item.uuid} props={props} />
+            else if (item.type === imgType)
+                newItemHtml = <Img key={item.uuid} props={props} />
+            else if (item.type === scrapType)
+                newItemHtml = <Scrap key={item.uuid} props={props} />
+
             itemHTML.push(newItemHtml);
         }
 

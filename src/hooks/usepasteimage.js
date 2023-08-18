@@ -23,7 +23,7 @@ const usePasteImage = (onPasteImage) => {
         // load image if there is a pasted image
         if (blob !== null) {
             var reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 // console.log(event.target.result); // data url!
                 let imgSRC = event.target.result;
                 onPasteImage(imgSRC);
@@ -33,7 +33,7 @@ const usePasteImage = (onPasteImage) => {
         }
     }
 }
-    
+
 export default usePasteImage;
 
 // https://stackoverflow.com/questions/21227078/convert-base64-to-image-in-javascript-jquery

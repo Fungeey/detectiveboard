@@ -11,8 +11,8 @@ const useMousePos = () => {
         return () => document.removeEventListener('mousemove', onMouseMove);
     }, []);
 
-    function onMouseMove(e){
-        setMousePos({x:e.clientX, y:e.clientY});
+    function onMouseMove(e) {
+        setMousePos({ x: e.clientX, y: e.clientY });
     }
 
     return mouseRefPos;
