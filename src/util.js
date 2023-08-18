@@ -8,7 +8,7 @@ const util = {
     sizeStyle: (size) =>
         ({ width: `${size.width}px`, height: `${size.height}px` }),
 
-    distance: (a, b) => 
+    distance: (a, b) =>
         Math.sqrt(Math.abs(a.x - b.x) + Math.abs(a.y - b.y) ^ 2),
     getMousePos: (e) => ({ x: e.clientX, y: e.clientY }),
 
@@ -22,6 +22,13 @@ const util = {
     mulPos: (v, s) => ({ x: v.x * s, y: v.y * s }),
     eqlPos: (a, b) => (a.x === b.x && a.y === b.y),
     eqlSize: (a, b) => (a.width === b.width && a.height === b.height),
+
+    lineSize: (line) => {
+        return {
+            width: Math.round(Math.max(line.start.x, line.end.x) - Math.min(line.start.x, line.end.x) + 10),
+            height: Math.round(Math.max(line.start.y, line.end.y) - Math.min(line.start.y, line.end.y) + 10)
+        }
+    },
 
     roundPos: (pos) => ({ x: Math.round(pos.x), y: Math.round(pos.y) }),
     LMB: 0,

@@ -244,12 +244,31 @@ const Board = () => {
                     </input>
                     : <></>}
 
+                {renderLines()}
                 {renderItems()}
-
-                {lines.map((line) => <Line start={line.start} end={line.end} key={line.uuid} />)}
             </div>
         </div>
     </div>
+
+    function renderLines() {
+        let lineHTML = [];
+
+        for (const line of lines) {
+            const topLeft = {
+                x: Math.min(line.start.x, line.end.x),
+                y: Math.min(line.start.y, line.end.y)
+            };
+
+            let lineSize = util.lineSize(line);
+
+            if (!withinViewport(topLeft, lineSize)) continue;
+
+            lineHTML.push(
+                <Line key={line.uuid} start={line.start} end={line.end} />);
+        }
+
+        return lineHTML;
+    }
 
     function renderItems() {
         let itemHTML = [];
@@ -268,6 +287,8 @@ const Board = () => {
                 item: item
             }
 
+            if (!withinViewport(item.pos, item.size)) continue;
+
             let newItemHtml;
             if (item.type === noteType)
                 newItemHtml = <Note key={item.uuid} props={props} />
@@ -280,6 +301,19 @@ const Board = () => {
         }
 
         return itemHTML;
+    }
+
+    function withinViewport(pos, size) {
+        let boardPos = util.addPos(util.mulPos(pos, scale), getBoardPos());
+        let scaledSize = { width: size.width * scale, height: size.height * scale };
+
+        let leftEdge = boardPos.x + scaledSize.width > 0;
+        let rightEdge = boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth);
+
+        let topEdge = boardPos.y + scaledSize.height > 0;
+        let bottomEdge = boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight);
+
+        return leftEdge && rightEdge && topEdge && bottomEdge;
     }
 }
 

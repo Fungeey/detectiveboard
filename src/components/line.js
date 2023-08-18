@@ -1,4 +1,4 @@
-import util from '../util';
+import util from '../util'
 
 const Line = (props) => {
     let offset = { x: 10, y: 10 };

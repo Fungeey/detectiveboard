@@ -10,7 +10,8 @@ const useSaveLoad = (props) => {
 
 
     useEffect(() => {
-        loadTutorial();
+        if(false)
+            props.onLoad(tutorial);
     }, [])
 
     function handleCtrlS(e) {
@@ -41,10 +42,6 @@ const useSaveLoad = (props) => {
         a.click();
     }
 
-    function loadTutorial() {
-        props.onLoad(tutorial);
-    }
-
     function forceLoad() {
         let i = document.createElement("input");
         i.type = "file";
@@ -69,11 +66,11 @@ const useSaveLoad = (props) => {
             let item = data["items"][uuid];
 
             if (!item.pos) e(item, "pos is missing");
-            if (item.size && (!item.size.width || !item.size.height)) {
+            if (!item.size || item.size && (!item.size.width || !item.size.height)) {
                 e("size is broken, reset to default");
                 item.size = {
-                    width: 200,
-                    height: 200
+                    width: 150,
+                    height: 100
                 }
             }
         }
