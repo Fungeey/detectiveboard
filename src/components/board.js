@@ -161,8 +161,11 @@ const Board = () => {
         if(input.text === "" || input.pos === {})
             return;
 
+        let type = input.text.substring(0, 1) === '/' ? scrapType : noteType;
+        if(type == scrapType) input.text = input.text.substring(1);
+
         createItem({
-            type:input.text.length < 20 ? scrapType : noteType,
+            type:type,
             pos:input.pos,
             color:"#feff9c",
             size:{width:150, height:100},
@@ -259,6 +262,7 @@ const Board = () => {
                 makeLine:makeLine,
                 items:items,
                 boardPos:getBoardPos,
+                addItem:createItem,
                 deleteItem:deleteItem,
                 debug:debug,
                 item:item

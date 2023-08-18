@@ -8,10 +8,7 @@ const useMousePos = () => {
 
     useEffect(() => {
         document.addEventListener('mousemove', onMouseMove);
-
-        return () => {
-            document.removeEventListener('mousemove', onMouseMove);
-        }
+        return () => document.removeEventListener('mousemove', onMouseMove);
     }, []);
 
     function onMouseMove(e){

@@ -5,6 +5,8 @@ import Pin from "../components/pin";
 import Line from "../components/line";
 import useSelectionBehavior from "./useselectionbehavior";
 import useScale from '../hooks/usescale';
+import useCopyPaste from '../hooks/usecopypaste';
+import useMousePos from '../hooks/usemousepos';
 
 let hoverUUID = "";
 
@@ -13,6 +15,30 @@ const useItemBehavior = (props) => {
     const [previewLine, setPreviewLine] = useState({});
     const [startSize, setStartSize] = useState({});
     const scale = useScale();
+    const mousePos = useMousePos();
+
+    const [copiedItem, setCopiedItem] = useState(null);
+
+    // shouldn't be able to copy when editing
+    function copy(){
+        if(!isSelected){
+            setCopiedItem(null); // throw away previously copied item
+            return;
+        }
+        setCopiedItem(props.item);
+    }
+
+    function paste(){
+        if(copiedItem == null) return;
+        
+        let itemCopy = {...copiedItem};
+        let boardPos = util.subPos(mousePos.current, props.boardPos());
+        itemCopy.pos = util.mulPos(boardPos, 1/scale);
+
+        props.addItem(itemCopy);
+    }
+    
+    useCopyPaste(copy, paste);
 
     function onStartDrag(mousePos, e){
         setStartSize(getSize());
@@ -60,6 +86,7 @@ const useItemBehavior = (props) => {
         }
     }
 
+    // cancel preview line on window unfocus
     useEffect(() => {
         window.addEventListener('blur', () => setPreviewLine({}), false);
         return () => 
