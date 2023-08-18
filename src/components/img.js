@@ -5,24 +5,15 @@ const Img = ({ props }) => {
 
     const [render] = useItemBehavior(props);
 
-    function getSize() {
-        if (props.item.size)
-            return util.sizeStyle(props.item.size);
-        else
-            return util.sizeStyle(300, 300);
-    }
-
     function renderItem(isSelected) {
-        return (
-            <div
-                style={{
-                    ...getSize(),
-                    backgroundImage: `url("${props.item.src}")`,
-                    resize: isSelected ? "both" : "none"
-                }}
-                className="imgItem"
-            />
-        )
+        return <div
+            style={{
+                ...util.sizeStyle(props.item.size),
+                backgroundImage: `url("${props.item.src}")`,
+                resize: isSelected ? "both" : "none"
+            }}
+            className="imgItem"
+        />
     }
 
     return render(renderItem);

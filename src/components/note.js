@@ -63,7 +63,7 @@ const Note = ({ props }) => {
                 resize: isSelected ? "both" : "none"
             }} onDoubleClick={doubleClick} ref={noteRef}>
                 {props.item.text}
-                {props.debug ? <><br /><br />{props.item.uuid.substring(0, 4)}</> : <></>}
+                {props.debug ? <><br /><br />{props.item.uuid}</> : <></>}
             </div>
         )
     }

@@ -156,7 +156,6 @@ const Board = () => {
         setLines(newLines);
     }
 
-    // Add a new note
     function addNote() {
         if (input.text === "" || input.pos === {})
             return;
@@ -230,7 +229,6 @@ const Board = () => {
     // 2. UI / Save's data model
     // should update every action, ie move from a to b.
 
-    // Render
     return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
         <UI data={{ items: items, lines: lines }} onLoad={onLoad} />
 
@@ -276,6 +274,8 @@ const Board = () => {
         for (const uuid in items) {
             let item = items[uuid];
 
+            if (!withinViewport(item.pos, item.size)) continue;
+
             let props = {
                 update: updateItem,
                 makeLine: makeLine,
@@ -287,17 +287,12 @@ const Board = () => {
                 item: item
             }
 
-            if (!withinViewport(item.pos, item.size)) continue;
-
-            let newItemHtml;
             if (item.type === noteType)
-                newItemHtml = <Note key={item.uuid} props={props} />
+                itemHTML.push(<Note key={item.uuid} props={props} />);
             else if (item.type === imgType)
-                newItemHtml = <Img key={item.uuid} props={props} />
+                itemHTML.push(<Img key={item.uuid} props={props} />);
             else if (item.type === scrapType)
-                newItemHtml = <Scrap key={item.uuid} props={props} />
-
-            itemHTML.push(newItemHtml);
+                itemHTML.push(<Scrap key={item.uuid} props={props} />);
         }
 
         return itemHTML;
@@ -307,13 +302,12 @@ const Board = () => {
         let boardPos = util.addPos(util.mulPos(pos, scale), getBoardPos());
         let scaledSize = { width: size.width * scale, height: size.height * scale };
 
-        let leftEdge = boardPos.x + scaledSize.width > 0;
-        let rightEdge = boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth);
-
-        let topEdge = boardPos.y + scaledSize.height > 0;
-        let bottomEdge = boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight);
-
-        return leftEdge && rightEdge && topEdge && bottomEdge;
+        return (
+            boardPos.x + scaledSize.width > 0 &&
+            boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth) &&
+            boardPos.y + scaledSize.height > 0 &&
+            boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight)
+        )
     }
 }
 

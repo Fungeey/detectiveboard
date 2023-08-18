@@ -6,7 +6,6 @@ const useUndoStack = () => {
 
     useEffect(() => {
         document.addEventListener('keydown', handleUndoRedo);
-
         return () => document.removeEventListener('keydown', handleUndoRedo);
     }, [stack, undoSpot]);
 

@@ -138,7 +138,7 @@ const useItemBehavior = (props) => {
     }
 
     function render(renderItem, renderItemSelection) {
-        return (<>
+        return <>
             {renderPreviewLine()}
             {props.item.isConnected ? <Pin pos={props.item.pos} /> : <></>}
 
@@ -154,20 +154,9 @@ const useItemBehavior = (props) => {
                     </div>
                 </div>
 
-                {itemRef.current !== null && props.debug ?
-                    <div style={{
-                        position: "absolute",
-                        width: 20,
-                        height: 20,
-                        top: itemRef.current.clientHeight - 10,
-                        left: itemRef.current.clientWidth - 10,
-                        background: "blue"
-                    }}> </div> : <></>
-                }
-
                 {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
             </div>
-        </>)
+        </>
     }
 
     return [
