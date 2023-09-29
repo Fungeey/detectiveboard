@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import util from '../util';
 
 const usePasteImage = (onPasteImage) => {
     useEffect(() => {
@@ -23,10 +24,12 @@ const usePasteImage = (onPasteImage) => {
         // load image if there is a pasted image
         if (blob !== null) {
             var reader = new FileReader();
-            reader.onload = function (event) {
+            reader.onload = async function (event) {
                 // console.log(event.target.result); // data url!
                 let imgSRC = event.target.result;
-                onPasteImage(imgSRC);
+
+                let smallSRC = await util.downscaleImage(imgSRC, 500);
+                onPasteImage(smallSRC);
             };
 
             reader.readAsDataURL(blob);

@@ -157,7 +157,7 @@ const Board = () => {
     }
 
     function addNote() {
-        if (input.text === "" || input.pos === {})
+        if (input.text === "" || util.isEmpty(input.pos))
             return;
 
         let type = input.text.substring(0, 1) === '/' ? scrapType : noteType;

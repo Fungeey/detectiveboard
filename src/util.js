@@ -17,6 +17,11 @@ const util = {
 
     getUUID: type => type + "_" + uuid().substring(0, 5),
 
+    isEmpty: obj => Object.keys(obj).length == 0,
+
+    // Take an image URL, downscale it to the given width, and return a new image URL.
+    downscaleImage:downscaleImage,
+
     addPos: (a, b) => ({ x: a.x + b.x, y: a.y + b.y }),
     subPos: (a, b) => ({ x: a.x - b.x, y: a.y - b.y }),
     mulPos: (v, s) => ({ x: v.x * s, y: v.y * s }),
@@ -35,6 +40,46 @@ const util = {
     MMB: 1,
     RMB: 2,
     clickDist: 2
+}
+
+async function downscaleImage(dataUrl, newWidth, imageType, imageArguments){
+    var oldWidth, oldHeight, newHeight, canvas, ctx, newDataUrl;
+
+    // Provide default values
+    imageType = imageType || "image/png";
+    imageArguments = imageArguments || 0.7;
+
+    // Create a temporary image so that we can compute the height of the    downscaled image.
+
+    let image = await addImageProcess(dataUrl);
+
+    function addImageProcess(src){
+        return new Promise((resolve, reject) => {
+            let img = new Image()
+            img.onload = () => resolve(img)
+            img.onerror = reject
+            img.src = src
+        })
+    }
+
+    oldWidth = image.width;
+    oldHeight = image.height;
+
+    newWidth = 1000;
+    newHeight = Math.floor(oldHeight / oldWidth * newWidth)
+
+    // Create a temporary canvas to draw the downscaled image on.
+    canvas = document.createElement("canvas");
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+
+    // Draw the downscaled image on the canvas and return the new data URL.
+    ctx = canvas.getContext("2d");
+    console.log(ctx);
+    ctx.drawImage(image, 0, 0, newWidth, newHeight);
+    newDataUrl = canvas.toDataURL(imageType, imageArguments);
+
+    return newDataUrl;
 }
 
 export default util;
