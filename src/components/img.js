@@ -1,7 +1,7 @@
 import useItemBehavior from "../hooks/useitembehavior";
 import util from "../util";
 
-const Img = ({ props }) => {
+export default function Img({ props }) {
 
     const [render] = useItemBehavior(props);
 
@@ -18,5 +18,3 @@ const Img = ({ props }) => {
 
     return render(renderItem);
 }
-
-export default Img;

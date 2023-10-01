@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useReducer } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
 import useUndoStack from '../hooks/useundostack';
+import boardStateReducer from '../hooks/boardstatereducer';
 import util from '../util';
 import ContextMenu from './contextmenu';
 import Img from './img';
@@ -12,6 +13,7 @@ import Line from './line';
 import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
+import boardLineReducer from '../hooks/boardlinereducer';
 
 const noteType = "note";
 const imgType = "img";
@@ -19,9 +21,9 @@ const scrapType = "scrap";
 const lineType = "line";
 const debug = false;
 
-const Board = () => {
-    const [items, setItems] = useState({});
-    const [lines, setLines] = useState([]);
+export default function Board() {
+    const [items, dispatchItems] = useReducer(boardStateReducer, {});
+    const [lines, dispatchLines] = useReducer(boardLineReducer, []);
     const scale = useScale();
 
     const boardRef = useRef(null);
@@ -43,9 +45,8 @@ const Board = () => {
     }
 
     function endPan(dist, e) {
-        if (dist < 2 && e.button === 0) {
+        if (dist < 2 && e.button === 0)
             setIsCreating(false);
-        }
     }
 
     function onDoubleLClick(e) {
@@ -118,42 +119,36 @@ const Board = () => {
     }
 
     function removeLine(line) {
-        let newLines = lines.filter(l => l.uuid !== line.uuid);
-        setLines(newLines);
+        dispatchLines({ type: 'delete_line', line: line });
 
+        let newLines = lines.filter(l => l.uuid !== line.uuid);
         for (const uuid in items) {
-            if (newLines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0)
+            if (newLines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0){
                 modifyItem(uuid, item => item.isConnected = false);
+            }
         }
     }
 
     function addLine(line) {
         modifyItem(line.startRef, item => item.isConnected = true);
         modifyItem(line.endRef, item => item.isConnected = true);
-        setLines(lines => [...lines, line]);
+        dispatchLines({ type: 'create_line', line: line });
     }
 
     function modifyItem(uuid, modify) {
-        let newItems = { ...items };
-        modify(newItems[uuid]);
-        setItems(newItems);
+        let item = items[uuid];
+        modify(item);
+        dispatchItems({ type: 'update_item', item: item });
     }
 
     function updateItem(uuid, update) {
         modifyItem(uuid, update);
-        updateLines(uuid);
-    }
 
-    // update the line to match the new item positions
-    function updateLines(uuid) {
-        let newLines = [...lines];
-        newLines.forEach(line => {
-            if (line.startRef === uuid)
-                line.start = util.roundPos(items[uuid].pos);
-            else if (line.endRef === uuid)
-                line.end = util.roundPos(items[uuid].pos);
-        })
-        setLines(newLines);
+        // update the line to match the new item positions
+        dispatchLines({
+            type: 'update_line',
+            uuid: uuid, pos: util.roundPos(items[uuid].pos)
+        });
     }
 
     function addNote() {
@@ -185,10 +180,11 @@ const Board = () => {
 
     function createItem(item) {
         item.uuid = util.getUUID(item.type);
+        item.isConnected = false;
 
         doAction({
             id: "make " + item.uuid,
-            do: () => addItem(item),
+            do: () => dispatchItems({ type: 'create_item', item: item }),
             undo: () => deleteItem(item.uuid)
         })
     }
@@ -200,26 +196,14 @@ const Board = () => {
         });
     }
 
-    function addItem(item) {
-        item.isConnected = false;
-
-        let itemsCopy = { ...items };
-        itemsCopy[item.uuid] = item;
-        setItems(itemsCopy);
-    }
-
     function deleteItem(uuid) {
-        let newItems = { ...items };
-        delete newItems[uuid];
-        setItems(newItems);
-
-        let newLines = lines.filter(l => l.startRef !== uuid && l.endRef !== uuid);
-        setLines(newLines);
+        dispatchItems({ type: 'delete_item', uuid: uuid });
+        dispatchLines({ type: 'delete_lines_to_item', uuid: uuid });
     }
 
     function onLoad(data) {
-        setItems(data.items);
-        setLines(data.lines);
+        // setItems(data.items);
+        // setLines(data.lines);
     }
 
     // UI's version of data is updating every frame, following the board.
@@ -238,7 +222,7 @@ const Board = () => {
                 <p style={{ position: 'absolute' }}></p>
 
                 {isCreating ?
-                    <input style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
+                    <input style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} name="createTextBox" onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
                     </input>
                     : <></>}
 
@@ -310,5 +294,3 @@ const Board = () => {
         )
     }
 }
-
-export default Board;
