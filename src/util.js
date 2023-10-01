@@ -42,6 +42,7 @@ const util = {
     clickDist: 2
 }
 
+//https://stackoverflow.com/questions/14672746/how-to-compress-an-image-via-javascript-in-the-browser
 async function downscaleImage(dataUrl, newWidth, imageType, imageArguments){
     var oldWidth, oldHeight, newHeight, canvas, ctx, newDataUrl;
 
