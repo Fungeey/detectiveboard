@@ -5,7 +5,7 @@ import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
 import useUndoStack from '../hooks/useundostack';
-import boardStateReducer from '../hooks/boardstatereducer';
+import { boardStateReducer, actions } from '../hooks/boardstatereducer';
 import util from '../util';
 import ContextMenu from './contextmenu';
 import Img from './img';
@@ -13,7 +13,6 @@ import Line from './line';
 import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
-import boardLineReducer from '../hooks/boardlinereducer';
 
 const noteType = "note";
 const imgType = "img";
@@ -22,10 +21,12 @@ const lineType = "line";
 const debug = false;
 
 export default function Board() {
-    const [items, dispatchItems] = useReducer(boardStateReducer, {});
-    const [lines, dispatchLines] = useReducer(boardLineReducer, []);
-    const scale = useScale();
+    const [data, dispatch] = useReducer(boardStateReducer, {
+        items: {},
+        lines: []
+    });
 
+    const scale = useScale();
     const boardRef = useRef(null);
 
     const [isCreating, setIsCreating] = useState(false);
@@ -88,13 +89,31 @@ export default function Board() {
         let line = {
             startRef: uuid,
             endRef: endUuid,
-            start: items[uuid].pos,
-            end: items[endUuid].pos,
+            start: data.items[uuid].pos,
+            end: data.items[endUuid].pos,
             uuid: util.getUUID(lineType)
         };
 
-        for (let i = 0; i < lines.length; i++) {
-            let other = lines[i];
+        let other = getExistingLine(line);
+        if (Object.keys(other).length !== 0) {
+            doAction({
+                do: () =>
+                    dispatch({ type: actions.deleteLineObj, line: other }),
+                undo: () =>
+                    dispatch({ type: actions.createLineObj, line: other })
+            })
+            return;
+        }
+
+        doAction({
+            do: () => dispatch({ type: actions.createLineObj, line: line }),
+            undo: () => dispatch({ type: actions.deleteLineObj, line: line })
+        })
+    }
+
+    function getExistingLine(line) {
+        for (let i = 0; i < data.lines.length; i++) {
+            let other = data.lines[i];
 
             let exists = other.startRef === line.startRef
                 && other.endRef === line.endRef;
@@ -102,53 +121,15 @@ export default function Board() {
             let existsBackwards = other.startRef === line.endRef
                 && other.endRef === line.startRef;
 
-            if (exists || existsBackwards) {
-                // if the line exists already, remove it
-                doAction({
-                    do: () => removeLine(other),
-                    undo: () => addLine(other)
-                })
-                return;
-            }
+            if(exists || existsBackwards)
+                return other;
         }
 
-        doAction({
-            do: () => addLine(line),
-            undo: () => removeLine(line)
-        })
-    }
-
-    function removeLine(line) {
-        dispatchLines({ type: 'delete_line', line: line });
-
-        let newLines = lines.filter(l => l.uuid !== line.uuid);
-        for (const uuid in items) {
-            if (newLines.filter(l => l.startRef === uuid || l.endRef === uuid).length === 0){
-                modifyItem(uuid, item => item.isConnected = false);
-            }
-        }
-    }
-
-    function addLine(line) {
-        modifyItem(line.startRef, item => item.isConnected = true);
-        modifyItem(line.endRef, item => item.isConnected = true);
-        dispatchLines({ type: 'create_line', line: line });
-    }
-
-    function modifyItem(uuid, modify) {
-        let item = items[uuid];
-        modify(item);
-        dispatchItems({ type: 'update_item', item: item });
+        return {};
     }
 
     function updateItem(uuid, update) {
-        modifyItem(uuid, update);
-
-        // update the line to match the new item positions
-        dispatchLines({
-            type: 'update_line',
-            uuid: uuid, pos: util.roundPos(items[uuid].pos)
-        });
+        dispatch({ type: actions.updateItemObj, uuid: uuid, update: update });
     }
 
     function addNote() {
@@ -184,21 +165,21 @@ export default function Board() {
 
         doAction({
             id: "make " + item.uuid,
-            do: () => dispatchItems({ type: 'create_item', item: item }),
+            do: () => dispatch({ type: actions.createItem, item: item }),
             undo: () => deleteItem(item.uuid)
         })
     }
 
-    function modifyItemAction(doAction, undoAction) {
-        doAction({
-            do: modifyItem(doAction),
-            undo: modifyItem(undoAction)
-        });
-    }
+    // function modifyItemAction(doAction, undoAction) {
+    //     doAction({
+    //         do: modifyItem(doAction),
+    //         undo: modifyItem(undoAction)
+    //     });
+    // }
 
     function deleteItem(uuid) {
-        dispatchItems({ type: 'delete_item', uuid: uuid });
-        dispatchLines({ type: 'delete_lines_to_item', uuid: uuid });
+        dispatch({ type: actions.deleteItem, uuid: uuid });
+        // dispatch({ type: 'delete_lines_to_item', uuid: uuid });
     }
 
     function onLoad(data) {
@@ -214,7 +195,7 @@ export default function Board() {
     // should update every action, ie move from a to b.
 
     return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
-        <UI data={{ items: items, lines: lines }} onLoad={onLoad} />
+        <UI data={data} onLoad={onLoad} />
 
         <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
             <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
@@ -235,7 +216,7 @@ export default function Board() {
     function renderLines() {
         let lineHTML = [];
 
-        for (const line of lines) {
+        for (const line of data.lines) {
             const topLeft = {
                 x: Math.min(line.start.x, line.end.x),
                 y: Math.min(line.start.y, line.end.y)
@@ -255,15 +236,15 @@ export default function Board() {
     function renderItems() {
         let itemHTML = [];
 
-        for (const uuid in items) {
-            let item = items[uuid];
+        for (const uuid in data.items) {
+            let item = data.items[uuid];
 
             if (!withinViewport(item.pos, item.size)) continue;
 
             let props = {
                 update: updateItem,
                 makeLine: makeLine,
-                items: items,
+                items: data.items,
                 boardPos: getBoardPos,
                 addItem: createItem,
                 deleteItem: deleteItem,
