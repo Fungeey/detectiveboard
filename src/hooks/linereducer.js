@@ -1,45 +1,25 @@
 
-export const lineActions = {
-    createLine: 'createLine',
-    deleteLine: 'deleteLine',
-    updateLine: 'updateLine'
-}
-
-export function lineReducer(state, action) {
-    switch (action.type) {
-        case lineActions.createLine: return createLine(state, action);
-        case lineActions.deleteLine: return deleteLine(state, action);
-        case lineActions.updateLine: return updateLine(state, action);
-        case 'delete_lines_to_item': return deleteLinesToItem(state, action);
-        default: console.error("undefined reducer action: " + action.type);
-    }
+// line
+export function createLine(state, line) {
+  return [...state, line];
 }
 
 // line
-function createLine(state, action) {
-    return [...state, action.line];
+export function deleteLine(state, line) {
+  return state.filter(l => l.uuid !== line.uuid);
 }
 
-// uuid
-function deleteLine(state, action) {
-    return state.filter(l => l.uuid !== action.line.uuid);
+// uuid, update
+export function updateLine(state, uuid, update) {
+  let newState = [...state];
+  let line = newState.find(line => line.uuid === uuid);
+  if (line)
+    update(line);
+  return newState;
 }
 
-// make generic, not just position update.
-function updateLine(state, action) {
-    let newState = [...state];
-    newState.forEach(line => action.update(line));
-        
-    //     {
-    //     if (line.startRef === action.uuid) line.start = action.pos;
-    //     else if (line.endRef === action.uuid) line.end = action.pos;
-    // });
-
-    return newState;
-}
-
-function deleteLinesToItem(state, action) {
-    return state.filter(
-        l => l.startRef !== action.uuid &&
-            l.endRef !== action.uuid);
+export function deleteLinesToItem(state, uuid) {
+  return state.filter(l =>
+    l.startRef !== uuid &&
+    l.endRef !== uuid);
 }
