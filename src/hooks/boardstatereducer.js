@@ -11,7 +11,8 @@ export const actions = {
   deleteItem: 'deleteItem',
 
   createLine: 'createLine',
-  deleteLine: 'deleteLine'
+  deleteLine: 'deleteLine',
+  load: 'load'
 }
 
 export function boardStateReducer(state, action) {
@@ -24,6 +25,8 @@ export function boardStateReducer(state, action) {
     case actions.createLine:
       return createLine(state, action.uuid, action.endUuid);
     case actions.deleteLine: return deleteLine(state, action.line);
+
+    case actions.load: return action.data;
 
     default: console.error("undefined reducer action: " + action.type);
   }

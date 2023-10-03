@@ -61,7 +61,6 @@ const useUndoStack = () => {
         setUndoSpot(newStack.length);
     }
 
-
     // create item                      inside board
     // delete item                      from item
     // create / delete lines            inside board

@@ -111,8 +111,7 @@ export default function Board() {
   });
 
   function onLoad(data) {
-    // setItems(data.items);
-    // setLines(data.lines);
+    dispatch({ type: actions.load, data });
   }
 
   // UI's version of data is updating every frame, following the board.
@@ -150,9 +149,7 @@ export default function Board() {
         y: Math.min(line.start.y, line.end.y)
       };
 
-      let lineSize = util.lineSize(line);
-
-      if (!withinViewport(topLeft, lineSize)) continue;
+      if (!withinViewport(topLeft, util.lineSize(line))) continue;
 
       lineHTML.push(
         <Line key={line.uuid} start={line.start} end={line.end} />);
