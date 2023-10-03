@@ -2,6 +2,9 @@ import * as itemReducer from './itemreducer';
 import * as lineReducer from './linereducer';
 import util from '../util';
 
+
+// every action here must be undoable
+
 export const actions = {
   createItem: 'createItem',
   updateItem: 'updateItem',
@@ -14,10 +17,12 @@ export const actions = {
 export function boardStateReducer(state, action) {
   switch (action.type) {
     case actions.createItem: return createItem(state, action.item);
-    case actions.updateItem: return updateItem(state, action.uuid, action.update);
+    case actions.updateItem: 
+      return updateItem(state, action.uuid, action.update);
     case actions.deleteItem: return deleteItem(state, action.uuid);
 
-    case actions.createLine: return createLine(state, action.line);
+    case actions.createLine: 
+      return createLine(state, action.uuid, action.endUuid);
     case actions.deleteLine: return deleteLine(state, action.line);
 
     default: console.error("undefined reducer action: " + action.type);
@@ -32,15 +37,45 @@ function createItem(state, item) {
 }
 
 // line
-function createLine(state, line) {
+function createLine(state, uuid, endUuid) {
+  let line = {
+    startRef: uuid,
+    endRef: endUuid,
+    start: state.items[uuid].pos,
+    end: state.items[endUuid].pos,
+    uuid: util.getUUID(util.type.line)
+  };
+
+  let other = getExistingLine(state.lines, line);
+  if (Object.keys(other).length !== 0) {
+    return deleteLine(state, other);
+  }
+
+  // Create line
   let lines = lineReducer.createLine(state.lines, line);
 
-  let items = itemReducer.updateItem(state.items, line.startRef,
-    item => item.isConnected = true);
-  items = itemReducer.updateItem(items, line.endRef,
-    item => item.isConnected = true);
+  let update = item => item.isConnected = true;
+  let items = itemReducer.updateItem(state.items, line.startRef, update);
+  items = itemReducer.updateItem(items, line.endRef, update);
 
   return { items: items, lines: lines }
+}
+
+function getExistingLine(lines, line) {
+  for (let i = 0; i < lines.length; i++) {
+    let other = lines[i];
+
+    let exists = other.startRef === line.startRef
+      && other.endRef === line.endRef;
+
+    let existsBackwards = other.startRef === line.endRef
+      && other.endRef === line.startRef;
+
+    if (exists || existsBackwards)
+      return other;
+  }
+
+  return {};
 }
 
 function deleteLine(state, line) {

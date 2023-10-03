@@ -35,6 +35,13 @@ const util = {
         }
     },
 
+    type: {
+        note: "note",
+        img: "img",
+        scrap: "scrap",
+        line: "line"
+    },
+
     roundPos: (pos) => ({ x: Math.round(pos.x), y: Math.round(pos.y) }),
     LMB: 0,
     MMB: 1,

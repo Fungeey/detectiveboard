@@ -14,10 +14,6 @@ import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
 
-const noteType = "note";
-const imgType = "img";
-const scrapType = "scrap";
-const lineType = "line";
 const debug = false;
 
 export default function Board() {
@@ -83,49 +79,7 @@ export default function Board() {
   const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
 
   function makeLine(uuid, endUuid) {
-    if (endUuid == null || endUuid === "")
-      return;
-
-    let line = {
-      startRef: uuid,
-      endRef: endUuid,
-      start: data.items[uuid].pos,
-      end: data.items[endUuid].pos,
-      uuid: util.getUUID(lineType)
-    };
-
-    let other = getExistingLine(line);
-    if (Object.keys(other).length !== 0) {
-      doAction({
-        do: () =>
-          dispatch({ type: actions.deleteLine, line: other }),
-        undo: () =>
-          dispatch({ type: actions.createLine, line: other })
-      })
-      return;
-    }
-
-    doAction({
-      do: () => dispatch({ type: actions.createLine, line: line }),
-      undo: () => dispatch({ type: actions.deleteLine, line: line })
-    })
-  }
-
-  function getExistingLine(line) {
-    for (let i = 0; i < data.lines.length; i++) {
-      let other = data.lines[i];
-
-      let exists = other.startRef === line.startRef
-        && other.endRef === line.endRef;
-
-      let existsBackwards = other.startRef === line.endRef
-        && other.endRef === line.startRef;
-
-      if (exists || existsBackwards)
-        return other;
-    }
-
-    return {};
+    dispatch({ type: actions.createLine, uuid:uuid, endUuid:endUuid });
   }
 
   function updateItem(uuid, update) {
@@ -136,8 +90,8 @@ export default function Board() {
     if (input.text === "" || util.isEmpty(input.pos))
       return;
 
-    let type = input.text.substring(0, 1) === '/' ? scrapType : noteType;
-    if (type === scrapType) input.text = input.text.substring(1);
+    let type = input.text.substring(0, 1) === '/' ? util.type.scrap : util.type.note;
+    if (type === util.type.scrap) input.text = input.text.substring(1);
 
     createItem({  
       type: type,
@@ -152,7 +106,7 @@ export default function Board() {
   usePasteImage((src) => {
     let boardPos = util.subPos(mousePos.current, getBoardPos());
     createItem({
-      type: imgType,
+      type: util.type.img,
       pos: util.mulPos(boardPos, 1 / scale),
       size: { width: 300, height: 300 },
       src: src
@@ -237,11 +191,11 @@ export default function Board() {
         item: item
       }
 
-      if (item.type === noteType)
+      if (item.type === util.type.note)
         itemHTML.push(<Note key={item.uuid} props={props} />);
-      else if (item.type === imgType)
+      else if (item.type === util.type.img)
         itemHTML.push(<Img key={item.uuid} props={props} />);
-      else if (item.type === scrapType)
+      else if (item.type === util.type.scrap)
         itemHTML.push(<Scrap key={item.uuid} props={props} />);
     }
 
