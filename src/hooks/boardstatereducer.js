@@ -17,11 +17,11 @@ export const actions = {
 export function boardStateReducer(state, action) {
   switch (action.type) {
     case actions.createItem: return createItem(state, action.item);
-    case actions.updateItem: 
+    case actions.updateItem:
       return updateItem(state, action.uuid, action.update);
     case actions.deleteItem: return deleteItem(state, action.uuid);
 
-    case actions.createLine: 
+    case actions.createLine:
       return createLine(state, action.uuid, action.endUuid);
     case actions.deleteLine: return deleteLine(state, action.line);
 
@@ -38,6 +38,9 @@ function createItem(state, item) {
 
 // line
 function createLine(state, uuid, endUuid) {
+  if (endUuid == null || endUuid === "")
+    return state;
+
   let line = {
     startRef: uuid,
     endRef: endUuid,

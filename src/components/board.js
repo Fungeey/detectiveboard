@@ -78,14 +78,6 @@ export default function Board() {
 
   const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
 
-  function makeLine(uuid, endUuid) {
-    dispatch({ type: actions.createLine, uuid:uuid, endUuid:endUuid });
-  }
-
-  function updateItem(uuid, update) {
-    dispatch({ type: actions.updateItem, uuid: uuid, update: update });
-  }
-
   function addNote() {
     if (input.text === "" || util.isEmpty(input.pos))
       return;
@@ -93,33 +85,30 @@ export default function Board() {
     let type = input.text.substring(0, 1) === '/' ? util.type.scrap : util.type.note;
     if (type === util.type.scrap) input.text = input.text.substring(1);
 
-    createItem({  
+    let item = {
       type: type,
       pos: input.pos,
       color: "#feff9c",
       size: { width: 150, height: 100 },
       text: input.text
-    });
+    };
+
+    dispatch({ type: actions.createItem, item: item });
   }
 
   // paste images and make new img item
   usePasteImage((src) => {
     let boardPos = util.subPos(mousePos.current, getBoardPos());
-    createItem({
+
+    let item = {
       type: util.type.img,
       pos: util.mulPos(boardPos, 1 / scale),
       size: { width: 300, height: 300 },
       src: src
-    });
-  });
+    }
 
-  function createItem(item) {
     dispatch({ type: actions.createItem, item: item });
-  }
-
-  function deleteItem(uuid) {
-    dispatch({ type: actions.deleteItem, uuid: uuid });
-  }
+  });
 
   function onLoad(data) {
     // setItems(data.items);
@@ -181,12 +170,9 @@ export default function Board() {
       if (!withinViewport(item.pos, item.size)) continue;
 
       let props = {
-        update: updateItem,
-        makeLine: makeLine,
+        dispatch: dispatch,
         items: data.items,
         boardPos: getBoardPos,
-        addItem: createItem,
-        deleteItem: deleteItem,
         debug: debug,
         item: item
       }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useKeyDown from '../hooks/usekeydown';
+import { actions } from "./boardstatereducer";
 
 function useSelectionBehavior(props) {
     const [isSelected, setIsSelected] = useState(false);
@@ -28,7 +29,7 @@ function useSelectionBehavior(props) {
     useKeyDown(deSelect, ["Enter", "Escape"]);
 
     function deleteItem() {
-        props.deleteItem(props.item.uuid);
+        props.dispatch({ type: actions.deleteItem, uuid: props.item.uuid });
     }
 
     function renderSelection(itemRef, renderItemSelection) {
