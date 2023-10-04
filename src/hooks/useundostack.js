@@ -51,6 +51,7 @@ const useUndoStack = () => {
         for (let i = 0; i < undoSpot; i++) {
             newStack.push(stack[i]);
         }
+
         newStack.push(action);
         setStack(newStack);
 

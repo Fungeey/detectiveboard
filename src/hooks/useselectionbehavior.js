@@ -13,9 +13,9 @@ function useSelectionBehavior(props) {
     function onClickDocument(e) {
         if (!e.target.parentElement) return;
         // deselect if click anywhere other than this note.
-        if (e.target.parentElement.parentElement.getAttribute("uuid") !== props.item.uuid) {
+        let target = e.target.parentElement.parentElement.getAttribute("uuid");
+        if (target !== props.item.uuid)
             deSelect();
-        }
     }
 
     function select() {
@@ -29,7 +29,12 @@ function useSelectionBehavior(props) {
     useKeyDown(deSelect, ["Enter", "Escape"]);
 
     function deleteItem() {
-        props.dispatch({ type: actions.deleteItem, uuid: props.item.uuid });
+        props.doAction({
+            do: () => props.dispatch({ 
+                type: actions.deleteItem, item: props.item }),
+            undo: () => props.dispatch({ 
+                type: actions.createItem, item: props.item })
+        });
     }
 
     function renderSelection(itemRef, renderItemSelection) {

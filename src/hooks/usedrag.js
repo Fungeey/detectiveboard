@@ -76,7 +76,8 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
         document.removeEventListener('mouseup', endDrag);
 
         let dist = util.distance(startPos, util.getMousePos(e));
-        if (doEndDrag) doEndDrag(dist, e);
+        let actualStart = util.addPos(startPos, offset);
+        if (doEndDrag) doEndDrag(dist, e, actualStart);
     }
 
     return [

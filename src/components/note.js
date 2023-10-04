@@ -16,7 +16,6 @@ const padding = 20; // px;
 const Note = ({ props }) => {
   const [render] = useItemBehavior(props);
   const noteRef = useRef(null);
-  const [color, setColor] = useState(props.item.color);
 
   function doubleClick(e) {
     e.stopPropagation();
@@ -43,8 +42,17 @@ const Note = ({ props }) => {
   function stopEditing() {
     noteRef.current.contentEditable = false;
 
-    let update = item => item.text = noteRef.current.innerText;
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update});
+    let oldText = props.item.text;
+    let newText = noteRef.current.innerText;
+
+    // unfocus and finishEditing may both fire, need to check that the text 
+    // hasn't already been updated. Only continue if text is unique
+    if (oldText === newText) return;
+
+    props.doAction({
+      do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = newText }),
+      undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = oldText })
+    });
   }
 
   function getSize() {
@@ -61,7 +69,7 @@ const Note = ({ props }) => {
     return (
       <div className="noteItem" style={{
         ...getSize(),
-        background: color,
+        background: props.item.color,
         resize: isSelected ? "both" : "none"
       }} onDoubleClick={doubleClick} ref={noteRef}>
         {props.item.text}
@@ -71,9 +79,12 @@ const Note = ({ props }) => {
   }
 
   function changeColor(color) {
-    setColor(color);
-    let update = item => item.color = color;
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update});
+    let oldColor = props.item.color;
+
+    props.doAction({
+      do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = color }),
+      undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = oldColor })
+    });
   }
 
   function renderSelection(itemRef) {

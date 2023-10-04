@@ -43,7 +43,7 @@ const useItemBehavior = (props) => {
 
   function onStartDrag(mousePos, e) {
     setStartSize(getSize());
-    return pos;
+    return props.item.pos;
   }
 
   function onDrag(dragPos, e) {
@@ -54,7 +54,6 @@ const useItemBehavior = (props) => {
       }
 
       // move the item to the drag position.
-      setPos(dragPos);
       let update = item => item.pos = util.roundPos(dragPos);
       props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update });
 
@@ -96,19 +95,30 @@ const useItemBehavior = (props) => {
       window.removeEventListener('blur', () => setPreviewLine({}), false);
   }, []);
 
-  const onEndDrag = (dist, e) => {
+  const onEndDrag = (dist, e, startPos) => {
     if (!util.eqlSize(getSize(), startSize)) {
       // save new width
       //clientWidth includes padding, so need to subtract it away
-      let update = item => item.size = getSize();
-      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update });
-      
+      let newSize = getSize();
+      let oldSize = props.item.size;
+
+      props.doAction({
+        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = newSize }),
+        undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = oldSize }),
+      })
+
     } else if (dragButton === util.LMB) {
       // lmb click = select
       if (dist < util.clickDist) {
         select();
         return;
       }
+
+      props.doAction({
+        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = props.item.pos }),
+        undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = startPos })
+      });
+
     } else if (dragButton === util.RMB) {
       // line connecting this item to the hovered (destination) item.
       if (props.item.uuid !== hoverUUID)
@@ -118,7 +128,6 @@ const useItemBehavior = (props) => {
     setPreviewLine({});
   }
 
-  const [pos, setPos] = useState(props.item.pos);
   const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
 
   function enter() { hoverUUID = props.item.uuid; }

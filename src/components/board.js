@@ -93,7 +93,10 @@ export default function Board() {
       text: input.text
     };
 
-    dispatch({ type: actions.createItem, item: item });
+    doAction({
+      do: () => dispatch({ type: actions.createItem, item: item }),
+      undo: () => dispatch({ type: actions.deleteItem, item: item })
+    });
   }
 
   // paste images and make new img item
@@ -107,11 +110,17 @@ export default function Board() {
       src: src
     }
 
-    dispatch({ type: actions.createItem, item: item });
+    doAction({
+      do: () => dispatch({ type: actions.createItem, item: item }),
+      undo: () => dispatch({ type: actions.deleteItem, item: item })
+    });
   });
 
-  function onLoad(data) {
-    dispatch({ type: actions.load, data });
+  function onLoad(newData) {
+    doAction({
+      do: () => dispatch({ type: actions.load, data: newData }),
+      undo: () => dispatch({ type: actions.load, data: data })
+    });
   }
 
   // UI's version of data is updating every frame, following the board.
@@ -168,6 +177,7 @@ export default function Board() {
 
       let props = {
         dispatch: dispatch,
+        doAction: doAction,
         items: data.items,
         boardPos: getBoardPos,
         debug: debug,

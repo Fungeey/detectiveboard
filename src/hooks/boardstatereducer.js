@@ -20,7 +20,7 @@ export function boardStateReducer(state, action) {
     case actions.createItem: return createItem(state, action.item);
     case actions.updateItem:
       return updateItem(state, action.uuid, action.update);
-    case actions.deleteItem: return deleteItem(state, action.uuid);
+    case actions.deleteItem: return deleteItem(state, action.item);
 
     case actions.createLine:
       return createLine(state, action.uuid, action.endUuid);
@@ -118,9 +118,9 @@ function updateItem(state, uuid, update) {
   return { items: items, lines: lines }
 }
 
-function deleteItem(state, uuid) {
-  let items = itemReducer.deleteItem(state.items, uuid);
-  let lines = lineReducer.deleteLinesToItem(state.lines, uuid);
+function deleteItem(state, item) {
+  let items = itemReducer.deleteItem(state.items, item);
+  let lines = lineReducer.deleteLinesToItem(state.lines, item.uuid);
   return { items: items, lines: lines }
 }
 
@@ -152,3 +152,10 @@ function deleteItem(state, uuid) {
 // = delete item
 // = delete line: remove connections
 // = update item: disconnect
+
+
+
+
+
+// update() many times from start to finish
+// once finished, create undoable action from start to finish

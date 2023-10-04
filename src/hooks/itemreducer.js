@@ -6,10 +6,10 @@ export function createItem(state, item) {
   return newState;
 }
 
-// uuid
-export function deleteItem(state, uuid) {
+// item
+export function deleteItem(state, item) {
   let newItems = { ...state };
-  delete newItems[uuid];
+  delete newItems[item.uuid];
   return newItems;
 }
 
