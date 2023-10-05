@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import useItemBehavior from "../hooks/useitembehavior";
 import util from "../util";
-import { actions } from "../hooks/boardstatereducer";
+import { actions } from "../state/boardstatereducer";
 
 const colors = [
   "#feff9c",      //yellow

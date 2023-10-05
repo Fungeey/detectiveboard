@@ -7,7 +7,7 @@ import useScale from '../hooks/usescale';
 import util from "../util";
 import useDrag from "./usedrag";
 import useSelectionBehavior from "./useselectionbehavior";
-import { actions } from "./boardstatereducer";
+import { actions } from "../state/boardstatereducer";
 
 let hoverUUID = "";
 

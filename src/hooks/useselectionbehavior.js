@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useKeyDown from '../hooks/usekeydown';
-import { actions } from "./boardstatereducer";
+import { actions } from "../state/boardstatereducer";
 
 function useSelectionBehavior(props) {
     const [isSelected, setIsSelected] = useState(false);
