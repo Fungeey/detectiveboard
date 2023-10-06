@@ -114,8 +114,10 @@ const useItemBehavior = (props) => {
         return;
       }
 
+      let newPos = props.item.pos;
+
       props.doAction({
-        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = props.item.pos }),
+        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = newPos }),
         undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = startPos })
       });
 
