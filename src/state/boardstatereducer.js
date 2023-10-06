@@ -38,6 +38,7 @@ function createItem(state, item) {
 
 // line
 function createLine(state, line) {
+  console.log(line.uuid);
   let lines = lineReducer.createLine(state.lines, line);
 
   let update = item => item.isConnected = true;
@@ -57,7 +58,7 @@ export function getExistingLine(lines, line) {
       return other;
   }
 
-  return {};
+  return {}
 }
 
 function deleteLine(state, line) {

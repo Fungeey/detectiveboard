@@ -132,20 +132,24 @@ const useItemBehavior = (props) => {
     let line = {
       startRef: props.item.uuid,
       endRef: hoverUUID,
-      start: props.data.items[props.item.uuid].pos,
+      start: props.item.pos,
       end: props.data.items[hoverUUID].pos,
       uuid: util.getUUID(util.type.line)
     };
 
     let other = getExistingLine(props.data.lines, line);
 
-    let cline = () => props.dispatch({ type: actions.createLine, line: line });
-    let dline = () => props.dispatch({ type: actions.deleteLine, line: line });
-
-    if (Object.keys(other).length !== 0)
-      props.doAction({ do: dline, undo: cline });
-    else
-      props.doAction({ do: cline, undo: dline });
+    if (Object.keys(other).length !== 0){
+      props.doAction({ 
+        do: () => props.dispatch({ type: actions.deleteLine, line: other }), 
+        undo: () => props.dispatch({ type: actions.createLine, line: other }) 
+      });
+    }else{
+      props.doAction({ 
+        do: () => props.dispatch({ type: actions.createLine, line: line }), 
+        undo: () => props.dispatch({ type: actions.deleteLine, line: line }) 
+      });
+    }
   }
 
   const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
