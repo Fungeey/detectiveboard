@@ -87,6 +87,7 @@ export default function Board() {
 
     let item = {
       type: type,
+      uuid: util.getUUID(type),
       pos: input.pos,
       color: "#feff9c",
       size: { width: 150, height: 100 },
@@ -105,6 +106,7 @@ export default function Board() {
 
     let item = {
       type: util.type.img,
+      uuid: util.getUUID(util.type.img),
       pos: util.mulPos(boardPos, 1 / scale),
       size: { width: 300, height: 300 },
       src: src
@@ -178,7 +180,7 @@ export default function Board() {
       let props = {
         dispatch: dispatch,
         doAction: doAction,
-        items: data.items,
+        data: data,
         boardPos: getBoardPos,
         debug: debug,
         item: item

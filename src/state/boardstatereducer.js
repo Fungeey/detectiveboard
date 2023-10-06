@@ -22,8 +22,7 @@ export function boardStateReducer(state, action) {
       return updateItem(state, action.uuid, action.update);
     case actions.deleteItem: return deleteItem(state, action.item);
 
-    case actions.createLine:
-      return createLine(state, action.uuid, action.endUuid);
+    case actions.createLine: return createLine(state, action.line);
     case actions.deleteLine: return deleteLine(state, action.line);
 
     case actions.load: return action.data;
@@ -33,31 +32,12 @@ export function boardStateReducer(state, action) {
 }
 
 function createItem(state, item) {
-  item.uuid = util.getUUID(item.type);
-
   let items = itemReducer.createItem(state.items, item);
   return { items: items, lines: state.lines }
 }
 
 // line
-function createLine(state, uuid, endUuid) {
-  if (endUuid == null || endUuid === "")
-    return state;
-
-  let line = {
-    startRef: uuid,
-    endRef: endUuid,
-    start: state.items[uuid].pos,
-    end: state.items[endUuid].pos,
-    uuid: util.getUUID(util.type.line)
-  };
-
-  let other = getExistingLine(state.lines, line);
-  if (Object.keys(other).length !== 0) {
-    return deleteLine(state, other);
-  }
-
-  // Create line
+function createLine(state, line) {
   let lines = lineReducer.createLine(state.lines, line);
 
   let update = item => item.isConnected = true;
@@ -67,17 +47,13 @@ function createLine(state, uuid, endUuid) {
   return { items: items, lines: lines }
 }
 
-function getExistingLine(lines, line) {
+export function getExistingLine(lines, line) {
   for (let i = 0; i < lines.length; i++) {
     let other = lines[i];
 
-    let exists = other.startRef === line.startRef
-      && other.endRef === line.endRef;
-
-    let existsBackwards = other.startRef === line.endRef
-      && other.endRef === line.startRef;
-
-    if (exists || existsBackwards)
+    if(
+      (other.startRef === line.startRef && other.endRef === line.endRef) || 
+      (other.startRef === line.endRef && other.endRef === line.startRef))
       return other;
   }
 

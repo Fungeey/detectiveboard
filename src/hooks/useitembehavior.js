@@ -7,7 +7,7 @@ import useScale from '../hooks/usescale';
 import util from "../util";
 import useDrag from "./usedrag";
 import useSelectionBehavior from "./useselectionbehavior";
-import { actions } from "../state/boardstatereducer";
+import { actions, getExistingLine } from "../state/boardstatereducer";
 
 let hoverUUID = "";
 
@@ -67,7 +67,7 @@ const useItemBehavior = (props) => {
       // snap to any item
       setPreviewLine({
         start: props.item.pos,
-        end: props.items[hoverUUID].pos
+        end: props.data.items[hoverUUID].pos
       });
     } else {
 
@@ -96,9 +96,8 @@ const useItemBehavior = (props) => {
   }, []);
 
   const onEndDrag = (dist, e, startPos) => {
-    if (!util.eqlSize(getSize(), startSize)) {
-      // save new width
-      //clientWidth includes padding, so need to subtract it away
+    if (!util.eqlSize(getSize(), startSize)) { // save new width
+      // clientWidth includes padding, so need to subtract it away
       let newSize = getSize();
       let oldSize = props.item.size;
 
@@ -107,8 +106,7 @@ const useItemBehavior = (props) => {
         undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = oldSize }),
       })
 
-    } else if (dragButton === util.LMB) {
-      // lmb click = select
+    } else if (dragButton === util.LMB) { // lmb click = select
       if (dist < util.clickDist) {
         select();
         return;
@@ -120,14 +118,34 @@ const useItemBehavior = (props) => {
         do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = newPos }),
         undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = startPos })
       });
-
-    } else if (dragButton === util.RMB) {
-      // line connecting this item to the hovered (destination) item.
-      if (props.item.uuid !== hoverUUID)
-        props.dispatch({ type: actions.createLine, uuid: props.item.uuid, endUuid: hoverUUID });
+    } else if (dragButton === util.RMB) { // connect this item to hovered item
+      createLine();
     }
 
     setPreviewLine({});
+  }
+
+  function createLine() {
+    if (props.item.uuid === hoverUUID || hoverUUID === "")
+      return;
+
+    let line = {
+      startRef: props.item.uuid,
+      endRef: hoverUUID,
+      start: props.data.items[props.item.uuid].pos,
+      end: props.data.items[hoverUUID].pos,
+      uuid: util.getUUID(util.type.line)
+    };
+
+    let other = getExistingLine(props.data.lines, line);
+
+    let cline = () => props.dispatch({ type: actions.createLine, line: line });
+    let dline = () => props.dispatch({ type: actions.deleteLine, line: line });
+
+    if (Object.keys(other).length !== 0)
+      props.doAction({ do: dline, undo: cline });
+    else
+      props.doAction({ do: cline, undo: dline });
   }
 
   const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
@@ -172,9 +190,7 @@ const useItemBehavior = (props) => {
     </>
   }
 
-  return [
-    render
-  ]
+  return [render]
 }
 
 export default useItemBehavior;
