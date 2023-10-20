@@ -27,7 +27,7 @@ export function boardStateReducer(state, action) {
 
     case actions.load: return action.data;
 
-    default: console.error("undefined reducer action: " + action.type);
+    default: console.error("undefined reducer action: " + action);
   }
 }
 
@@ -38,7 +38,6 @@ function createItem(state, item) {
 
 // line
 function createLine(state, line) {
-  console.log(line.uuid);
   let lines = lineReducer.createLine(state.lines, line);
 
   let update = item => item.isConnected = true;
@@ -52,8 +51,8 @@ export function getExistingLine(lines, line) {
   for (let i = 0; i < lines.length; i++) {
     let other = lines[i];
 
-    if(
-      (other.startRef === line.startRef && other.endRef === line.endRef) || 
+    if (
+      (other.startRef === line.startRef && other.endRef === line.endRef) ||
       (other.startRef === line.endRef && other.endRef === line.startRef))
       return other;
   }
@@ -98,6 +97,19 @@ function updateItem(state, uuid, update) {
 function deleteItem(state, item) {
   let items = itemReducer.deleteItem(state.items, item);
   let lines = lineReducer.deleteLinesToItem(state.lines, item.uuid);
+
+  let linesRemoved = state.lines.filter(line => !lines.includes(line));
+  for (const removedLine of linesRemoved) {
+    let otherUUID = (item.uuid === removedLine.startRef)
+      ? removedLine.endRef
+      : removedLine.startRef;
+
+    let isStillConnected = lines.filter(line => line.startRef === otherUUID || line.endRef === otherUUID).length !== 0;
+
+    items = itemReducer.updateItem(items, otherUUID,
+      item => item.isConnected = isStillConnected);
+  }
+
   return { items: items, lines: lines }
 }
 

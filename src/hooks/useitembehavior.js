@@ -13,6 +13,7 @@ let hoverUUID = "";
 
 const useItemBehavior = (props) => {
   const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
+  const [draggedPosition, setDraggedPosition] = useState({});
   const [previewLine, setPreviewLine] = useState({});
   const [startSize, setStartSize] = useState({});
   const scale = useScale();
@@ -54,9 +55,10 @@ const useItemBehavior = (props) => {
       }
 
       // move the item to the drag position.
-      let update = item => item.pos = util.roundPos(dragPos);
-      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update });
+      // let update = item => item.pos = dragPos;
+      // props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update });
 
+      setDraggedPosition(dragPos);
     } else if (dragButton === util.RMB) {
       drawPreviewLine(e);
     }
@@ -95,16 +97,14 @@ const useItemBehavior = (props) => {
       window.removeEventListener('blur', () => setPreviewLine({}), false);
   }, []);
 
-  const onEndDrag = (dist, e, startPos) => {
+  // console.log(props.data.items[props.item.uuid].size);
+
+  const onEndDrag = (dist, e, startPos, endPos) => {
     if (!util.eqlSize(getSize(), startSize)) { // save new width
       // clientWidth includes padding, so need to subtract it away
       let newSize = getSize();
-      let oldSize = props.item.size;
 
-      props.doAction({
-        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = newSize }),
-        undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = oldSize }),
-      })
+      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = newSize });
 
     } else if (dragButton === util.LMB) { // lmb click = select
       if (dist < util.clickDist) {
@@ -112,12 +112,10 @@ const useItemBehavior = (props) => {
         return;
       }
 
-      let newPos = props.item.pos;
+      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = endPos });
 
-      props.doAction({
-        do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = newPos }),
-        undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = startPos })
-      });
+      setDraggedPosition({});
+
     } else if (dragButton === util.RMB) { // connect this item to hovered item
       createLine();
     }
@@ -139,16 +137,10 @@ const useItemBehavior = (props) => {
 
     let other = getExistingLine(props.data.lines, line);
 
-    if (Object.keys(other).length !== 0){
-      props.doAction({ 
-        do: () => props.dispatch({ type: actions.deleteLine, line: other }), 
-        undo: () => props.dispatch({ type: actions.createLine, line: other }) 
-      });
-    }else{
-      props.doAction({ 
-        do: () => props.dispatch({ type: actions.createLine, line: line }), 
-        undo: () => props.dispatch({ type: actions.deleteLine, line: line }) 
-      });
+    if (util.objIsEmpty(other)) {
+      props.dispatch({ type: actions.createLine, line: line });
+    } else {
+      props.dispatch({ type: actions.deleteLine, line: other });
     }
   }
 
@@ -172,12 +164,18 @@ const useItemBehavior = (props) => {
     </div>
   }
 
+  function getPos() {
+    if (util.objIsEmpty(draggedPosition))
+      return props.item.pos;
+    return draggedPosition;
+  }
+
   function render(renderItem, renderItemSelection) {
     return <>
       {renderPreviewLine()}
       {props.item.isConnected ? <Pin pos={props.item.pos} /> : <></>}
 
-      <div style={{ ...util.posStyle(props.item.pos) }}>
+      <div style={{ ...util.posStyle(getPos()) }}>
         <div className="itemWrapper"
           onMouseDown={startDrag}
           onMouseEnter={enter}

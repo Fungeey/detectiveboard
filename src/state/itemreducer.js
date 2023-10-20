@@ -15,8 +15,8 @@ export function deleteItem(state, item) {
 
 // uuid, update
 export function updateItem(state, uuid, update) {
-  let item = state[uuid];
+  let newState = { ...state };
+  let item = newState[uuid];
   update(item);
-  state[uuid] = item;
-  return state;
+  return newState;
 }

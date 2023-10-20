@@ -1,11 +1,11 @@
-import { useRef, useState, useReducer } from 'react';
+import { useRef, useState, useEffect, useReducer } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
-import useUndoStack from '../hooks/useundostack';
 import { boardStateReducer, actions } from '../state/boardstatereducer';
+import undoable from '../hooks/undoable';
 import util from '../util';
 import ContextMenu from './contextmenu';
 import Img from './img';
@@ -14,12 +14,16 @@ import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
 
-const debug = false;
+const debug = true;
 
 export default function Board() {
-  const [data, dispatch] = useReducer(boardStateReducer, {
-    items: {},
-    lines: []
+  const [data, dispatch] = useReducer(undoable, {
+    past: [],
+    present: {
+      items: {},
+      lines: []
+    },
+    future: []
   });
 
   const scale = useScale();
@@ -29,7 +33,7 @@ export default function Board() {
   const [input, setInput] = useState({ pos: {}, text: "" });
   const mousePos = useMousePos();
 
-  const doAction = useUndoStack();
+  // const doAction = useUndoStack();
 
   const getBoardPos = () => {
     let rect = boardRef.current.getBoundingClientRect();
@@ -94,10 +98,22 @@ export default function Board() {
       text: input.text
     };
 
-    doAction({
-      do: () => dispatch({ type: actions.createItem, item: item }),
-      undo: () => dispatch({ type: actions.deleteItem, item: item })
-    });
+    dispatch({ type: actions.createItem, item: item });
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleUndoRedo);
+    return () => document.removeEventListener('keydown', handleUndoRedo);
+  }, []);
+
+  function handleUndoRedo(e) {
+    if (e.ctrlKey && e.key === 'z') {
+      e.preventDefault();
+      dispatch({ type: 'UNDO'});
+    } else if (e.ctrlKey && e.key === 'y') {
+      e.preventDefault();
+      dispatch({ type: 'REDO'});
+    }
   }
 
   // paste images and make new img item
@@ -112,17 +128,11 @@ export default function Board() {
       src: src
     }
 
-    doAction({
-      do: () => dispatch({ type: actions.createItem, item: item }),
-      undo: () => dispatch({ type: actions.deleteItem, item: item })
-    });
+    dispatch({ type: actions.createItem, item: item })
   });
 
   function onLoad(newData) {
-    doAction({
-      do: () => dispatch({ type: actions.load, data: newData }),
-      undo: () => dispatch({ type: actions.load, data: data })
-    });
+    dispatch({ type: actions.load, data: newData });
   }
 
   // UI's version of data is updating every frame, following the board.
@@ -154,7 +164,7 @@ export default function Board() {
   function renderLines() {
     let lineHTML = [];
 
-    for (const line of data.lines) {
+    for (const line of data.present.lines) {
       const topLeft = {
         x: Math.min(line.start.x, line.end.x),
         y: Math.min(line.start.y, line.end.y)
@@ -172,15 +182,14 @@ export default function Board() {
   function renderItems() {
     let itemHTML = [];
 
-    for (const uuid in data.items) {
-      let item = data.items[uuid];
+    for (const uuid in data.present.items) {
+      let item = data.present.items[uuid];
 
       if (!withinViewport(item.pos, item.size)) continue;
 
       let props = {
         dispatch: dispatch,
-        doAction: doAction,
-        data: data,
+        data: data.present,
         boardPos: getBoardPos,
         debug: debug,
         item: item

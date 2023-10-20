@@ -29,12 +29,7 @@ function useSelectionBehavior(props) {
     useKeyDown(deSelect, ["Enter", "Escape"]);
 
     function deleteItem() {
-        props.doAction({
-            do: () => props.dispatch({ 
-                type: actions.deleteItem, item: props.item }),
-            undo: () => props.dispatch({ 
-                type: actions.createItem, item: props.item })
-        });
+        props.dispatch({ type: actions.deleteItem, item: props.item })
     }
 
     function renderSelection(itemRef, renderItemSelection) {
