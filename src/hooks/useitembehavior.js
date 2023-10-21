@@ -49,16 +49,13 @@ const useItemBehavior = (props) => {
 
   function onDrag(dragPos, e) {
     if (dragButton === util.LMB) {
-      if (!util.eqlSize(getSize(), startSize)) {
-        // resizing, don't change position
+      if (!util.eqlSize(getSize(), startSize))
         return;
-      }
 
       // move the item to the drag position.
-      // let update = item => item.pos = dragPos;
-      // props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: update });
+      let update = item => item.pos = dragPos;
+      props.dispatch({ type: actions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
 
-      setDraggedPosition(dragPos);
     } else if (dragButton === util.RMB) {
       drawPreviewLine(e);
     }
@@ -97,8 +94,6 @@ const useItemBehavior = (props) => {
       window.removeEventListener('blur', () => setPreviewLine({}), false);
   }, []);
 
-  // console.log(props.data.items[props.item.uuid].size);
-
   const onEndDrag = (dist, e, startPos, endPos) => {
     if (!util.eqlSize(getSize(), startSize)) { // save new width
       // clientWidth includes padding, so need to subtract it away
@@ -112,11 +107,9 @@ const useItemBehavior = (props) => {
         return;
       }
 
-      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.pos = endPos });
+      props.dispatch({ type: actions.updateItem, restorePresent: true, uuid: props.item.uuid, update: item => item.pos = endPos });
 
-      setDraggedPosition({});
-
-    } else if (dragButton === util.RMB) { // connect this item to hovered item
+    } else if (dragButton === util.RMB) {
       createLine();
     }
 
@@ -137,11 +130,10 @@ const useItemBehavior = (props) => {
 
     let other = getExistingLine(props.data.lines, line);
 
-    if (util.objIsEmpty(other)) {
+    if (util.objIsEmpty(other))
       props.dispatch({ type: actions.createLine, line: line });
-    } else {
+    else
       props.dispatch({ type: actions.deleteLine, line: other });
-    }
   }
 
   const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
@@ -164,18 +156,12 @@ const useItemBehavior = (props) => {
     </div>
   }
 
-  function getPos() {
-    if (util.objIsEmpty(draggedPosition))
-      return props.item.pos;
-    return draggedPosition;
-  }
-
   function render(renderItem, renderItemSelection) {
     return <>
       {renderPreviewLine()}
       {props.item.isConnected ? <Pin pos={props.item.pos} /> : <></>}
 
-      <div style={{ ...util.posStyle(getPos()) }}>
+      <div style={{ ...util.posStyle(props.item.pos) }}>
         <div className="itemWrapper"
           onMouseDown={startDrag}
           onMouseEnter={enter}

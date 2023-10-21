@@ -14,7 +14,7 @@ import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
 
-const debug = true;
+const debug = false;
 
 export default function Board() {
   const [data, dispatch] = useReducer(undoable, {
@@ -23,7 +23,8 @@ export default function Board() {
       items: {},
       lines: []
     },
-    future: []
+    future: [],
+    temporaryPresent: []
   });
 
   const scale = useScale();
@@ -33,14 +34,11 @@ export default function Board() {
   const [input, setInput] = useState({ pos: {}, text: "" });
   const mousePos = useMousePos();
 
-  // const doAction = useUndoStack();
-
   const getBoardPos = () => {
     let rect = boardRef.current.getBoundingClientRect();
     return { x: rect.left, y: rect.top };
   }
 
-  // Panning Board
   function startPan() {
     return boardPos;
   }
@@ -116,7 +114,6 @@ export default function Board() {
     }
   }
 
-  // paste images and make new img item
   usePasteImage((src) => {
     let boardPos = util.subPos(mousePos.current, getBoardPos());
 
@@ -134,13 +131,6 @@ export default function Board() {
   function onLoad(newData) {
     dispatch({ type: actions.load, data: newData });
   }
-
-  // UI's version of data is updating every frame, following the board.
-
-  // 1. Board's data model 
-  // should update every frame, to display the notes moving incrementally
-  // 2. UI / Save's data model
-  // should update every action, ie move from a to b.
 
   return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
     <UI data={data} onLoad={onLoad} />
