@@ -56,19 +56,24 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
   }
 
   function onDrag(e) {
+    let newPos = getActualPosition(e);
+
+    setPos(newPos);
+    if (doOnDrag) doOnDrag(newPos, e);
+  }
+
+  function getActualPosition(e) {
     let scaleOff = util.mulPos(offset, scale)
     let newPos = util.addPos(util.getMousePos(e), scaleOff);
 
     // newpos - oldpos to get direction
-    // multiply by scale factor
-
     let vec = util.subPos(newPos, startPos);
+    // multiply by scale factor
     vec = util.mulPos(vec, 1 / scale);
+
     newPos = util.addPos(startPos, vec);
     newPos = util.roundPos(newPos);
-
-    setPos(newPos);
-    if (doOnDrag) doOnDrag(newPos, e);
+    return newPos;
   }
 
   function endDrag(e) {
@@ -76,8 +81,10 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     document.removeEventListener('mouseup', endDrag);
 
     let dist = util.distance(startPos, util.getMousePos(e));
-    let actualStart = util.addPos(startPos, offset);
-    if (doEndDrag) doEndDrag(dist, e, actualStart, util.addPos(util.getMousePos(e), offset));
+    let endPos = getActualPosition(e);
+
+    if (doEndDrag)
+      doEndDrag(dist, e, endPos);
   }
 
   return [

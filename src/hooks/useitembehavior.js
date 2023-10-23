@@ -94,7 +94,7 @@ const useItemBehavior = (props) => {
       window.removeEventListener('blur', () => setPreviewLine({}), false);
   }, []);
 
-  const onEndDrag = (dist, e, startPos, endPos) => {
+  const onEndDrag = (dist, e, endPos) => {
     if (!util.eqlSize(getSize(), startSize)) { // save new width
       // clientWidth includes padding, so need to subtract it away
       let newSize = getSize();
