@@ -1,21 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 
 const useMousePos = () => {
-    const [mousePos, setMousePos] = useState({});
-    const mouseRefPos = useRef();
+  const [mousePos, setMousePos] = useState({});
+  const mouseRefPos = useRef();
 
-    mouseRefPos.current = mousePos;
+  mouseRefPos.current = mousePos;
 
-    useEffect(() => {
-        document.addEventListener('mousemove', onMouseMove);
-        return () => document.removeEventListener('mousemove', onMouseMove);
-    }, []);
+  useEffect(() => {
+    document.addEventListener('mousemove', onMouseMove);
+    return () => document.removeEventListener('mousemove', onMouseMove);
+  }, []);
 
-    function onMouseMove(e) {
-        setMousePos({ x: e.clientX, y: e.clientY });
-    }
+  function onMouseMove(e) {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }
 
-    return mouseRefPos;
+  return mouseRefPos;
 }
 
 export default useMousePos;
