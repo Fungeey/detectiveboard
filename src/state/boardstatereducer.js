@@ -2,9 +2,6 @@ import * as itemReducer from './itemreducer';
 import * as lineReducer from './linereducer';
 import util from '../util';
 
-
-// every action here must be undoable
-
 export const actions = {
   createItem: 'createItem',
   updateItem: 'updateItem',
@@ -36,7 +33,6 @@ function createItem(state, item) {
   return { items: items, lines: state.lines }
 }
 
-// line
 function createLine(state, line) {
   let lines = lineReducer.createLine(state.lines, line);
 
@@ -141,10 +137,3 @@ function deleteItem(state, item) {
 // = delete item
 // = delete line: remove connections
 // = update item: disconnect
-
-
-
-
-
-// update() many times from start to finish
-// once finished, create undoable action from start to finish

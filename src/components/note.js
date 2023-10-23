@@ -29,30 +29,22 @@ const Note = ({ props }) => {
   function unfocus(e) {
     stopEditing();
     document.removeEventListener('focusout', unfocus);
+    document.removeEventListener('keydown', finishEditing);
   }
 
   function finishEditing(e) {
     if (e.key !== "Enter" && e.key !== "Escape") return;
     e.preventDefault();
 
-    stopEditing();
+    document.removeEventListener('focusout', unfocus);
     document.removeEventListener('keydown', finishEditing);
+    stopEditing();
   }
 
   function stopEditing() {
     noteRef.current.contentEditable = false;
 
-    let oldText = props.item.text;
-    let newText = noteRef.current.innerText;
-
-    // unfocus and finishEditing may both fire, need to check that the text 
-    // hasn't already been updated. Only continue if text is unique
-    if (oldText === newText) return;
-
-    props.doAction({
-      do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = newText }),
-      undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = oldText })
-    });
+    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = noteRef.current.innerText });
   }
 
   function getSize() {
@@ -79,12 +71,7 @@ const Note = ({ props }) => {
   }
 
   function changeColor(color) {
-    let oldColor = props.item.color;
-
-    props.doAction({
-      do: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = color }),
-      undo: () => props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = oldColor })
-    });
+    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = color });
   }
 
   function renderSelection(itemRef) {

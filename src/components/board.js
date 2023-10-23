@@ -57,12 +57,12 @@ export default function Board() {
       return;
     }
 
-    // open text window, then 
+    // open text window
     let pos = { x: e.clientX, y: e.clientY };
     let boardPos = util.subPos(pos, getBoardPos());
     setInput({
       pos: util.mulPos(boardPos, 1 / scale),
-      text: ""
+      text: ''
     });
 
     setIsCreating(true);
@@ -107,10 +107,10 @@ export default function Board() {
   function handleUndoRedo(e) {
     if (e.ctrlKey && e.key === 'z') {
       e.preventDefault();
-      dispatch({ type: 'UNDO'});
+      dispatch({ type: 'UNDO' });
     } else if (e.ctrlKey && e.key === 'y') {
       e.preventDefault();
-      dispatch({ type: 'REDO'});
+      dispatch({ type: 'REDO' });
     }
   }
 

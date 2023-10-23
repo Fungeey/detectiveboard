@@ -22,7 +22,7 @@ function undo(state) {
 
   const previous = past[past.length - 1];
   const newPast = past.slice(0, past.length - 1);
-  
+
   return {
     past: newPast,
     present: previous,
@@ -35,8 +35,9 @@ function redo(state) {
   const { past, present, future, temporaryPresent } = state;
   if (future.length === 0) return state;
 
-  const next = future[0]
-  const newFuture = future.slice(1)
+  const next = future[0];
+  const newFuture = future.slice(1);
+
   return {
     past: [...past, present],
     present: next,
@@ -48,11 +49,11 @@ function redo(state) {
 function doReducer(state, action) {
   let { past, present, future } = state;
 
-  if(action.restorePresent){
+  if(action.restorePresent)
     present = util.clone(state.temporaryPresent);
-  }
 
   const newPresent = boardStateReducer(util.clone(present), action);
+
   if (present === newPresent)
     return state;
 
@@ -76,3 +77,7 @@ function modifyPresent(state, action){
     temporaryPresent: temporaryPresent
   }
 }
+
+// moving an item requires updating the present every frame without counting each update as a new undoable action. First save the present into temporaryPresent. skipUndo bypasses the undo / redo stack to directly modify the present. 
+
+// then once the move is finished, set the present to the temporary present to restore the changes made, and create one undo/redo action to represent the whole move action.
