@@ -107,6 +107,14 @@ code {
   height:100vh;
 }
 
+#boardBackground{
+
+  width:100vw;
+  height:100vh;
+
+  background-image: radial-gradient(var(--darkergrey) .25vh, transparent 0);
+}
+
 p{
   margin:0;
 }

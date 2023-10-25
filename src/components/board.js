@@ -8,6 +8,7 @@ import { boardStateReducer, actions } from '../state/boardstatereducer';
 import undoable from '../hooks/undoable';
 import util from '../util';
 import ContextMenu from './contextmenu';
+import BoardBackground from './boardbackground';
 import Img from './img';
 import Line from './line';
 import Note from './note';
@@ -136,6 +137,8 @@ export default function Board() {
     <UI data={data} onLoad={onLoad} />
 
     <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
+      <BoardBackground scale={scale} boardPos={boardPos}/>
+
       <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
         <ContextMenu boardPos={getBoardPos} />
         <p style={{ position: 'absolute' }}></p>
