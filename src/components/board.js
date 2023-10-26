@@ -17,16 +17,20 @@ import UI from './ui';
 
 const debug = false;
 
-export default function Board() {
-  const [data, dispatch] = useReducer(undoable, {
+function initData(present) {
+  return {
     past: [],
-    present: {
-      items: {},
-      lines: []
-    },
+    present: present,
     future: [],
     temporaryPresent: []
-  });
+  }
+}
+
+export default function Board() {
+  const [data, dispatch] = useReducer(undoable, initData({
+    items: {},
+    lines: []
+  }));
 
   const scale = useScale();
   const boardRef = useRef(null);
@@ -134,10 +138,10 @@ export default function Board() {
   }
 
   return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
-    <UI data={data} onLoad={onLoad} />
+    <UI data={data.present} onLoad={onLoad} />
 
     <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
-      <BoardBackground scale={scale} boardPos={boardPos}/>
+      <BoardBackground scale={scale} boardPos={boardPos} />
 
       <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
         <ContextMenu boardPos={getBoardPos} />
