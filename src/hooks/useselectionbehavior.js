@@ -14,7 +14,9 @@ function useSelectionBehavior(props) {
     if (!e.target.parentElement) return;
     // deselect if click anywhere other than this note.
     let target = e.target.parentElement.parentElement.getAttribute("uuid");
-    if (target !== props.item.uuid)
+
+    //&& target !== props.item.uuid
+    if (target === null)
       deSelect();
   }
 

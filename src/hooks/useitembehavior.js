@@ -13,7 +13,6 @@ let hoverUUID = "";
 
 const useItemBehavior = (props) => {
   const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
-  const [draggedPosition, setDraggedPosition] = useState({});
   const [previewLine, setPreviewLine] = useState({});
   const [startSize, setStartSize] = useState({});
   const scale = useScale();
