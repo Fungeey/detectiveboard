@@ -54,7 +54,9 @@ function doReducer(state, action) {
 
   const newPresent = boardStateReducer(util.clone(present), action);
 
-  if (present === newPresent)
+  // const diff = util.objDiff.map(present, newPresent);
+
+  if (JSON.stringify(present) === JSON.stringify(newPresent) )
     return state;
 
   return {

@@ -18,11 +18,11 @@ function useSelectionBehavior(props) {
   }
 
   function select() {
-    props.dispatch({ type: actions.updateItem, skipUndo: false, uuid: props.item.uuid, update: item => item.isSelected = true});
+    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = true});
   }
 
   function deSelect() {
-    props.dispatch({ type: actions.updateItem, skipUndo: false, uuid: props.item.uuid, update: item => item.isSelected = false});
+    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = false});
   }
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
