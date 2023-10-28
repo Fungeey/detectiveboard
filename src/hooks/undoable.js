@@ -1,4 +1,4 @@
-import { boardStateReducer } from "../state/boardstatereducer";
+import { reducerActions, boardStateReducer } from "../state/boardstatereducer";
 import util from "../util";
 
 export default function undoable(state, action) {
@@ -52,9 +52,17 @@ function doReducer(state, action) {
   if(action.restorePresent)
     present = util.clone(state.temporaryPresent);
 
-  const newPresent = boardStateReducer(util.clone(present), action);
+  let newPresent = util.clone(present);
+  if(action.type === reducerActions.many){
+    for(const asdf of action.actions){
+      newPresent = boardStateReducer(newPresent, asdf);
+    }
+  }else{
+    newPresent = boardStateReducer(util.clone(present), action);
+  }
 
   // const diff = util.objDiff.map(present, newPresent);
+  // console.log(diff);
 
   if (JSON.stringify(present) === JSON.stringify(newPresent) )
     return state;

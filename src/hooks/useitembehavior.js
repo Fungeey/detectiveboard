@@ -5,9 +5,9 @@ import useCopyPaste from '../hooks/usecopypaste';
 import useMousePos from '../hooks/usemousepos';
 import useScale from '../hooks/usescale';
 import util from "../util";
-import useDrag from "./usedrag";
+import useDragItem from "./usedragitem";
 import useSelectionBehavior from "./useselectionbehavior";
-import { actions, getExistingLine } from "../state/boardstatereducer";
+import { reducerActions, getExistingLine } from "../state/boardstatereducer";
 
 let hoverUUID = "";
 
@@ -43,21 +43,38 @@ const useItemBehavior = (props) => {
 
   function onStartDrag(mousePos, e) {
     setStartSize(getSize());
-    return props.item.pos;
+
+    let startPositions = [props.item.pos];
+
+    for (let uuid in props.data.items) {
+      if (uuid === props.item.uuid) continue;
+      let item = props.data.items[uuid];
+      if (item.isSelected) startPositions.push(item.pos);
+    }
+
+    return startPositions;
   }
 
-  function onDrag(dragPos, e) {
+  function onDrag(dragPositions, e) {
     if (dragButton === util.LMB) {
       if (!util.eqlSize(getSize(), startSize))
         return;
 
       // move the item to the drag position.
-      let update = item => item.pos = dragPos;
-      props.dispatch({ type: actions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
+      let update = item => item.pos = dragPositions[0];
+      props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
 
-      // for(let item in props.data.items){
-      //   // if(item.isSel)
-      // }
+      let i = 1;
+      for (let uuid in props.data.items) {
+        if (uuid === props.item.uuid) continue;
+        let item = props.data.items[uuid];
+
+        if (item.isSelected) {
+          let newPosition = util.clone(dragPositions[i++]);
+          let updated = item => item.pos = newPosition;
+          props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: uuid, update: updated });
+        }
+      }
 
     } else if (dragButton === util.RMB) {
       drawPreviewLine(e);
@@ -97,12 +114,12 @@ const useItemBehavior = (props) => {
       window.removeEventListener('blur', () => setPreviewLine({}), false);
   }, []);
 
-  const onEndDrag = (dist, e, endPos) => {
+  const onEndDrag = (dist, e, endPositions) => {
     if (!util.eqlSize(getSize(), startSize)) { // save new width
       // clientWidth includes padding, so need to subtract it away
       let newSize = getSize();
 
-      props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.size = newSize });
+      props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.size = newSize });
 
     } else if (dragButton === util.LMB) { // lmb click = select
       if (dist < util.clickDist) {
@@ -110,7 +127,22 @@ const useItemBehavior = (props) => {
         return;
       }
 
-      props.dispatch({ type: actions.updateItem, restorePresent: true, uuid: props.item.uuid, update: item => item.pos = endPos });
+      let actions = [];
+
+      actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: item => item.pos = endPositions[0] });
+
+      let i = 1;
+      for (let uuid in props.data.items) {
+        if (uuid === props.item.uuid) continue;
+
+        if (props.data.items[uuid].isSelected) {
+          let newPosition = util.clone(endPositions[i++]);
+          let updated = item => item.pos = newPosition;
+          actions.push({ type: reducerActions.updateItem, uuid: uuid, update: updated});
+        }
+      }
+
+      props.dispatch({ type: reducerActions.many, restorePresent: true, actions: actions });
 
     } else if (dragButton === util.RMB) {
       createLine();
@@ -134,12 +166,12 @@ const useItemBehavior = (props) => {
     let other = getExistingLine(props.data.lines, line);
 
     if (util.objIsEmpty(other))
-      props.dispatch({ type: actions.createLine, line: line });
+      props.dispatch({ type: reducerActions.createLine, line: line });
     else
-      props.dispatch({ type: actions.deleteLine, line: other });
+      props.dispatch({ type: reducerActions.deleteLine, line: other });
   }
 
-  const [dragPos, startDrag, dragButton] = useDrag(onStartDrag, onDrag, onEndDrag);
+  const [dragPositions, startDrag, dragButton] = useDragItem(onStartDrag, onDrag, onEndDrag);
 
   function enter() { hoverUUID = props.item.uuid; }
   function exit() { hoverUUID = ""; }

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import useItemBehavior from "../hooks/useitembehavior";
 import util from "../util";
-import { actions } from "../state/boardstatereducer";
+import { reducerActions } from "../state/boardstatereducer";
 
 const colors = [
   "#feff9c",      //yellow
@@ -44,7 +44,7 @@ const Note = ({ props }) => {
   function stopEditing() {
     noteRef.current.contentEditable = false;
 
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.text = noteRef.current.innerText });
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.text = noteRef.current.innerText });
   }
 
   function getSize() {
@@ -71,7 +71,7 @@ const Note = ({ props }) => {
   }
 
   function changeColor(color) {
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.color = color });
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.color = color });
   }
 
   function renderSelection(itemRef) {

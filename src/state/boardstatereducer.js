@@ -2,27 +2,29 @@ import * as itemReducer from './itemreducer';
 import * as lineReducer from './linereducer';
 import util from '../util';
 
-export const actions = {
+export const reducerActions = {
   createItem: 'createItem',
   updateItem: 'updateItem',
   deleteItem: 'deleteItem',
 
   createLine: 'createLine',
   deleteLine: 'deleteLine',
+
+  many: 'many',
   load: 'load'
 }
 
 export function boardStateReducer(state, action) {
   switch (action.type) {
-    case actions.createItem: return createItem(state, action.item);
-    case actions.updateItem:
+    case reducerActions.createItem: return createItem(state, action.item);
+    case reducerActions.updateItem:
       return updateItem(state, action.uuid, action.update);
-    case actions.deleteItem: return deleteItem(state, action.item);
+    case reducerActions.deleteItem: return deleteItem(state, action.item);
 
-    case actions.createLine: return createLine(state, action.line);
-    case actions.deleteLine: return deleteLine(state, action.line);
+    case reducerActions.createLine: return createLine(state, action.line);
+    case reducerActions.deleteLine: return deleteLine(state, action.line);
 
-    case actions.load: return action.data;
+    case reducerActions.load: return action.data;
 
     default: console.error("undefined reducer action: " + action);
   }

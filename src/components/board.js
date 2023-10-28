@@ -5,7 +5,7 @@ import useDragItem from '../hooks/usedragitem';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
-import { boardStateReducer, actions } from '../state/boardstatereducer';
+import { boardStateReducer, reducerActions } from '../state/boardstatereducer';
 import undoable from '../hooks/undoable';
 import util from '../util';
 import ContextMenu from './contextmenu';
@@ -101,10 +101,11 @@ export default function Board() {
       pos: input.pos,
       color: "#feff9c",
       size: { width: 150, height: 100 },
-      text: input.text
+      text: input.text,
+      isSelected:false
     };
 
-    dispatch({ type: actions.createItem, item: item });
+    dispatch({ type: reducerActions.createItem, item: item });
   }
 
   useEffect(() => {
@@ -130,14 +131,15 @@ export default function Board() {
       uuid: util.getUUID(util.type.img),
       pos: util.mulPos(boardPos, 1 / scale),
       size: { width: 300, height: 300 },
-      src: src
+      src: src,
+      isSelected:false
     }
 
-    dispatch({ type: actions.createItem, item: item })
+    dispatch({ type: reducerActions.createItem, item: item })
   });
 
   function onLoad(newData) {
-    dispatch({ type: actions.load, data: newData });
+    dispatch({ type: reducerActions.load, data: newData });
   }
 
   return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>

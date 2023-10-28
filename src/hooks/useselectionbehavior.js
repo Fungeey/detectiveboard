@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useKeyDown from '../hooks/usekeydown';
-import { actions } from "../state/boardstatereducer";
+import { reducerActions } from "../state/boardstatereducer";
 
 function useSelectionBehavior(props) {
   useEffect(() => {
@@ -18,17 +18,17 @@ function useSelectionBehavior(props) {
   }
 
   function select() {
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = true});
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = true});
   }
 
   function deSelect() {
-    props.dispatch({ type: actions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = false});
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = false});
   }
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
 
   function deleteItem() {
-    props.dispatch({ type: actions.deleteItem, item: props.item });
+    props.dispatch({ type: reducerActions.deleteItem, item: props.item });
   }
 
   function renderSelection(itemRef, renderItemSelection) {
