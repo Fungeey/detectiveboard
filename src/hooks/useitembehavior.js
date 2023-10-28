@@ -12,7 +12,7 @@ import { actions, getExistingLine } from "../state/boardstatereducer";
 let hoverUUID = "";
 
 const useItemBehavior = (props) => {
-  const [isSelected, select, deselect, renderSelection] = useSelectionBehavior(props);
+  const [select, deselect, renderSelection] = useSelectionBehavior(props);
   const [previewLine, setPreviewLine] = useState({});
   const [startSize, setStartSize] = useState({});
   const scale = useScale();
@@ -22,7 +22,7 @@ const useItemBehavior = (props) => {
 
   // shouldn't be able to copy when editing
   function copy() {
-    if (!isSelected) {
+    if (!props.item.isSelected) {
       setCopiedItem(null); // throw away previously copied item
       return;
     }
@@ -54,6 +54,10 @@ const useItemBehavior = (props) => {
       // move the item to the drag position.
       let update = item => item.pos = dragPos;
       props.dispatch({ type: actions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
+
+      // for(let item in props.data.items){
+      //   // if(item.isSel)
+      // }
 
     } else if (dragButton === util.RMB) {
       drawPreviewLine(e);
@@ -167,12 +171,12 @@ const useItemBehavior = (props) => {
           onMouseLeave={exit}
           uuid={props.item.uuid} ref={itemRef}>
 
-          <div className={`itemHolder${isSelected ? ' selected' : ''}`}>
-            {renderItem(isSelected)}
+          <div className={`itemHolder${props.item.isSelected ? ' selected' : ''}`}>
+            {renderItem(props.item.isSelected)}
           </div>
         </div>
 
-        {isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+        {props.item.isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
       </div>
     </>
   }

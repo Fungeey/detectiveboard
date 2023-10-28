@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useReducer } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
+import useDragItem from '../hooks/usedragitem';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
@@ -72,6 +73,8 @@ export default function Board() {
 
     setIsCreating(true);
   }
+
+  useDragItem();
 
   useKeyDown(() => {
     addNote();

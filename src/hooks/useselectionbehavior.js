@@ -3,8 +3,6 @@ import useKeyDown from '../hooks/usekeydown';
 import { actions } from "../state/boardstatereducer";
 
 function useSelectionBehavior(props) {
-  const [isSelected, setIsSelected] = useState(false);
-
   useEffect(() => {
     document.addEventListener('click', onClickDocument);
     return () => document.removeEventListener('click', onClickDocument);
@@ -15,23 +13,22 @@ function useSelectionBehavior(props) {
     // deselect if click anywhere other than this note.
     let target = e.target.parentElement.parentElement.getAttribute("uuid");
 
-    //&& target !== props.item.uuid
     if (target === null)
       deSelect();
   }
 
   function select() {
-    setIsSelected(true);
+    props.dispatch({ type: actions.updateItem, skipUndo: false, uuid: props.item.uuid, update: item => item.isSelected = true});
   }
 
   function deSelect() {
-    setIsSelected(false);
+    props.dispatch({ type: actions.updateItem, skipUndo: false, uuid: props.item.uuid, update: item => item.isSelected = false});
   }
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
 
   function deleteItem() {
-    props.dispatch({ type: actions.deleteItem, item: props.item })
+    props.dispatch({ type: actions.deleteItem, item: props.item });
   }
 
   function renderSelection(itemRef, renderItemSelection) {
@@ -50,7 +47,6 @@ function useSelectionBehavior(props) {
   }
 
   return [
-    isSelected,
     select,
     deSelect,
     renderSelection
