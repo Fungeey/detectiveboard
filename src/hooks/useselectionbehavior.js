@@ -17,6 +17,14 @@ function useSelectionBehavior(props) {
       deSelect();
   }
 
+  const [shiftKey, setShiftKey] = useState()
+
+  useKeyDown(() => {
+    if(!props.item.isSelected) return;
+
+    setShiftKey(true);
+  }, ["Shift"]);
+
   function select() {
     props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = true});
   }

@@ -1,4 +1,5 @@
 import util from "../util";
+const pinSRC = require('../img/pin.png');
 
 const pin = (props) => {
 
@@ -11,7 +12,7 @@ const pin = (props) => {
   }
 
   return (
-    <img className="pin" alt="thumbtack" src={require('../img/pin.png')}
+    <img className="pin" alt="thumbtack" src={pinSRC}
       style={{
         ...util.posStyle(getPos()),
         width: pinSize, height: pinSize,

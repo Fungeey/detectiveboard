@@ -5,7 +5,7 @@ import useDragItem from '../hooks/usedragitem';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
-import { boardStateReducer, reducerActions } from '../state/boardstatereducer';
+import { reducerActions } from '../state/boardstatereducer';
 import undoable from '../hooks/undoable';
 import util from '../util';
 import ContextMenu from './contextmenu';

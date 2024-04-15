@@ -112,7 +112,7 @@ code {
   width:100vw;
   height:100vh;
 
-  background-image: radial-gradient(var(--darkergrey) .25vh, transparent 0);
+  /* background-image: radial-gradient(var(--darkergrey) .25vh, transparent 0); */
 }
 
 p{
