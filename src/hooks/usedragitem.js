@@ -57,13 +57,13 @@ export default function useDragItem (doStartDrag, doOnDrag, doEndDrag) {
     setStartPos(p);
   }
 
-  function onDrag(e) {
+  const onDrag = util.throttle((e) => {
     let newPositions = [];
     offsets.forEach(offset => newPositions.push(getActualPosition(e, offset)));
 
     setPositions(newPositions);
     if (doOnDrag) doOnDrag(newPositions, e);
-  }
+  });
 
   function getActualPosition(e, offset) {
     let scaleOff = util.mulPos(offset, scale)

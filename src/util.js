@@ -74,6 +74,21 @@ const deepDiffMapper = function () {
   }
 }();
 
+const doThrottle = (function() {
+  let timeout = undefined;
+  return function throttle(callback, duration) {
+    if (timeout === undefined) {
+      callback();
+      if(!duration) duration = 16;
+      
+      timeout = setTimeout(() => {
+        // allow another call to be throttled
+        timeout = undefined;
+      }, duration);
+    }
+  }
+})();
+
 const util = {
   posStyle: (pos) =>
     ({ transform: `translateX(${pos.x}px) translateY(${pos.y}px)` }),
@@ -95,6 +110,19 @@ const util = {
 
   // Take an image URL, downscale it to the given width, and return a new image URL.
   downscaleImage: downscaleImage,
+  
+  /**
+   * Wraps callback in a function and throttles it.
+   * @returns Wrapper function
+   */
+  throttle: (callback, duration) => {
+    return function throttled(event){
+
+      doThrottle(() => {
+        callback(event);
+      }, duration);
+    }
+  },
 
   objDiff: deepDiffMapper,
   clone: (obj) => JSON.parse(JSON.stringify(obj)),

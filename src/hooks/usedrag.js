@@ -38,11 +38,6 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
   }, [offset]);
 
-  function loseFocus() {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
-  }
-
   function startDrag(e) {
     e.stopPropagation();
     setDragButton(e.button);
@@ -53,13 +48,6 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     setPos(newStartPos);
     setOffset(util.subPos(newStartPos, p));
     setStartPos(p);
-  }
-
-  function onDrag(e) {
-    let newPos = getActualPosition(e);
-
-    setPos(newPos);
-    if (doOnDrag) doOnDrag(newPos, e);
   }
 
   function getActualPosition(e) {
@@ -76,6 +64,20 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     return newPos;
   }
 
+  const onDrag = util.throttle((e) => {
+    let newPos = getActualPosition(e);
+
+    setPos(newPos);
+    if (doOnDrag) doOnDrag(newPos, e);
+
+    console.log("update mouse");
+  });
+
+  function loseFocus() {
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', endDrag);
+  }
+
   function endDrag(e) {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', endDrag);
@@ -86,6 +88,14 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     if (doEndDrag)
       doEndDrag(dist, e, endPos);
   }
+
+
+  // function onDragT(e){
+  //   let newPos = getActualPosition(e);
+
+  //   setPos(newPos);
+  //   if (doOnDrag) doOnDrag(newPos, e);
+  // }
 
   return [
     pos,
