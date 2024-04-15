@@ -69,8 +69,6 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     setPos(newPos);
     if (doOnDrag) doOnDrag(newPos, e);
-
-    console.log("update mouse");
   });
 
   function loseFocus() {
