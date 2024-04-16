@@ -64,7 +64,7 @@ function doReducer(state, action) {
   // const diff = util.objDiff.map(present, newPresent);
   // console.log(diff);
 
-  if (JSON.stringify(present) === JSON.stringify(newPresent) )
+  if (JSON.stringify(present) === JSON.stringify(newPresent))
     return state;
 
   return {

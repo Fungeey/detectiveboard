@@ -80,7 +80,7 @@ const doThrottle = (function() {
     if (timeout === undefined) {
       callback();
       if(!duration) duration = 16;
-      
+
       timeout = setTimeout(() => {
         // allow another call to be throttled
         timeout = undefined;
@@ -180,7 +180,6 @@ async function downscaleImage(dataUrl, newWidth, imageType, imageArguments) {
   oldWidth = image.width;
   oldHeight = image.height;
 
-  newWidth = 100;
   newHeight = Math.floor(oldHeight / oldWidth * newWidth)
 
   // Create a temporary canvas to draw the downscaled image on.

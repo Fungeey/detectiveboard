@@ -13,7 +13,7 @@ function useSelectionBehavior(props) {
     // deselect if click anywhere other than this note.
     let target = e.target.parentElement.parentElement.getAttribute("uuid");
 
-    if (target === null)
+    if (target === null && e.target.name !== "deleteButton")
       deSelect();
   }
 
@@ -30,18 +30,19 @@ function useSelectionBehavior(props) {
   }
 
   function deSelect() {
-    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = false});
+        props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isSelected = false});
   }
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
 
   function deleteItem() {
+    deSelect();
     props.dispatch({ type: reducerActions.deleteItem, item: props.item });
   }
 
   function renderSelection(itemRef, renderItemSelection) {
     return <div>
-      <img src={require('../img/delete.png')} alt="delete icon"
+      <img src={require('../img/delete.png')} alt="delete icon" name="deleteButton"
         style={{
           width: 20,
           height: 20,

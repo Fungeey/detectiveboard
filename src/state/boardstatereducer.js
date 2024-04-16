@@ -15,6 +15,17 @@ export const reducerActions = {
 }
 
 export function boardStateReducer(state, action) {
+  let newState = runReducer(state, action);
+
+  if(!newState || util.isEmpty(newState)){
+    console.error("failed to create new state while performing action");
+    return state;
+  }
+
+  return newState;
+}
+
+function runReducer(state, action){
   switch (action.type) {
     case reducerActions.createItem: return createItem(state, action.item);
     case reducerActions.updateItem:

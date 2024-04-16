@@ -41,7 +41,6 @@ code {
 }
 
 .itemWrapper{
-  position:absolute;
   user-select: none;
   width:fit-content;
 }
