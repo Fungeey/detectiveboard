@@ -43,6 +43,7 @@ code {
 .itemWrapper{
   user-select: none;
   width:fit-content;
+  position:absolute;
 }
 
 .itemHolder{
