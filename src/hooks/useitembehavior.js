@@ -33,10 +33,13 @@ const useItemBehavior = (props) => {
     if (copiedItem == null) return;
 
     let itemCopy = { ...copiedItem };
+    itemCopy.uuid = util.getUUID(itemCopy.type);
+    itemCopy.isSelected = false;
+
     let boardPos = util.subPos(mousePos.current, props.boardPos());
     itemCopy.pos = util.mulPos(boardPos, 1 / scale);
 
-    props.addItem(itemCopy);
+    props.dispatch({ type: reducerActions.createItem, item: itemCopy });
   }
 
   useCopyPaste(copy, paste);

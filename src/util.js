@@ -79,7 +79,7 @@ const doThrottle = (function() {
   return function throttle(callback, duration) {
     if (timeout === undefined) {
       callback();
-      if(!duration) duration = 16;
+      // if(!duration) duration = 16;
 
       timeout = setTimeout(() => {
         // allow another call to be throttled
