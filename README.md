@@ -12,3 +12,10 @@ Here is the board I used as a todo list for this project:
 
 
 you can try it out here: https://fungeey.github.io/detectiveboard/
+
+
+## usage
+
+- click and drag on the canvas to pan
+- double click on the canvas to create a new note
+- hold right click and drag to connect notes
