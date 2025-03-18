@@ -98,6 +98,25 @@ code {
   padding: 20px;
 }
 
+.itemHolder.selected .imgItem:after,
+.itemHolder.selected .noteItem:after,
+.itemHolder.selected .scrapItem:after {
+  content: '\f1ce';
+  position: absolute;
+  font-family: 'Material Symbols Outlined';
+  background: white;
+  border: 1px solid;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  font-size: 12px;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  transform: rotate(90deg);
+  border-radius: 3px;
+}
+
 .board{
 
 }
