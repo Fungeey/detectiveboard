@@ -19,3 +19,10 @@ you can try it out here: https://fungeey.github.io/detectiveboard/
 - click and drag on the canvas to pan
 - double click on the canvas to create a new note
 - hold right click and drag to connect notes
+
+## development
+start npm
+- npm start
+
+publish to github pages branch
+- npm run deploy
