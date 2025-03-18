@@ -76,7 +76,9 @@ const useItemBehavior = (props) => {
 
         if (item.isSelected) {
           let newPosition = util.clone(dragPositions[i++]);
-          let updated = item => item.pos = newPosition;
+          let updated = (item) => {
+            if(props.item.type != util.type.note || (props.item.type == util.type.note && !props.item.isBlocked)) item.pos = newPosition;
+          }
           props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: uuid, update: updated });
         }
       }
@@ -145,7 +147,7 @@ const useItemBehavior = (props) => {
         if (props.data.items[uuid].isSelected) {
           let newPosition = util.clone(endPositions[i++]);
           let updated = (item) => {
-            if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = newPosition
+            if(props.item.type != util.type.note || (props.item.type == util.type.note && !props.item.isBlocked)) item.pos = newPosition
           }
           actions.push({ type: reducerActions.updateItem, uuid: uuid, update: updated});
         }
