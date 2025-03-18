@@ -135,11 +135,16 @@ const util = {
   eqlPos: (a, b) => (a.x === b.x && a.y === b.y),
   eqlSize: (a, b) => (a.width === b.width && a.height === b.height),
 
-  lineSize: (line) => {
+  lineBounds: (line) => {
+    let minX = Math.min(line.start.x, line.end.x);
+    let minY = Math.min(line.start.y, line.end.y);
+    let maxX = Math.max(line.start.x, line.end.x);
+    let maxY = Math.max(line.start.y, line.end.y);
+
     return {
-      width: Math.round(Math.max(line.start.x, line.end.x) - Math.min(line.start.x, line.end.x) + 10),
-      height: Math.round(Math.max(line.start.y, line.end.y) - Math.min(line.start.y, line.end.y) + 10)
-    }
+        width: maxX - minX,
+        height: maxY - minY,
+    };
   },
 
   type: {

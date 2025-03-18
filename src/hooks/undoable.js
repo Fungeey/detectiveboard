@@ -3,7 +3,7 @@ import util from "../util";
 
 export default function undoable(state, action) {
   if(action.skipUndo){
-    if(state.temporaryPresent.length == 0)
+    if(state.temporaryPresent.length === 0)
       state.temporaryPresent = util.clone(state.present);
 
     return modifyPresent(state, action);

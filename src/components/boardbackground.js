@@ -1,4 +1,3 @@
-
 const mod = 1.25;
 
 export default function BoardBackground({scale, boardPos}){

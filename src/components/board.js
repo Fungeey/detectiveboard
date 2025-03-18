@@ -183,14 +183,16 @@ export default function Board() {
   function renderLines() {
     let lineHTML = [];
 
-    for (const line of data.present.lines) {
+    const visibleLines = data.present.lines.filter(line => {
       const topLeft = {
         x: Math.min(line.start.x, line.end.x),
         y: Math.min(line.start.y, line.end.y)
       };
+      
+      return withinViewport(topLeft, util.lineBounds(line))
+    })
 
-      if (!withinViewport(topLeft, util.lineSize(line))) continue;
-
+    for (const line of visibleLines) {
       lineHTML.push(
         <Line key={line.uuid} start={line.start} end={line.end} />);
     }
@@ -201,11 +203,11 @@ export default function Board() {
   function renderItems() {
     let itemHTML = [];
 
-    for (const uuid in data.present.items) {
-      let item = data.present.items[uuid];
+    const visibleItems = Object.values(data.present.items).filter(item => {
+      return withinViewport(item.pos, item.size);
+    });
 
-      if (!withinViewport(item.pos, item.size)) continue;
-
+    for (const item of visibleItems) {
       let props = {
         dispatch: dispatch,
         data: data.present,
@@ -226,14 +228,15 @@ export default function Board() {
   }
 
   function withinViewport(pos, size) {
-    let boardPos = util.addPos(util.mulPos(pos, scale), getBoardPos());
-    let scaledSize = { width: size.width * scale, height: size.height * scale };
-
-    return (
-      boardPos.x + scaledSize.width > 0 &&
-      boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth) &&
-      boardPos.y + scaledSize.height > 0 &&
-      boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight)
-    )
+      let itemRealPos = { x: pos.x * scale, y: pos.y * scale };
+      let boardRelativePos = util.addPos(itemRealPos, getBoardPos());
+      let scaledSize = { width: size.width * scale, height: size.height * scale };
+  
+      return (
+          boardRelativePos.x + scaledSize.width > 0 &&
+          boardRelativePos.x < (document.documentElement.clientWidth || window.innerWidth) &&
+          boardRelativePos.y + scaledSize.height > 0 &&
+          boardRelativePos.y < (window.innerHeight || document.documentElement.clientHeight)
+      )
   }
 }
