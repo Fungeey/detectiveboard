@@ -21,6 +21,7 @@ const Note = ({ props }) => {
     e.stopPropagation();
     noteRef.current.contentEditable = true;
     noteRef.current.focus();
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.isBlocked = true });
 
     document.addEventListener('focusout', unfocus);
     document.addEventListener('keydown', finishEditing);
@@ -44,7 +45,7 @@ const Note = ({ props }) => {
   function stopEditing() {
     noteRef.current.contentEditable = false;
 
-    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: item => item.text = noteRef.current.innerText });
+    props.dispatch({ type: reducerActions.updateItem, uuid: props.item.uuid, update: (item) => {item.text = noteRef.current.innerText; item.isBlocked = false } });
   }
 
   function getSize() {

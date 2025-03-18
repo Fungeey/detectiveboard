@@ -102,7 +102,8 @@ export default function Board() {
       color: "#feff9c",
       size: { width: 150, height: 100 },
       text: input.text,
-      isSelected:false
+      isSelected:false,
+      isBlocked:false
     };
 
     dispatch({ type: reducerActions.createItem, item: item });

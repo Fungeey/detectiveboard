@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import tutorial from '../tutorial.json';
+import util from "../util";
 
 const useSaveLoad = (props) => {
 
@@ -64,6 +65,8 @@ const useSaveLoad = (props) => {
 
     for (const uuid in data["items"]) {
       let item = data["items"][uuid];
+      //Compatibility to old data
+      if(item.type == util.type.note && item.isBlocked == null) item.isBlocked = false 
 
       if (!item.pos) e(item, "pos is missing");
       if ((!item.size || item.size) && (!item.size.width || !item.size.height)) {

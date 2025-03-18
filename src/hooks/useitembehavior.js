@@ -64,7 +64,9 @@ const useItemBehavior = (props) => {
         return;
 
       // move the item to the drag position.
-      let update = item => item.pos = dragPositions[0];
+      let update = (item) => {
+        if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = dragPositions[0]
+      };
       props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
 
       let i = 1;
@@ -132,7 +134,9 @@ const useItemBehavior = (props) => {
 
       let actions = [];
 
-      actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: item => item.pos = endPositions[0] });
+      actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: (item) => {
+        if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = endPositions[0] 
+      }});
 
       let i = 1;
       for (let uuid in props.data.items) {
@@ -140,7 +144,9 @@ const useItemBehavior = (props) => {
 
         if (props.data.items[uuid].isSelected) {
           let newPosition = util.clone(endPositions[i++]);
-          let updated = item => item.pos = newPosition;
+          let updated = (item) => {
+            if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = newPosition
+          }
           actions.push({ type: reducerActions.updateItem, uuid: uuid, update: updated});
         }
       }
