@@ -119,7 +119,7 @@ export default function Board() {
       size: { width: 150, height: 100 },
       text: input.text,
       isSelected:false,
-      isBlocked:false
+      isFrozen:false
     };
 
     dispatch({ type: reducerActions.createItem, item: item });

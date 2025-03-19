@@ -62,11 +62,11 @@ const useItemBehavior = (props) => {
     if (dragButton === util.LMB) {
       if (!util.eqlSize(getSize(), startSize))
         return;
+      if (props.item.type == util.type.note && props.item.isFrozen)
+        return;
 
       // move the item to the drag position.
-      let update = (item) => {
-        if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = dragPositions[0]
-      };
+      let update = item => item.pos = dragPositions[0];
       props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: props.item.uuid, update: update });
 
       let i = 1;
@@ -76,9 +76,7 @@ const useItemBehavior = (props) => {
 
         if (item.isSelected) {
           let newPosition = util.clone(dragPositions[i++]);
-          let updated = (item) => {
-            if(props.item.type != util.type.note || (props.item.type == util.type.note && !props.item.isBlocked)) item.pos = newPosition;
-          }
+          let updated = item => item.pos = newPosition;
           props.dispatch({ type: reducerActions.updateItem, skipUndo: true, uuid: uuid, update: updated });
         }
       }
@@ -134,10 +132,13 @@ const useItemBehavior = (props) => {
         return;
       }
 
+      if(props.item.type == util.type.note && props.item.isFrozen)
+        return;
+
       let actions = [];
 
       actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: (item) => {
-        if(item.type != util.type.note || (item.type == util.type.note && !item.isBlocked)) item.pos = endPositions[0] 
+        item.pos = endPositions[0] 
       }});
 
       let i = 1;
@@ -146,9 +147,7 @@ const useItemBehavior = (props) => {
 
         if (props.data.items[uuid].isSelected) {
           let newPosition = util.clone(endPositions[i++]);
-          let updated = (item) => {
-            if(props.item.type != util.type.note || (props.item.type == util.type.note && !props.item.isBlocked)) item.pos = newPosition
-          }
+          let updated = item => item.pos = newPosition;
           actions.push({ type: reducerActions.updateItem, uuid: uuid, update: updated});
         }
       }
