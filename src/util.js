@@ -149,6 +149,11 @@ const util = {
     line: "line"
   },
 
+  actions: {
+    select: "select",
+    card: "card"
+  },
+
   roundPos: (pos) => ({ x: Math.round(pos.x), y: Math.round(pos.y) }),
   LMB: 0,
   MMB: 1,
