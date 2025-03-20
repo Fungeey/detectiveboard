@@ -40,10 +40,24 @@ code {
     monospace;
 }
 
+.elementContent{
+  width: 0;
+  height: 0;
+}
+
 .itemWrapper{
   user-select: none;
-  width:fit-content;
   position:absolute;
+  width: fit-content;
+}
+
+.itemActions{
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  min-width: 100%;
+  width: 100%;
 }
 
 .itemHolder{
@@ -60,11 +74,12 @@ code {
 
 /* selection ui for an item ie the color boxes on notes*/
 .itemSelection{
-  position:absolute;
   display: flex;
   flex-direction: row;
   gap: 5px;
-  padding: 5px;
+  flex: 1;
+  justify-content: right;
+  flex-wrap: wrap;
 }
 
 .noteItem{

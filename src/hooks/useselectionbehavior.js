@@ -41,14 +41,11 @@ function useSelectionBehavior(props) {
   }
 
   function renderSelection(itemRef, renderItemSelection) {
-    return <div>
+    return <div className="itemActions">
       <img src={require('../img/delete.png')} alt="delete icon" name="deleteButton"
         style={{
           width: 20,
           height: 20,
-          top: itemRef.current.clientHeight + 5,
-          left: 0,
-          position: "absolute"
         }} onClick={deleteItem} />
 
       {renderItemSelection ? renderItemSelection(itemRef) : <></>}

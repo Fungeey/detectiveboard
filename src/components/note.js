@@ -86,10 +86,7 @@ const Note = ({ props }) => {
     }
 
     return (
-      <div className="itemSelection" style={{
-        top: itemRef.current.clientHeight,
-        left: itemRef.current.clientWidth - 20 * 5 - 5 * 5
-      }}>
+      <div className="itemSelection">
         {colors.map(c => colorSelect(c))}
       </div>
     )
