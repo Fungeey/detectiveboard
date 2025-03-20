@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useReducer } from 'react';
+import { useRef, useState, useEffect, useReducer, useContext  } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
 import useDragItem from '../hooks/usedragitem';
@@ -15,6 +15,7 @@ import Line from './line';
 import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
+import { useGlobalContext } from '../state/context';
 
 const debug = false;
 
@@ -37,6 +38,8 @@ export default function Board() {
   const boardRef = useRef(null);
 
   const [isCreating, setIsCreating] = useState(false);
+  const { actionType, setActionType } = useGlobalContext();
+  
   const [input, setInput] = useState({ pos: {}, text: "" });
   const mousePos = useMousePos();
 
@@ -62,6 +65,18 @@ export default function Board() {
       setIsCreating(false);
       return;
     }
+    
+    writeNote(e);
+  }
+
+  function onLClick(e){
+    if( actionType==util.actions.card ) {
+      writeNote(e);
+      setActionType(util.actions.select)
+    }
+  }
+
+  function writeNote(e){
 
     // open text window
     let pos = { x: e.clientX, y: e.clientY };
@@ -72,6 +87,7 @@ export default function Board() {
     });
 
     setIsCreating(true);
+
   }
 
   useDragItem();
@@ -102,7 +118,8 @@ export default function Board() {
       color: "#feff9c",
       size: { width: 150, height: 100 },
       text: input.text,
-      isSelected:false
+      isSelected:false,
+      isFrozen:false
     };
 
     dispatch({ type: reducerActions.createItem, item: item });
@@ -142,10 +159,10 @@ export default function Board() {
     dispatch({ type: reducerActions.load, data: newData });
   }
 
-  return <div onMouseDown={onMouseDown} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
-    <UI data={data.present} onLoad={onLoad} />
+  return <div onMouseDown={onMouseDown} onClick={onLClick} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
+    <UI data={data.present} onLoad={onLoad} dispatch={dispatch} allData={data} />
 
-    <div id='boardWrapper' style={util.scaleStyle(scale)} scale={scale}>
+    <div id='boardWrapper' className={ actionType==util.actions.card?'cursorCard':'' } style={util.scaleStyle(scale)} scale={scale}>
       <BoardBackground scale={scale} boardPos={boardPos} />
 
       <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>

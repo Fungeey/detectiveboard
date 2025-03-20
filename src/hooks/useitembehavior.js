@@ -62,6 +62,8 @@ const useItemBehavior = (props) => {
     if (dragButton === util.LMB) {
       if (!util.eqlSize(getSize(), startSize))
         return;
+      if (props.item.type == util.type.note && props.item.isFrozen)
+        return;
 
       // move the item to the drag position.
       let update = item => item.pos = dragPositions[0];
@@ -130,9 +132,14 @@ const useItemBehavior = (props) => {
         return;
       }
 
+      if(props.item.type == util.type.note && props.item.isFrozen)
+        return;
+
       let actions = [];
 
-      actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: item => item.pos = endPositions[0] });
+      actions.push({ type: reducerActions.updateItem, restorePresent: true, uuid: props.item.uuid, update: (item) => {
+        item.pos = endPositions[0] 
+      }});
 
       let i = 1;
       for (let uuid in props.data.items) {

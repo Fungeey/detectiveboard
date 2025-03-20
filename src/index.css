@@ -98,13 +98,32 @@ code {
   padding: 20px;
 }
 
-.board{
-
+.itemHolder.selected .imgItem:after,
+.itemHolder.selected .noteItem:after,
+.itemHolder.selected .scrapItem:after {
+  content: '\f1ce';
+  position: absolute;
+  font-family: 'Material Symbols Outlined';
+  background: white;
+  border: 1px solid;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  font-size: 12px;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  transform: rotate(90deg);
+  border-radius: 3px;
 }
 
 #boardWrapper{
   width:100vw;
   height:100vh;
+}
+
+#boardWrapper.cursorCard{
+  cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAVCAQAAAAZIo2TAAABfUlEQVQ4T4XRSyhEYRjG8f85Z85cOMYYgxKakZFbsVA2ykZZylZEucRKFqSsbVhThmLJ5DZnLjWDhVJCwkpZSNm4REkuC4zFJM7h4/m276+nrwcAwv+8DEyR0N/fksJIIVQzsbDy/CgmRLCbO2wsXt6IiRJB+0kCJ2dikqaT85OMbRyLScEy5ZhiZWBmW0zqlmhAMhKV1qG4mAyGaTcTC42NITEJ7zJuJgpV+bqYvDzZlnEbiYxLij79sUzrEh1GIpHGZPRQTK6u04NUGImdvq6YmCSTW3uOBTrxfiGVamfs/fUvdHGeGUSnFyVFFJzMrx78fnz/ENxvWrOEGMZn/E1LcdjYc3WrH/XEvTEpwRTd+NE+G1Kx4mF2dPPmbuc0sNO/XhvVEsSYZoRmKimhEA8O5O9ERqOGKBHmmGCINuopw4+PAvJwk4EdxTiohBU3XkoppQQfReSTixsn6dhQkc37p3rsuPCQTRZONBzYUFGQfjv+QipWVCzIyOLTD1m+18l/NWSvAAAAAElFTkSuQmCC) 11 10, auto;
 }
 
 #boardBackground{
@@ -148,20 +167,90 @@ p{
 #ui{
   position:fixed;
   left:0;
-  top:0;
+  top:50%;
+  transform: translateY(-50%);
   z-index: var(--layer-ui);
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.UIGroup{
+  padding: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px 0px #22242814;
+  border: 0.5px solid #E9EAEF;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .UIButton{
-  border:none;
   padding:10px;
-  background:rgb(200, 200, 200, 0.5);
   display:flex;
   flex-direction: row;
-  backdrop-filter: blur(3px);
-  box-shadow:  0px 0px 10px rgba(0, 0, 0, 0.35);
   gap: 0.5rem;
-  margin:10px;
   user-select: none;
+  position: relative;
+  cursor: pointer;
 }
 
+.UIButton svg{
+  width: 24px;
+  height: 24px;
+}
+
+.UITooltip{
+  position: absolute;
+  left: 130%;
+  top: 50%;
+  transform: translateY(-50%);
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #222428;
+  color: white;
+  display: none;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.UITooltip::before{
+  content: '';
+  border: 8px solid transparent;
+  position: absolute;
+  top: 50%;
+  left: -16px;
+  transform: translateY(-50%);
+  border-right-color: #222426;
+}
+
+.UIButton:hover{
+  background: #F1F2F5;
+  border-radius: 8px;
+}
+
+.UIButton:not(.UIButtonSelect):hover .UITooltip{
+  display: flex;
+}
+
+.UIButton.UIButtonSelect{
+  background: #d9f5fb;
+  border-radius: 8px;
+}
+.UIButton.UIButtonDisabled{
+  opacity: 0.4;
+}
+
+.UIHotkeyGroup{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: #4d515f;
+  padding: 0 5px;
+  font-size: 12px;
+}
