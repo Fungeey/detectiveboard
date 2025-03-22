@@ -11,7 +11,7 @@ const useSaveLoad = (props) => {
 
 
   useEffect(() => {
-    // if (false)
+    if (false)
       props.onLoad(tutorial);
   }, [])
 
