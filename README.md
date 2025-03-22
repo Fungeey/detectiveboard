@@ -10,9 +10,7 @@ Here is the board I used as a todo list for this project:
 
 ![image](https://github.com/Fungeey/DetectiveBoard/assets/45613337/a113ec7b-bd14-40a9-9dc5-560312220587)
 
-
 you can try it out here: https://fungeey.github.io/detectiveboard/
-
 
 ## usage
 
@@ -21,6 +19,8 @@ you can try it out here: https://fungeey.github.io/detectiveboard/
 - hold right click and drag to connect notes
 
 ## development
+[view changelog](CHANGELOG.md)
+
 start npm
 - npm start
 
