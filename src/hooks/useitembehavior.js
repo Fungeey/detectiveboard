@@ -206,19 +206,21 @@ const useItemBehavior = (props) => {
       {renderPreviewLine()}
       {props.item.isConnected ? <Pin pos={props.item.pos} /> : <></>}
 
-      <div style={{ ...util.posStyle(props.item.pos) }}>
-        <div className="itemWrapper"
-          onMouseDown={startDrag}
-          onMouseEnter={enter}
-          onMouseLeave={exit}
-          uuid={props.item.uuid} ref={itemRef}>
+      <div className="elementContent" style={{ ...util.posStyle(props.item.pos) }}>
+        <div className="itemWrapper">
+          <div className="itemElement"
+            onMouseDown={startDrag}
+            onMouseEnter={enter}
+            onMouseLeave={exit}
+            uuid={props.item.uuid} ref={itemRef}>
 
-          <div className={`itemHolder${props.item.isSelected ? ' selected' : ''}`}>
-            {renderItem(props.item.isSelected)}
+            <div className={`itemHolder${props.item.isSelected ? ' selected' : ''}`}>
+              {renderItem(props.item.isSelected)}
+            </div>
           </div>
-        </div>
 
-        {props.item.isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+          {props.item.isSelected ? renderSelection(itemRef, renderItemSelection) : <></>}
+        </div>
       </div>
     </>
   }
