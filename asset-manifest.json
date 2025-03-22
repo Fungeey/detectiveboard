@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/detectiveboard/static/css/main.d8f6a36e.css",
-    "main.js": "/detectiveboard/static/js/main.7cce4675.js",
+    "main.js": "/detectiveboard/static/js/main.70265767.js",
     "static/js/787.223550ad.chunk.js": "/detectiveboard/static/js/787.223550ad.chunk.js",
     "static/media/pin.png": "/detectiveboard/static/media/pin.ae15f9322865325c0ee4.png",
     "static/media/delete.png": "/detectiveboard/static/media/delete.3c662b752278fc52f408.png",
     "index.html": "/detectiveboard/index.html",
     "main.d8f6a36e.css.map": "/detectiveboard/static/css/main.d8f6a36e.css.map",
-    "main.7cce4675.js.map": "/detectiveboard/static/js/main.7cce4675.js.map",
+    "main.70265767.js.map": "/detectiveboard/static/js/main.70265767.js.map",
     "787.223550ad.chunk.js.map": "/detectiveboard/static/js/787.223550ad.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d8f6a36e.css",
-    "static/js/main.7cce4675.js"
+    "static/js/main.70265767.js"
   ]
 }
