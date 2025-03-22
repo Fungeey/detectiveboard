@@ -46,7 +46,7 @@ const UI = (props) => {
           </div>
         </div>
         <div className={`UIButton ${actionType == util.actions.card ? 'UIButtonSelect': ''}`} onClick={changeActionCard}>
-          <svg viewBox="0 0 24 24" fill="none" ><path fill="currentColor" fill-rule="evenodd" d="M5 2c-1.6568 0-3 1.3432-3 3v14c0 1.6569 1.3432 3 3 3h7c5.5228 0 10-4.4772 10-10v-7c0-1.6568-1.3431-3-3-3h-14Zm15 7v-4c0-.5523-.4477-1-1-1h-14c-.5523 0-1 .4477-1 1v14c0 .5523.4477 1 1 1v-.0039h4c1.6569 0 3-1.3432 3-3v-3.9961l1-1h4c1.6569 0 3-1.3431 3-3Zm-6.9523 10.932a4.9774 4.9774 0 0 0 .9523-2.9359v-2.9961h3a4.9774 4.9774 0 0 0 2.9316-.9492c-.4696 3.5789-3.3046 6.413-6.8839 6.8812Z" clip-rule="evenodd"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" ><path fill="currentColor" fillRule="evenodd" d="M5 2c-1.6568 0-3 1.3432-3 3v14c0 1.6569 1.3432 3 3 3h7c5.5228 0 10-4.4772 10-10v-7c0-1.6568-1.3431-3-3-3h-14Zm15 7v-4c0-.5523-.4477-1-1-1h-14c-.5523 0-1 .4477-1 1v14c0 .5523.4477 1 1 1v-.0039h4c1.6569 0 3-1.3432 3-3v-3.9961l1-1h4c1.6569 0 3-1.3431 3-3Zm-6.9523 10.932a4.9774 4.9774 0 0 0 .9523-2.9359v-2.9961h3a4.9774 4.9774 0 0 0 2.9316-.9492c-.4696 3.5789-3.3046 6.413-6.8839 6.8812Z" clipRule="evenodd"></path></svg>
           <div className={"UITooltip"}>
             <span className={"UITooltipText"}>Card</span>
             <div className={"UIHotkeyGroup"}>
