@@ -67,12 +67,25 @@ code {
   overflow:hidden;
 }
 
+/* Style*/
+.cursorGrabbing{
+  cursor: grabbing;
+}
 /* styling for itemHolder when selected*/
+.selected_box{
+  position: absolute;
+  background-color: #0080ff25;
+  outline: 3px solid #0080ff;
+  user-select: none;
+}
 .selected{
   outline: 3px solid rgb(0, 0, 0, 0.5);
 }
 
 /* selection ui for an item ie the color boxes on notes*/
+.icon{
+  user-select: none;
+}
 .itemSelection{
   display: flex;
   flex-direction: row;
@@ -80,6 +93,8 @@ code {
   flex: 1;
   justify-content: right;
   flex-wrap: wrap;
+  padding: 5px;
+  user-select: none;
 }
 
 .noteItem{
