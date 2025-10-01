@@ -15,6 +15,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [dragButton, setDragButton] = useState(0);
+  const [isGrabbing, setIsGrabbing] = useState(false);
 
   // replace with useCallback?
   const firstUpdate = useRef(true);
@@ -39,6 +40,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
   }, [offset]);
 
   function startDrag(e) {
+    if(e.button == 0) return;
     e.stopPropagation();
     setDragButton(e.button);
 
@@ -48,6 +50,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
     setPos(newStartPos);
     setOffset(util.subPos(newStartPos, p));
     setStartPos(p);
+    setIsGrabbing(true)
   }
 
   function getActualPosition(e) {
@@ -85,6 +88,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
 
     if (doEndDrag)
       doEndDrag(dist, e, endPos);
+      setIsGrabbing(false)
   }
 
 
@@ -98,7 +102,7 @@ const useDrag = (doStartDrag, doOnDrag, doEndDrag) => {
   return [
     pos,
     startDrag,
-    dragButton      //remove?
+    isGrabbing
   ]
 }
 

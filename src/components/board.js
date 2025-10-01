@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useReducer, useContext  } from 'react';
 import useDrag from '../hooks/usedrag';
+import useMultiSelect from '../hooks/usemultiselect';
 import useKeyDown from '../hooks/usekeydown';
 import useDragItem from '../hooks/usedragitem';
 import useMousePos from '../hooks/usemousepos';
@@ -101,8 +102,13 @@ export default function Board() {
   useKeyDown(() => {
     setIsCreating(false);
   }, ["Escape"]);
+  
+  function selectItem(uuid){
+    dispatch({ type: reducerActions.updateItem, uuid: uuid, update: item => item.isSelected = true});
+  }
 
-  const [boardPos, onMouseDown] = useDrag(startPan, null, endPan);
+  const [boardPos, onMouseDownDrag, isGrabbing] = useDrag(startPan, null, endPan);
+  const [onMouseDownSelect, selectBounding, isSelecting] = useMultiSelect(data, selectItem);
 
   function addNote() {
     if (input.text === "" || util.isEmpty(input.pos))
@@ -159,7 +165,26 @@ export default function Board() {
     dispatch({ type: reducerActions.load, data: newData });
   }
 
-  return <div onMouseDown={onMouseDown} onClick={onLClick} onDoubleClick={onDoubleLClick} style={{ overflow: 'hidden' }}>
+  const handleMouseDown = (e)=>{
+    if(!isSelecting){
+      onMouseDownDrag(e)
+    }
+    if(!isGrabbing){
+      onMouseDownSelect(e)
+    }
+  }
+  const updateSelectPos = ()=>{
+
+    let x = selectBounding.position.x;
+    let y = selectBounding.position.y;
+    let width = Math.abs(selectBounding.size.x);
+    let height = Math.abs(selectBounding.size.y);
+    if(selectBounding.size.x < 0) x = selectBounding.position.x - Math.abs(selectBounding.size.x)
+    if(selectBounding.size.y < 0) y = selectBounding.position.y - Math.abs(selectBounding.size.y)
+    return ({ position:`absolute`, top:`${y}px`, left:`${x}px`, width:`${width}px`, height:`${height}px` })
+  }
+
+  return <div onMouseDown={handleMouseDown} onClick={onLClick} onDoubleClick={onDoubleLClick} className={ isGrabbing?'cursorGrabbing':'' } style={{ overflow: 'hidden' }}>
     <UI data={data.present} onLoad={onLoad} dispatch={dispatch} allData={data} />
 
     <div id='boardWrapper' className={ actionType==util.actions.card?'cursorCard':'' } style={util.scaleStyle(scale)} scale={scale}>
@@ -178,6 +203,7 @@ export default function Board() {
         {renderItems()}
       </div>
     </div>
+    <div id='select_box' className='selected_box' style={updateSelectPos()}></div>
   </div>
 
   function renderLines() {
