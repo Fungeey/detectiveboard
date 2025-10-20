@@ -1,4 +1,4 @@
-import { useState  } from 'react';
+import React, { useState  } from 'react';
 import Board from './components/board';
 import util from './util';
 import { ActionsContext } from './state/context';
