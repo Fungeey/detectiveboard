@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+// Unused, created in order to understand useundostack.ts
+
 const maxSize = 50;
 
 const useStackState = () => {
