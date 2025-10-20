@@ -62,7 +62,12 @@ const useMultiSelect = (data, onSelectItem) => {
     let selectRectangle = document.getElementById('select_box').getBoundingClientRect();
     boundingsElements.forEach(el=>{
         if(isColliding(selectRectangle, el.bounding)){
-            if(onSelectItem) onSelectItem(el.item.getAttribute("uuid"));
+          //el.item.classList is DOMTokenList
+          let isItemWrapper = Array.from(el.item.classList).filter(e=>e=="itemWrapper").length != 0;
+          if(isItemWrapper){
+            el.item = el.item.children[0];
+          }
+          if(onSelectItem) onSelectItem(el.item.getAttribute("uuid"));
         }
     })
 
