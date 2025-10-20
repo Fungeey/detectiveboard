@@ -1,15 +1,14 @@
 import React, { useState  } from 'react';
 import Board from './components/board';
-import util from './util';
-import { ActionsContext } from './state/context';
+import { UserMode, UserModeContext } from './state/context';
 
 const App = () => {
-  const [actionType, setActionType] = useState(util.actions.select);
+  const [userMode, setUserMode] = useState(UserMode.SELECT);
 
   return (
-    <ActionsContext.Provider value={{ actionType, setActionType }}>
+    <UserModeContext.Provider value={{ userMode, setUserMode }}>
       <Board/>
-    </ActionsContext.Provider>)
+    </UserModeContext.Provider>)
 }
 
 export default App;

@@ -1,14 +1,18 @@
 import { createContext, useContext  } from 'react';
-import util from '../util';
 
-export interface contextType {
-  actionType: string,
-  setActionType?: React.Dispatch<React.SetStateAction<string>> 
+export enum UserMode{
+  SELECT = 'select',
+  CARD = 'card'
 }
 
-export const ActionsContext = createContext<contextType>({
-  actionType: util.actions.select, 
-  setActionType: undefined 
+interface ContextType {
+  userMode: UserMode,
+  setUserMode?: React.Dispatch<React.SetStateAction<UserMode>> 
+}
+
+export const UserModeContext = createContext<ContextType>({
+  userMode: UserMode.SELECT,
+  setUserMode: undefined 
 });
 
-export const useGlobalContext = () => useContext(ActionsContext);
+export const useGlobalContext = () => useContext(UserModeContext);
