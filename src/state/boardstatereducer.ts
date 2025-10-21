@@ -21,7 +21,7 @@ export interface ReducerAction extends Action {
 }
 
 export function boardStateReducer(state: State, action: ReducerAction) {
-  let newState = runReducer(state, action);
+  const newState = runReducer(state, action);
 
   if(!newState || util.isEmpty(newState)){
     console.error("failed to create new state while performing action");
@@ -47,12 +47,12 @@ function runReducer(state: State, action: ReducerAction){
   }
 }
 
-function CREATE_ITEM(state: State, item: Item) {
+function CREATE_ITEM(state: State, item: Item): State {
   const items = itemReducer.createItem(state.items, item);
   return { items: items, lines: state.lines }
 }
 
-function createLine(state: State, line: LineItem) {
+function createLine(state: State, line: LineItem): State {
   if(!line.startUuid || !line.endUuid) return state;
 
   const lines = lineReducer.createLine(state.lines, line);

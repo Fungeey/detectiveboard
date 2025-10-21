@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, useReducer, ReactNode } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
-import useDragItem from '../hooks/usedragitem';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
@@ -16,7 +15,7 @@ import Note from './note';
 import Scrap from './scrap';
 import UI from './ui';
 import { useGlobalContext, UserMode } from '../state/context';
-import { Point, NoteItem, State, Item, ItemType, ImageItem, LineItem, Size } from '../types/index';
+import { Point, NoteItem, State, ItemType, ImageItem, LineItem, Size, ScrapItem } from '../types/index';
 import { ActionType } from '../hooks/useundostack';
 
 const debug = false;
@@ -32,7 +31,7 @@ function initData(present: State): OmniState {
 
 export default function Board() {
   const [data, dispatch] = useReducer(undoable, initData({
-    items: new Map<string, Item>(),
+    items: {},
     lines: []
   }));
 
@@ -97,8 +96,6 @@ export default function Board() {
 
     setIsCreating(true);
   }
-
-  // useDragItem();
 
   useKeyDown(() => {
     addNote();
@@ -226,26 +223,24 @@ export default function Board() {
   }
 
   function renderItems(): ReactNode[] {
-    const uuids = Array.from(data.present.items.keys());
-    return uuids.map((uuid: string) => {
-      let item = data.present.items[uuid];
+    return Object.values(data.present.items).map((item) => {
 
       if (!withinViewport(item.pos, item.size)) return <></>;
 
-      let props = {
+      const props = {
         dispatch: dispatch,
         data: data.present,
         getBoardPos: getBoardPos,
         debug: debug,
-        item: item
+        key: item.uuid
       }
 
       if (item.type === ItemType.NOTE)
-        return <Note key={item.uuid} {...props} />;
+        return <Note item={item as NoteItem} {...props} />;
       else if (item.type === ItemType.IMG)
-        return <Img key={item.uuid} {...props} />;
+        return <Img item={item as ImageItem} {...props} />;
       else if (item.type === ItemType.SCRAP)
-        return <Scrap key={item.uuid} {...props} />;
+        return <Scrap item={item as ScrapItem} {...props} />;
       else
         return <></>;
     });

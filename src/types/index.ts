@@ -60,6 +60,6 @@ export interface LineItem {
 // Data
 // 
 export interface State {
-  items: Map<string, Item>,
+  items: Record<string, Item>,
   lines: LineItem[]
 }
