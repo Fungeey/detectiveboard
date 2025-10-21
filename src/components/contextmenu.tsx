@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import util from "../util";
+import React, { useCallback, useEffect, useState } from "react";
+import util, { Util } from "../util";
 
-const ContextMenu = (props) => {
+const ContextMenu = () => {
   const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
 
@@ -14,13 +14,11 @@ const ContextMenu = (props) => {
   )
 
   const closeContextMenu = useCallback((e) => {
-    if (e.button === util.RMB)
+    if (e.button === Util.MouseButton.RMB)
       return;
     e.preventDefault()
     setIsVisible(false);
-  },
-    [setAnchorPoint, setIsVisible]
-  )
+  }, [setAnchorPoint, setIsVisible]);
 
   // board should handle this state
   useEffect(() => {

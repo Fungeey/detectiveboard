@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import useItemBehavior from "../hooks/useitembehavior";
+import React, { useEffect, useState } from "react";
+import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
 import util from "../util";
+import { ScrapItem, Size } from "../types/index";
 
 const fonts = [
   "Trebuchet MS, Helvetica, sans-serif",
@@ -15,8 +16,18 @@ const style = [
   { textDecoration: "underline" }
 ]
 
-const Scrap = ({ props }) => {
-  const [render] = useItemBehavior(props);
+interface ScrapProps extends ItemProps {
+  item: ScrapItem
+}
+
+export const Scrap: React.FC<ScrapProps> = ({
+  item,
+  debug,
+  dispatch,
+  getBoardPos,
+  data
+}) => {
+  const {render} = useItemBehavior(item, dispatch, getBoardPos, data);
   const [font, setFont] = useState(getFont());
   const [effect, setEffect] = useState(getEffect());
 
@@ -25,20 +36,20 @@ const Scrap = ({ props }) => {
   }, []);
 
   function getSize() {
-    if (props.item.size)
-      return util.sizeStyle(props.item.size);
+    if (item.size)
+      return util.sizeStyle(item.size);
     else
-      return util.sizeStyle(300, 100);
+      return util.sizeStyle({ width:300, height:100 });
   }
 
-  function getFont() {
-    let ind = Math.round(Math.random() * fonts.length) - 1;
-    return fonts[ind];
+  function getFont(): string {
+    const rand = Math.round(Math.random() * fonts.length) - 1;
+    return fonts[rand];
   }
 
   function getEffect() {
-    let ind = Math.round(Math.random() * style.length) - 1;
-    return style[ind];
+    const rand = Math.round(Math.random() * style.length) - 1;
+    return style[rand];
   }
 
   async function timer() {
@@ -48,7 +59,7 @@ const Scrap = ({ props }) => {
     timer();
   }
 
-  function renderItem(isSelected) {
+  function renderItem() {
     return (
       <div
         style={{
@@ -56,7 +67,7 @@ const Scrap = ({ props }) => {
           ...effect
         }}
         className="scrapItem">
-        {props.item.text}
+        {item.text}
       </div>
     )
   }

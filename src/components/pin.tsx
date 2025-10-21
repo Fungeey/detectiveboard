@@ -3,16 +3,17 @@ import util from "../util";
 import { Point } from '../types/index';
 const pinSRC = require('../img/pin.png');
 
-export const pin = (pos: Point) => {
+const pinSize = 50;
+const offset = 10;
 
-  const pinSize = 50;
-  const offset = 10;
+interface PinProps{
+  pos: Point
+}
 
-  function getPos() {
-    if (pos) 
-      return pos;
-    else 
-      return { x: 0, y: 0 };
+export const Pin: React.FC<PinProps> = ({pos}) => {
+
+  function getPos(): Point {
+    return pos || { x: 0, y:0 };
   }
 
   return (
@@ -26,4 +27,4 @@ export const pin = (pos: Point) => {
   )
 }
 
-export default pin;
+export default Pin;

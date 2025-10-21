@@ -1,3 +1,4 @@
+import React from 'react';
 
 const mod = 1.25;
 
