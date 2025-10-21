@@ -4,12 +4,12 @@ import util, { Util } from "../util";
 import { Point } from "../types/index";
 
 function useDrag(
-  doStartDrag: (p: Point, e: React.MouseEvent) => Point, 
-  doOnDrag?: ((newPos: Point, e: MouseEvent) => void) | null, 
-  doEndDrag?: (dist: number, e: MouseEvent, endPos: Point) => void
+  doStartDrag: (p: Point, e: React.PointerEvent) => Point, 
+  doOnDrag?: ((newPos: Point, e: PointerEvent) => void) | null, 
+  doEndDrag?: (dist: number, e: PointerEvent, endPos: Point) => void
 ):{
   pos: Point,
-  onMouseDown: (e: React.MouseEvent) => void,
+  onMouseDown: (e: React.PointerEvent) => void,
   dragButton: Util.MouseButton
 }{
 
@@ -35,19 +35,19 @@ function useDrag(
       return;
     }
 
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('pointermove', onDrag);
+    document.addEventListener('pointerup', endDrag);
     window.addEventListener('blur', loseFocus, false);
 
     return () => {
-      document.removeEventListener('mousemove', onDrag);
-      document.removeEventListener('mouseup', endDrag);
+      document.removeEventListener('pointermove', onDrag);
+      document.removeEventListener('pointerup', endDrag);
       window.removeEventListener('blur', loseFocus, false);
     }
 
   }, [offset]);
 
-  function startDrag(e: React.MouseEvent): void {
+  function startDrag(e: React.PointerEvent): void {
     e.stopPropagation();
     setDragButton(e.button as Util.MouseButton);
 
@@ -59,7 +59,7 @@ function useDrag(
     setStartPos(p);
   }
 
-  function getActualPosition(e: MouseEvent): Point {
+  function getActualPosition(e: PointerEvent): Point {
     const scaleOff = util.mulPos(offset, scale)
     let newPos = util.addPos(util.getMousePos(e), scaleOff);
 
@@ -73,7 +73,7 @@ function useDrag(
     return newPos;
   }
 
-  const onDrag = util.throttle((e: MouseEvent) => {
+  const onDrag = util.throttle((e: PointerEvent) => {
     const newPos = getActualPosition(e);
 
     setPos(newPos);
@@ -81,13 +81,13 @@ function useDrag(
   }, 10);
 
   function loseFocus() {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('pointermove', onDrag);
+    document.removeEventListener('pointerup', endDrag);
   }
 
-  function endDrag(e: MouseEvent) {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
+  function endDrag(e: PointerEvent) {
+    document.removeEventListener('pointermove', onDrag);
+    document.removeEventListener('pointerup', endDrag);
 
     const dist = util.distance(startPos, util.getMousePos(e));
     const endPos = getActualPosition(e);

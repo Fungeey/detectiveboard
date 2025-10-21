@@ -196,7 +196,6 @@ function useItemBehavior(
   }
 
   function createLine() {
-    console.log('create line')
     if (item.uuid === hoverUUID || hoverUUID === "")
       return;
 
@@ -251,7 +250,7 @@ function useItemBehavior(
       <div className="elementContent" style={{ ...util.posStyle(item.pos) }}>
         <div className="itemWrapper">
           <div className="itemElement"
-            onMouseDown={startDrag}
+            onPointerDown={startDrag}
             onMouseEnter={enter}
             onMouseLeave={exit}
             data-uuid={item.uuid} ref={itemRef}>

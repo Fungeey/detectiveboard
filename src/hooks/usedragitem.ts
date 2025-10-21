@@ -4,12 +4,12 @@ import { Util } from "../util";
 import { Point } from "../types/index";
 
 export default function useDragItem (
-  doStartDrag: (p: Point, e: React.MouseEvent) => Point[], 
-  doOnDrag: ((newPos: Point[], e: MouseEvent) => void) | null, 
-  doEndDrag: (dist: number, e: MouseEvent, endPos: Point[]) => void
+  doStartDrag: (p: Point, e: React.PointerEvent) => Point[], 
+  doOnDrag: ((newPos: Point[], e: PointerEvent) => void) | null, 
+  doEndDrag: (dist: number, e: PointerEvent, endPos: Point[]) => void
 ):{
   positions: Point[],
-  startDrag: (e: React.MouseEvent) => void,
+  startDrag: (e: React.PointerEvent) => void,
   dragButton: Util.MouseButton
 } {
 
@@ -35,24 +35,24 @@ export default function useDragItem (
       return;
     }
 
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('pointermove', onDrag);
+    document.addEventListener('pointerup', endDrag);
     window.addEventListener('blur', loseFocus, false);
 
     return () => {
-      document.removeEventListener('mousemove', onDrag);
-      document.removeEventListener('mouseup', endDrag);
+      document.removeEventListener('pointermove', onDrag);
+      document.removeEventListener('pointerup', endDrag);
       window.removeEventListener('blur', loseFocus, false);
     }
 
   }, [offsets]);
 
   function loseFocus() {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('pointermove', onDrag);
+    document.removeEventListener('pointerup', endDrag);
   }
 
-  function startDrag(e: React.MouseEvent) {
+  function startDrag(e: React.PointerEvent) {
     e.stopPropagation();
     setDragButton(e.button as Util.MouseButton);
 
@@ -66,14 +66,15 @@ export default function useDragItem (
     setStartPos(p);
   }
 
-  const onDrag = Util.throttle((e: MouseEvent) => {
+  const onDrag = Util.throttle((e: PointerEvent) => {
+    e.stopPropagation();
     const newPositions = offsets.map(offset => getActualPosition(e, offset));
 
     setPositions(newPositions);
     doOnDrag?.(newPositions, e);
   }, 10);
 
-  function getActualPosition(e: MouseEvent, offset: Point) {
+  function getActualPosition(e: PointerEvent, offset: Point) {
     let scaleOff = Util.mulPos(offset, scale)
     let newPos = Util.addPos(Util.getMousePos(e), scaleOff);
 
@@ -87,9 +88,9 @@ export default function useDragItem (
     return newPos;
   }
 
-  function endDrag(e: MouseEvent) {
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
+  function endDrag(e: PointerEvent) {
+    document.removeEventListener('pointermove', onDrag);
+    document.removeEventListener('pointerup', endDrag);
 
     const endPositions: Point[] = [];
     let i = 0;

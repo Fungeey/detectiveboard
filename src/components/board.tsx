@@ -60,7 +60,7 @@ export default function Board() {
   }
 
   function endPan(dist: number, e: MouseEvent) {
-    if (dist < 2 && e.button === 0)
+    if (dist < 2 && e.button === Util.MouseButton.LMB)
       setIsCreating(false);
   }
 
@@ -107,7 +107,7 @@ export default function Board() {
     setIsCreating(false);
   }, ["Escape"]);
 
-  const { pos: boardPos, onMouseDown } = useDrag(startPan, null, endPan);
+  const { pos: boardPos, onMouseDown, dragButton } = useDrag(startPan, null, endPan);
 
   function addNote() {
     if (input.text === "" || !input.pos)
@@ -172,7 +172,7 @@ export default function Board() {
 
   return (
     <div 
-      onMouseDown={onMouseDown} 
+      onPointerDown={onMouseDown} 
       onClick={onLClick} 
       onDoubleClick={onDoubleLClick} 
       style={{ overflow: 'hidden' }}>
@@ -232,15 +232,14 @@ export default function Board() {
         data: data.present,
         getBoardPos: getBoardPos,
         debug: debug,
-        key: item.uuid
       }
 
       if (item.type === ItemType.NOTE)
-        return <Note item={item as NoteItem} {...props} />;
+        return <Note key={item.uuid} item={item as NoteItem} {...props} />;
       else if (item.type === ItemType.IMG)
-        return <Img item={item as ImageItem} {...props} />;
+        return <Img key={item.uuid} item={item as ImageItem} {...props} />;
       else if (item.type === ItemType.SCRAP)
-        return <Scrap item={item as ScrapItem} {...props} />;
+        return <Scrap key={item.uuid} item={item as ScrapItem} {...props} />;
       else
         return <></>;
     });
