@@ -1,18 +1,19 @@
 import { useState } from "react";
+import { Item } from "../types";
 
 // Unused, created in order to understand useundostack.ts
 
 const maxSize = 50;
 
 const useStackState = () => {
-  let [stack, setStack] = useState([]);
+  let [stack, setStack] = useState<Item[]>([]);
 
   // adds a newest item
-  function push(item) {
+  function push(item: Item) {
     // if(stack.length >= maxSize)
     //     shift();
 
-    let newStack = [...stack];
+    const newStack: Item[] = [...stack];
     newStack.push(item);
     setStack(newStack);
   }

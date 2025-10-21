@@ -1,4 +1,4 @@
-import util from "../util";
+import Util from "../util";
 
 function useMouseEvents(
   onLClick: () => void,
@@ -6,8 +6,8 @@ function useMouseEvents(
 ){
 
   function onClick(e: React.MouseEvent) {
-    if (e.button === util.LMB && onLClick) onLClick();
-    if (e.button === util.RMB && onRClick) onRClick();
+    if (e.button === Util.MouseButton.LMB && onLClick) onLClick();
+    if (e.button === Util.MouseButton.RMB && onRClick) onRClick();
   }
 
   return [onClick];

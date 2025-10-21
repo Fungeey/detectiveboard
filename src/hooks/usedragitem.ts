@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import useScale from '../hooks/usescale';
 import util from "../util";
+import { Point } from "../types/index";
 
-export default function useDragItem (doStartDrag, doOnDrag, doEndDrag) {
+export default function useDragItem (
+  doStartDrag: (p: Point, e: React.MouseEvent) => Point[], 
+  doOnDrag: ((newPos: Point[], e: MouseEvent) => void) | null, 
+  doEndDrag: (dist: number, e: MouseEvent, endPos: Point[]) => void
+):{
+  positions: Point[],
+  startDrag: (e: React.MouseEvent) => void 
+} {
 
   // when implementing useDrag, doStartDrag must return start position
   // function defaultDoStartDrag(mousePos, e){
@@ -11,10 +19,9 @@ export default function useDragItem (doStartDrag, doOnDrag, doEndDrag) {
 
   // doOnDrag and doEndDrag can be empty
 
-  const [positions, setPositions] = useState({ x: 0, y: 0 });
-  const [offsets, setOffsets] = useState([{ x: 0, y: 0 }]);
+  const [positions, setPositions] = useState<Point[]>([]);
+  const [offsets, setOffsets] = useState<Point[]>([]);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [dragButton, setDragButton] = useState(0);
 
   // replace with useCallback?
   const firstUpdate = useRef(true);
@@ -43,29 +50,28 @@ export default function useDragItem (doStartDrag, doOnDrag, doEndDrag) {
     document.removeEventListener('mouseup', endDrag);
   }
 
-  function startDrag(e) {
+  function startDrag(e: React.MouseEvent) {
     e.stopPropagation();
-    setDragButton(e.button);
 
-    let p = util.getMousePos(e);
-    let startPositions = doStartDrag(p, e);
+    const p = util.getMousePos(e);
+    const startPositions = doStartDrag(p, e);
 
     setPositions(startPositions);
-    let offsets = [];
+    const offsets: Point[] = [];
     startPositions.forEach(pos => offsets.push(util.subPos(pos, p)));
     setOffsets(offsets);
     setStartPos(p);
   }
 
-  const onDrag = util.throttle((e) => {
-    let newPositions = [];
+  const onDrag = util.throttle((e: MouseEvent) => {
+    const newPositions: Point[] = [];
     offsets.forEach(offset => newPositions.push(getActualPosition(e, offset)));
 
     setPositions(newPositions);
-    if (doOnDrag) doOnDrag(newPositions, e);
-  });
+    doOnDrag?.(newPositions, e);
+  }, 1);
 
-  function getActualPosition(e, offset) {
+  function getActualPosition(e: MouseEvent, offset: Point) {
     let scaleOff = util.mulPos(offset, scale)
     let newPos = util.addPos(util.getMousePos(e), scaleOff);
 
@@ -79,23 +85,21 @@ export default function useDragItem (doStartDrag, doOnDrag, doEndDrag) {
     return newPos;
   }
 
-  function endDrag(e) {
+  function endDrag(e: MouseEvent) {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', endDrag);
 
-    let endPositions = [];
+    const endPositions: Point[] = [];
     let i = 0;
     positions.forEach(pos => 
       endPositions.push(getActualPosition(e, offsets[i++])));
     let dist = util.distance(startPos, util.getMousePos(e));
 
-    if (doEndDrag)
-      doEndDrag(dist, e, endPositions);
+    doEndDrag?.(dist, e, endPositions);
   }
 
-  return [
+  return {
     positions,
     startDrag,
-    dragButton      //remove?
-  ]
+  }
 }

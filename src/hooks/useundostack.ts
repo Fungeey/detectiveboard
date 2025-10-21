@@ -15,8 +15,8 @@ export interface Action {
   // If type = MANY, this action is a collection of multiple actions.
   actions?: Action[], 
 
-  // skipUndo: boolean,
-  // restorePresent: boolean,
+  skipUndo?: boolean,
+  restorePresent?: boolean,
 
   line?: LineItem,
   item?: Item,
@@ -25,7 +25,10 @@ export interface Action {
   data?: State
 }
 
-// is this used at all??
+//
+// This hook is depreciated - the real logic is in undoable.ts 
+// and boardstatereducer.ts
+//
 const useUndoStack = () => {
   const [stack, setStack] = useState<Action[]>([]);
   const [undoSpot, setUndoSpot] = useState(0);
@@ -36,7 +39,7 @@ const useUndoStack = () => {
     if (!action) return;
 
     // redo the action
-    action.do();
+    // action.do();
 
     setUndoSpot(undoSpot + 1);
   }, [stack, undoSpot]);
@@ -49,7 +52,7 @@ const useUndoStack = () => {
     setUndoSpot(undoSpot - 1);
 
     // undo the action
-    action.undo();
+    // action.undo();
   }, [stack, undoSpot]);
 
   const handleUndoRedo = useCallback((e) => {
@@ -78,7 +81,7 @@ const useUndoStack = () => {
     setStack(newStack);
 
     // execute the given action
-    action.do();
+    // action.do();
 
     // add it to the undo stack
     setUndoSpot(newStack.length);

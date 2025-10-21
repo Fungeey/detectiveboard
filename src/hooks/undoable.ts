@@ -1,9 +1,18 @@
-import { reducerActions, boardStateReducer } from "../state/boardstatereducer";
+import { ReducerActions, boardStateReducer } from "../state/boardstatereducer";
 import util from "../util";
+import { Action } from "./useundostack";
+import { State } from "../types/index";
 
-export default function undoable(state, action) {
+export interface OmniState {
+  past: State[],
+  present: State,
+  future: State[],
+  temporaryPresent: State[]
+}
+
+export default function undoable(state: OmniState, action: Action): OmniState {
   if(action.skipUndo){
-    if(state.temporaryPresent.length == 0)
+    if(state.temporaryPresent.length === 0)
       state.temporaryPresent = util.clone(state.present);
 
     return modifyPresent(state, action);
@@ -16,7 +25,7 @@ export default function undoable(state, action) {
   }
 }
 
-function undo(state) {
+function undo(state: OmniState): OmniState {
   const { past, present, future, temporaryPresent } = state;
   if (past.length === 0) return state;
 
@@ -31,7 +40,7 @@ function undo(state) {
   }
 }
 
-function redo(state) {
+function redo(state: OmniState): OmniState {
   const { past, present, future, temporaryPresent } = state;
   if (future.length === 0) return state;
 
@@ -42,20 +51,20 @@ function redo(state) {
     past: [...past, present],
     present: next,
     future: newFuture,
-    temporaryPresent: temporaryPresent
+    temporaryPresent
   }
 }
 
-function doReducer(state, action) {
+function doReducer(state: OmniState, action: Action): OmniState {
   let { past, present, future } = state;
 
   if(action.restorePresent)
     present = util.clone(state.temporaryPresent);
 
   let newPresent = util.clone(present);
-  if(action.type === reducerActions.many){
-    for(const asdf of action.actions){
-      newPresent = boardStateReducer(newPresent, asdf);
+  if(action.type === ReducerActions.MANY && action.actions){
+    for(const a of action.actions){
+      newPresent = boardStateReducer(newPresent, a);
     }
   }else{
     newPresent = boardStateReducer(util.clone(present), action);
@@ -75,16 +84,16 @@ function doReducer(state, action) {
   }
 }
 
-function modifyPresent(state, action){
+function modifyPresent(state: OmniState, action: Action): OmniState {
   const { past, present, future, temporaryPresent } = state;
 
   const newPresent = boardStateReducer(util.clone(present), action);
 
   return {
-    past: past,
+    past,
     present: newPresent,
-    future: future,
-    temporaryPresent: temporaryPresent
+    future,
+    temporaryPresent
   }
 }
 
