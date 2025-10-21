@@ -68,9 +68,9 @@ function useItemBehavior(
   function onStartDrag(mousePos: Point, e: React.MouseEvent): Point[] {
     setStartSize(getSize());
 
-    let startPositions = [item.pos];
+    const startPositions = [item.pos];
 
-    for (let uuid in data.items) {
+    for (const uuid in data.items) {
       if (uuid === item.uuid) continue;
 
       const otherItem = data.items[uuid];
@@ -82,7 +82,6 @@ function useItemBehavior(
   }
 
   function onDrag(dragPositions: Point[], e: MouseEvent) {
-    const dragButton = e.button;
     if (dragButton === Util.MouseButton.LMB) {
       if (!util.eqlSize(getSize(), startSize))
         return;
@@ -91,7 +90,7 @@ function useItemBehavior(
         return;
 
       // move the item to the drag position.
-      let update = (item: Item) => item.pos = dragPositions[0];
+      const update = (item: Item) => item.pos = dragPositions[0];
       dispatch({ type: ReducerActions.UPDATE_ITEM, skipUndo: true, uuid: item.uuid, update: update });
 
       let i = 1;
@@ -154,7 +153,6 @@ function useItemBehavior(
     e: MouseEvent, 
     endPositions: Point[]
   ){
-    const dragButton = e.button;
     const newSize = getSize();
 
     if (newSize != null && !util.eqlSize(getSize(), startSize)) { // save new width
@@ -198,6 +196,7 @@ function useItemBehavior(
   }
 
   function createLine() {
+    console.log('create line')
     if (item.uuid === hoverUUID || hoverUUID === "")
       return;
 
@@ -217,7 +216,7 @@ function useItemBehavior(
       dispatch({ type: ReducerActions.DELETE_LINE, line: other });
   }
 
-  const {positions: dragPositions, startDrag} = useDragItem(
+  const {positions: dragPositions, startDrag, dragButton} = useDragItem(
     onStartDrag, onDrag, onEndDrag
   );
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useScale from '../hooks/usescale';
-import util from "../util";
+import util, { Util } from "../util";
 import { Point } from "../types/index";
 
 function useDrag(
@@ -9,7 +9,8 @@ function useDrag(
   doEndDrag?: (dist: number, e: MouseEvent, endPos: Point) => void
 ):{
   pos: Point,
-  onMouseDown: (e: React.MouseEvent) => void
+  onMouseDown: (e: React.MouseEvent) => void,
+  dragButton: Util.MouseButton
 }{
 
   // when implementing useDrag, doStartDrag must return start position
@@ -22,6 +23,7 @@ function useDrag(
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [dragButton, setDragButton] = useState(0);
 
   // replace with useCallback?
   const firstUpdate = useRef(true);
@@ -47,6 +49,7 @@ function useDrag(
 
   function startDrag(e: React.MouseEvent): void {
     e.stopPropagation();
+    setDragButton(e.button as Util.MouseButton);
 
     const p = util.getMousePos(e);
     const newStartPos = doStartDrag(p, e);
@@ -102,6 +105,7 @@ function useDrag(
   return {
     pos,
     onMouseDown: startDrag,
+    dragButton
   }
 }
 

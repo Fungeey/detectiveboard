@@ -26,9 +26,9 @@ function useSelectionBehavior(
 
     if (!target.parentElement) return;
     // deselect if click anywhere other than this note.
-    let targetUuid = target.parentElement?.parentElement?.getAttribute("uuid");
+    const targetUuid = target.parentElement?.parentElement?.dataset.uuid;
 
-    if (targetUuid && target.dataset.name !== "deleteButton")
+    if (!targetUuid && target.dataset.name !== "deleteButton")
       deSelect();
   }
 
@@ -63,7 +63,8 @@ function useSelectionBehavior(
       <div className="itemActions">
         <img 
           src={require('../img/delete.png')} 
-          alt="delete icon" 
+          alt="delete icon"
+          data-name={'deleteButton'}
           style={{
             width: 20,
             height: 20,

@@ -3,7 +3,6 @@ import util from '../util'
 import { Point } from '../types/index';
 
 interface LineProps{
-  key: string,
   start: Point,
   end: Point
 }
@@ -14,7 +13,7 @@ const lineWidth = 5;
 const tension = 1;
 
 export const Line: React.FC<LineProps> = ({
-  key, start:_start, end:_end
+  start:_start, end:_end
 }) => {
 
   const start = util.addPos(_start, offset);
@@ -50,7 +49,7 @@ export const Line: React.FC<LineProps> = ({
   const m2 = Math.max(y1, y2) * tension;
 
   return (
-    <svg className='svgHolder' key={key} width={getSvgWidth()} height={getSvgHeight()}
+    <svg className='svgHolder' width={getSvgWidth()} height={getSvgHeight()}
       style={util.posStyle(topLeft())}>
       <path d={`M ${x1} ${y1} Q ${m1} ${m2} ${x2} ${y2}`}
         style={lineStyle()} />
