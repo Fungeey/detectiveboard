@@ -75,7 +75,7 @@ function useDrag(
 
     setPos(newPos);
     doOnDrag?.(newPos, e);
-  }, 1);
+  }, 10);
 
   function loseFocus() {
     document.removeEventListener('mousemove', onDrag);

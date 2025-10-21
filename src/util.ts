@@ -75,21 +75,6 @@ const deepDiffMapper = function () {
   }
 }();
 
-const doThrottle = (function() {
-  let timeout: NodeJS.Timeout | null = null;
-  return function throttle(callback, duration) {
-    if (timeout === undefined) {
-      callback();
-      // if(!duration) duration = 16;
-
-      timeout = setTimeout(() => {
-        // allow another call to be throttled
-        timeout = null;
-      }, duration);
-    }
-  }
-})();
-
 export namespace Util {
   export function posStyle(pos: Point){
     return ({ transform: `translateX(${pos.x}px) translateY(${pos.y}px)` });
@@ -120,23 +105,24 @@ export namespace Util {
   }
 
   export function isEmpty(obj: any){
-    return Object.keys(obj).length == 0;
+    return Object.keys(obj).length === 0;
   }
 
   // Take an image URL, downscale it to the given width, and return a new image URL.
   // export const downscaleImage = downscaleImage;
   
-  /**
-   * Wraps callback in a function and throttles it.
-   * @returns Wrapper function
-   */
-  export function throttle(callback: (event) => void, duration: number){
-    return function throttled(event){
-
-      doThrottle(() => {
-        callback(event);
-      }, duration);
-    }
+  export function throttle<T extends (...args: any[]) => void>(
+    callback: T, 
+    delay: number
+  ) {
+    let lastCall = 0;
+    return function (...args: Parameters<T>) {
+      const now = Date.now();
+      if (now - lastCall >= delay) {
+        lastCall = now;
+        callback(...args);
+      }
+    };
   }
 
   export const objDiff = deepDiffMapper;
