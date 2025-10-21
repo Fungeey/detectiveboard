@@ -53,8 +53,11 @@ function CREATE_ITEM(state: State, item: Item) {
 }
 
 function createLine(state: State, line: LineItem) {
+  if(!line.startUuid || !line.endUuid) return state;
+
   const lines = lineReducer.createLine(state.lines, line);
 
+  // mark items on either end of the line as connected
   const update = (item: Item) => item.isConnected = true;
   let items = itemReducer.updateItem(state.items, line.startUuid, update);
   items = itemReducer.updateItem(items, line.endUuid, update);
@@ -62,7 +65,9 @@ function createLine(state: State, line: LineItem) {
   return { items: items, lines: lines }
 }
 
-export function getExistingLine(lines: LineItem[], line: LineItem) {
+export function getExistingLine(
+  lines: LineItem[], line: LineItem
+): LineItem | null {
   for (let i = 0; i < lines.length; i++) {
     let other = lines[i];
 
@@ -72,7 +77,7 @@ export function getExistingLine(lines: LineItem[], line: LineItem) {
       return other;
   }
 
-  return {}
+  return null;
 }
 
 function deleteLine(state: State, line: LineItem) {

@@ -42,6 +42,12 @@ export interface NoteItem extends Item {
   text: string,
 }
 
+export interface ScrapItem extends Item {
+  text: string,
+  font: string,
+  effect: string
+}
+
 export interface LineItem {
   start: Point,
   end: Point,

@@ -8,7 +8,8 @@ const App = () => {
   return (
     <UserModeContext.Provider value={{ userMode, setUserMode }}>
       <Board/>
-    </UserModeContext.Provider>)
+    </UserModeContext.Provider>
+  )
 }
 
 export default App;
