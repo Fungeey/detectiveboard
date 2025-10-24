@@ -1,22 +1,17 @@
-import { useCallback, useEffect } from "react";
+import useKeyDown from "./usekeydown";
 
 function useCopyPaste(
   onCopy: () => void, 
   onPaste: () => void
 ) {
 
-  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+  useKeyDown((e) => {
     if (e.ctrlKey && e.key === 'c') {
-      if (onCopy) onCopy();
+      onCopy?.();
     } else if (e.ctrlKey && e.key === 'v') {
-      if (onPaste) onPaste();
+      onPaste?.();
     }
-  }, [onCopy, onPaste]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [onCopy, onPaste, handleKeyPress]);
+  }, []);
 
 }
 

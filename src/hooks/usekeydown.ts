@@ -1,22 +1,53 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
-// https://medium.com/@paulohfev/problem-solving-custom-react-hook-for-keydown-events-e68c8b0a371
-const useKeyDown = (callback, keys) => {
+const listeners = new Map<(e: KeyboardEvent) => void, string[]>();
 
-  const onKeyDown = (event) => {
-    const wasAnyKeyPressed = keys.some((key) => event.key === key);
-    if (wasAnyKeyPressed) {
-      event.preventDefault();
-      callback();
+function globalKeyHandler(e: KeyboardEvent) {
+  if(e.repeat) return;
+
+  listeners.forEach((keys, callback) => {
+    const wasAnyKeyPressed = keys.some((key) => e.key === key);
+    if (wasAnyKeyPressed || keys.length === 0) {
+      console.log("ACTUAL")
+      // e.preventDefault();
+      callback(e);
     }
-  };
+  });
+}
+
+export function useKeyDown(
+  callback: (e: KeyboardEvent) => void, 
+  keys: string[]
+){
+  const callbackRef = useRef(callback);
 
   useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-    };
+    callbackRef.current = callback
   });
+
+  // Use a memoized callback that calls the latest callback
+  const stableCallback = useCallback((e: KeyboardEvent) => {
+    if (callbackRef.current) {
+      callbackRef.current(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    listeners.set(stableCallback, keys);
+    console.log(listeners.size)
+
+    if(listeners.size === 1){
+      console.log('setup')
+      document.addEventListener('keydown', globalKeyHandler);
+    }
+
+    return () => {
+      listeners.delete(stableCallback);
+      if (listeners.size === 0) {
+        document.removeEventListener('keydown', globalKeyHandler);
+      }
+    };
+  }, [stableCallback]);
 };
 
 export default useKeyDown;

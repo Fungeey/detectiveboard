@@ -116,7 +116,7 @@ export default function Board() {
   const { pos: boardPos, onMouseDown } = useDrag(startPan, null, endPan);
 
   function addNote() {
-    if (input.text === "" || !input.pos)
+    if (input.text === '' || !input.pos)
       return;
 
     let type = ItemType.NOTE;

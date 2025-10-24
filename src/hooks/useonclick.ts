@@ -17,7 +17,7 @@ export function useOnDocumentClick(callback: (e: MouseEvent) => void) {
     return () => {
       listeners.delete(callback);
       if (listeners.size === 0) {
-        document.addEventListener('click', globalClickHandler);
+        document.removeEventListener('click', globalClickHandler);
       }
     };
   }, [callback]);
