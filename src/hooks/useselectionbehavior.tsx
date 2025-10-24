@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import useKeyDown from '../hooks/usekeydown';
 import { ReducerActions } from "../state/boardstatereducer";
 import { Item } from "../types/index";
@@ -16,12 +16,15 @@ function useSelectionBehavior(
   ) => ReactNode, 
 }{
 
-  useEffect(() => {
-    document.addEventListener('click', onClickDocument);
-    return () => document.removeEventListener('click', onClickDocument);
-  }, []);
+  const select = useCallback(() => {
+    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
+  }, [dispatch, item.uuid]);
 
-  function onClickDocument(e: Event) {
+  const deSelect = useCallback(() => {
+    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
+  }, [dispatch, item.uuid]);
+
+  const onClickDocument = useCallback((e: Event) => {
     const target = e.target as HTMLElement;
 
     if (!target.parentElement) return;
@@ -30,7 +33,12 @@ function useSelectionBehavior(
 
     if (!targetUuid && target.dataset.name !== "deleteButton")
       deSelect();
-  }
+  }, [deSelect]);
+
+  useEffect(() => {
+    document.addEventListener('click', onClickDocument);
+    return () => document.removeEventListener('click', onClickDocument);
+  }, [onClickDocument]);
 
   const [shiftKey, setShiftKey] = useState<Boolean>(false)
 
@@ -39,14 +47,6 @@ function useSelectionBehavior(
 
     setShiftKey(true);
   }, ["Shift"]);
-
-  function select() {
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
-  }
-
-  function deSelect() {
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
-  }
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
 

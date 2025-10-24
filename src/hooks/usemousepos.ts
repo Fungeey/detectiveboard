@@ -1,11 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Point } from "../types/index";
 
 const useMousePos = () => {
   const [mousePos, setMousePos] = useState<Point | null>(null);
-  // const mouseRefPos = useRef();
-
-  // mouseRefPos.current = mousePos;
 
   useEffect(() => {
     document.addEventListener('mousemove', onMouseMove);

@@ -215,7 +215,7 @@ function useItemBehavior(
       dispatch({ type: ReducerActions.DELETE_LINE, line: other });
   }
 
-  const {positions: dragPositions, startDrag, dragButton} = useDragItem(
+  const { startDrag, dragButton } = useDragItem(
     onStartDrag, onDrag, onEndDrag
   );
 

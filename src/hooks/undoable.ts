@@ -56,7 +56,7 @@ function redo(state: OmniState): OmniState {
 }
 
 function doReducer(state: OmniState, action: Action): OmniState {
-  let { past, present, future } = state;
+  let { past, present } = state;
 
   if(action.restorePresent)
     present = util.clone(state.temporaryPresent);

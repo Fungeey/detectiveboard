@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from "react";
-import util from '../util';
 
 function usePasteImage(onPasteImage: (imgSRC: string) => void){
 

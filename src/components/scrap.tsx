@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
 import util from "../util";
-import { ScrapItem, Size } from "../types/index";
+import { ScrapItem } from "../types/index";
 
 const fonts = [
   "Trebuchet MS, Helvetica, sans-serif",

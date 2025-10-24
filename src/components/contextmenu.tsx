@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import util, { Util } from "../util";
+import { Util } from "../util";
 
 const ContextMenu = () => {
   const [anchorPoint, setAnchorPoint] = useState({ x: 0, y: 0 });
@@ -18,7 +18,7 @@ const ContextMenu = () => {
       return;
     e.preventDefault()
     setIsVisible(false);
-  }, [setAnchorPoint, setIsVisible]);
+  }, [setIsVisible]);
 
   // board should handle this state
   useEffect(() => {
