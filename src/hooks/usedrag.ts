@@ -1,68 +1,72 @@
-import { useEffect, useRef, useState } from "react";
-import useScale from '../hooks/usescale';
-import util, { Util } from "../util";
+import { useState } from "react";
+import useScale from './usescale';
+import { Util } from "../util";
 import { Point } from "../types/index";
-import usePointer from "./usepointermove";
 import useOnWindowBlur from "./useonwindowblur";
+import usePointer from "./usepointermove";
 
-function useDrag(
-  doStartDrag: (p: Point, e: React.PointerEvent) => Point, 
-  doOnDrag?: ((newPos: Point, e: PointerEvent) => void) | null, 
-  doEndDrag?: (dist: number, e: PointerEvent, endPos: Point) => void
+export default function useDrag (
+  doStartDrag: (p: Point, e: React.PointerEvent) => Point[], 
+  doOnDrag: ((newPos: Point[], e: PointerEvent) => void) | null, 
+  doEndDrag: (dist: number, e: PointerEvent, endPos: Point[]) => void
 ):{
-  pos: Point,
-  onMouseDown: (e: React.PointerEvent) => void,
+  positions: Point[],
+  startDrag: (e: React.PointerEvent) => void,
   dragButton: Util.MouseButton
-}{
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+} {
+  const [positions, setPositions] = useState<Point[]>([]);
+  const [offsets, setOffsets] = useState<Point[]>([]);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [dragButton, setDragButton] = useState(0);
 
+  // replace with useCallback?
   const getScale = useScale();
 
-  function startDrag(e: React.PointerEvent): void {
+  function startDrag(e: React.PointerEvent) {
     e.stopPropagation();
     setDragButton(e.button as Util.MouseButton);
 
-    const p = util.getMousePos(e);
-    const newStartPos = doStartDrag(p, e);
+    const p = Util.getMousePos(e);
+    const startPositions = doStartDrag(p, e);
 
-    setPos(newStartPos);
-    setOffset(util.subPos(newStartPos, p));
+    setPositions(startPositions);
+    const offsets: Point[] = [];
+    startPositions.forEach(pos => offsets.push(Util.subPos(pos, p)));
+    setOffsets(offsets);
     setStartPos(p);
     markDragStart();
   }
 
-  function getActualPosition(e: PointerEvent): Point {
-    const scaleOff = util.mulPos(offset, getScale())
-    let newPos = util.addPos(util.getMousePos(e), scaleOff);
+  const onDrag = Util.throttle((e: PointerEvent) => {
+    e.stopPropagation();
+    const newPositions = offsets.map(offset => getActualPosition(e, offset));
+
+    setPositions(newPositions);
+    doOnDrag?.(newPositions, e);
+  }, 10);
+
+  function getActualPosition(e: PointerEvent, offset: Point) {
+    let scaleOff = Util.mulPos(offset, getScale())
+    let newPos = Util.addPos(Util.getMousePos(e), scaleOff);
 
     // newpos - oldpos to get direction
-    let vec = util.subPos(newPos, startPos);
+    let vec = Util.subPos(newPos, startPos);
     // multiply by scale factor
-    vec = util.mulPos(vec, 1 / getScale());
+    vec = Util.mulPos(vec, 1 / getScale());
 
-    newPos = util.addPos(startPos, vec);
-    newPos = util.roundPos(newPos);
+    newPos = Util.addPos(startPos, vec);
+    newPos = Util.roundPos(newPos);
     return newPos;
   }
 
-  const onDrag = util.throttle((e: PointerEvent) => {
-    const newPos = getActualPosition(e);
-
-    setPos(newPos);
-    doOnDrag?.(newPos, e);
-  }, 10);
-
   function endDrag(e: PointerEvent) {
-    document.removeEventListener('pointermove', onDrag);
-    document.removeEventListener('pointerup', endDrag);
+    const endPositions: Point[] = [];
+    let i = 0;
+    positions.forEach(pos => 
+      endPositions.push(getActualPosition(e, offsets[i++])));
+    let dist = Util.distance(startPos, Util.getMousePos(e));
 
-    const dist = util.distance(startPos, util.getMousePos(e));
-    const endPos = getActualPosition(e);
-
-    doEndDrag?.(dist, e, endPos);
+    doEndDrag?.(dist, e, endPositions);
     markDragEnd();
   }
 
@@ -70,10 +74,8 @@ function useDrag(
   useOnWindowBlur(() => markDragEnd());
 
   return {
-    pos,
-    onMouseDown: startDrag,
+    positions,
+    startDrag,
     dragButton
   }
 }
-
-export default useDrag; 

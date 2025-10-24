@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo } from 'react';
-import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
@@ -17,6 +16,7 @@ import UI from './ui';
 import { useGlobalContext, UserMode } from '../state/context';
 import { Point, NoteItem, State, ItemType, ImageItem, LineItem, Size, ScrapItem } from '../types/index';
 import { ActionType } from '../hooks/useundostack';
+import useDrag from '../hooks/usedrag';
 
 const debug = false;
 
@@ -61,11 +61,11 @@ export default function Board() {
     return { x: rect.left, y: rect.top };
   }
 
-  function startPan(): Point {
-    return boardPos;
+  function startPan(): Point[] {
+    return [boardPos];
   }
 
-  function endPan(dist: number, e: MouseEvent) {
+  function endPan(dist: number, e: MouseEvent, endPositions: Point[]) {
     if (dist < 2 && e.button === Util.MouseButton.LMB)
       setIsCreating(false);
   }
@@ -113,7 +113,8 @@ export default function Board() {
     setIsCreating(false);
   }, ["Escape"]);
 
-  const { pos: boardPos, onMouseDown } = useDrag(startPan, null, endPan);
+  const { positions, startDrag } = useDrag(startPan, null, endPan);
+  const boardPos = positions[0] || { x: 0, y:0 };
 
   function addNote() {
     if (input.text === '' || !input.pos)
@@ -226,7 +227,7 @@ export default function Board() {
 
   return (
     <div 
-      onPointerDown={onMouseDown} 
+      onPointerDown={startDrag} 
       onClick={onLClick} 
       onDoubleClick={onDoubleLClick} 
       style={{ overflow: 'hidden' }}>

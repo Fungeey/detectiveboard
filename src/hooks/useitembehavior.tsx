@@ -6,7 +6,7 @@ import useCopyPaste from './usecopypaste';
 import useMousePos from './usemousepos';
 import useScale from './usescale';
 import util, { Util } from "../util";
-import useDragItem from "./usedragitem";
+import useDrag from "./usedrag";
 import useSelectionBehavior from "./useselectionbehavior";
 import { ReducerActions, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
@@ -212,7 +212,7 @@ function useItemBehavior(
       dispatch({ type: ReducerActions.DELETE_LINE, line: other });
   }
 
-  const { startDrag, dragButton } = useDragItem(
+  const { startDrag, dragButton } = useDrag(
     onStartDrag, onDrag, onEndDrag
   );
 

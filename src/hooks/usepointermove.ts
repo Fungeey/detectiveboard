@@ -6,24 +6,15 @@ const listeners = new Map<
 >();
 
 function globalPointerMoveHandler(e: PointerEvent) {
-  console.log('move');
-
   listeners.forEach((upListener, moveListener) => {
     moveListener(e);
   });
 }
 
 function globalPointerUpHandler(e: PointerEvent) {
-  console.log('up')
-
-  let toDelete: ((e: PointerEvent) => void)[] = [];
   listeners.forEach((upListener, moveListener) => {
     upListener(e);
-    toDelete.push(moveListener);
   });
-
-  // delete the listeners to end this drag event
-  toDelete.forEach((key) => listeners.delete(key));
 }
 
 // are there any situations we use pointer but not for drag?
