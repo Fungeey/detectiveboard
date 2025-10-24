@@ -1,5 +1,5 @@
 import React from 'react';
-import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
+import useItemBehavior, { ItemProps } from "../hooks/useItemBehavior";
 import util from "../util";
 import { ImageItem } from '../types/index';
 

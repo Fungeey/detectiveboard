@@ -1,22 +1,22 @@
 import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo } from 'react';
-import useKeyDown from '../hooks/usekeydown';
-import useMousePos from '../hooks/usemousepos';
-import usePasteImage from '../hooks/usepasteimage';
-import useScale from '../hooks/usescale';
-import { ReducerActions } from '../state/boardstatereducer';
+import useKeyDown from '../hooks/useKeyDown';
+import useMousePos from '../hooks/useMousePos';
+import usePasteImage from '../hooks/usePasteImage';
+import useScale from '../hooks/useScale';
+import { ReducerActions } from '../state/boardStateReducer';
 import undoable, { OmniState } from '../hooks/undoable';
 import util, { Util } from '../util';
-import ContextMenu from './contextmenu';
-import BoardBackground from './boardbackground';
-import Img from './img';
-import Line from './line';
-import Note from './note';
-import Scrap from './scrap';
-import UI from './ui';
-import { useGlobalContext, UserMode } from '../state/context';
+import ContextMenu from './ContextMenu';
+import BoardBackground from './BoardBackground';
+import Img from './Img';
+import Line from './Line';
+import Note from './Note';
+import Scrap from './Scrap';
+import UI from './UI';
+import { useGlobalContext, UserMode } from '../state/Context';
 import { Point, NoteItem, State, ItemType, ImageItem, LineItem, Size, ScrapItem } from '../types/index';
-import { ActionType } from '../hooks/useundostack';
-import useDrag from '../hooks/usedrag';
+import { ActionType } from '../hooks/useUndoStack';
+import useDrag from '../hooks/useDrag';
 
 const debug = false;
 

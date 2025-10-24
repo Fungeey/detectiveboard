@@ -1,8 +1,8 @@
-import * as itemReducer from './itemreducer';
-import * as lineReducer from './linereducer';
+import * as itemReducer from './ItemReducer';
+import * as lineReducer from './LineReducer';
 import util from '../util';
 import { State, Item, LineItem } from '../types/index';
-import { Action } from '../hooks/useundostack';
+import { Action } from '../hooks/useUndoStack';
 
 export const enum ReducerActions {
   CREATE_ITEM = 'createItem',

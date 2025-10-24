@@ -1,4 +1,4 @@
-import useKeyDown from "./usekeydown";
+import useKeyDown from "./useKeyDown";
 
 function useCopyPaste(
   onCopy: () => void, 

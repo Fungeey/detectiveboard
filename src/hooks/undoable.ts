@@ -1,6 +1,6 @@
-import { ReducerActions, boardStateReducer } from "../state/boardstatereducer";
+import { ReducerActions, boardStateReducer } from "../state/boardStateReducer";
 import util from "../util";
-import { Action } from "./useundostack";
+import { Action } from "./useUndoStack";
 import { State } from "../types/index";
 
 export interface OmniState {

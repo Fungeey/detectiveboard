@@ -1,9 +1,9 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import useKeyDown from '../hooks/usekeydown';
-import { ReducerActions } from "../state/boardstatereducer";
+import React, { ReactNode, useCallback, useState } from "react";
+import useKeyDown from './useKeyDown';
+import { ReducerActions } from "../state/boardStateReducer";
 import { Item } from "../types/index";
-import { Action } from "./useundostack";
-import useOnDocumentClick from "./useonclick";
+import { Action } from "./useUndoStack";
+import useOnDocumentClick from "./useOnClick";
 
 function useSelectionBehavior(
   item: Item,
@@ -45,6 +45,8 @@ function useSelectionBehavior(
 
     setShiftKey(true);
   }, ["Shift"]);
+
+  console.log(shiftKey)
 
   useKeyDown(deSelect, ["Enter", "Escape"]);
 

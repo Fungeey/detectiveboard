@@ -1,10 +1,10 @@
 import React, { useState  } from 'react';
-import Board from './components/board';
-import { UserMode, UserModeContext } from './state/context';
-import useKeyDown from './hooks/usekeydown';
-import useScale from './hooks/usescale';
-import useMousePos from './hooks/usemousepos';
-import usePointer from './hooks/usepointermove';
+import Board from './components/Board';
+import { UserMode, UserModeContext } from './state/Context';
+import useKeyDown from './hooks/useKeyDown';
+import useScale from './hooks/useScale';
+import useMousePos from './hooks/useMousePos';
+import usePointer from './hooks/usePointerMove';
 
 const App = () => {
   const [userMode, setUserMode] = useState(UserMode.SELECT);

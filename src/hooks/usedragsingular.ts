@@ -1,9 +1,9 @@
 import { useState } from "react";
-import useScale from './usescale';
+import useScale from './useScale';
 import util, { Util } from "../util";
 import { Point } from "../types/index";
-import usePointer from "./usepointermove";
-import useOnWindowBlur from "./useonwindowblur";
+import usePointer from "./usePointerMove";
+import useOnWindowBlur from "./useOnWindowBlur";
 
 // DEPRICATED
 
