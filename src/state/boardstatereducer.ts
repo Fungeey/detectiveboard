@@ -2,9 +2,8 @@ import * as itemReducer from './itemreducer';
 import * as lineReducer from './linereducer';
 import util from '../util';
 import { State, Item, LineItem } from '../types/index';
-import { Action } from '../hooks/useundostack';
 
-export const enum ReducerActions {
+export const enum ActionType {
   CREATE_ITEM = 'createItem',
   UPDATE_ITEM = 'updateItem',
   DELETE_ITEM = 'deleteItem',
@@ -13,14 +12,28 @@ export const enum ReducerActions {
   DELETE_LINE = 'deleteLine',
 
   MANY = 'many',
-  LOAD = 'load'
+  LOAD = 'load',
+
+  UNDO = 'UNDO',
+  REDO = 'REDO'
 }
 
-export interface ReducerAction extends Action {
+export interface Action {
+  type: ActionType | ActionType,
+  // If type = MANY, this action is a collection of multiple actions.
+  actions?: Action[], 
 
+  skipUndo?: boolean,
+  restorePresent?: boolean,
+
+  line?: LineItem,
+  item?: Item,
+  uuid?: string,
+  update?: (item: Item) => void,
+  data?: State
 }
 
-export function boardStateReducer(state: State, action: ReducerAction) {
+export function boardStateReducer(state: State, action: Action) {
   const newState = runReducer(state, action);
 
   if(!newState || util.isEmpty(newState)){
@@ -31,17 +44,17 @@ export function boardStateReducer(state: State, action: ReducerAction) {
   return newState;
 }
 
-function runReducer(state: State, action: ReducerAction){
+function runReducer(state: State, action: Action){
   switch (action.type) {
-    case ReducerActions.CREATE_ITEM: return CREATE_ITEM(state, action.item!);
-    case ReducerActions.UPDATE_ITEM:
+    case ActionType.CREATE_ITEM: return CREATE_ITEM(state, action.item!);
+    case ActionType.UPDATE_ITEM:
       return UPDATE_ITEM(state, action.uuid!, action.update!);
-    case ReducerActions.DELETE_ITEM: return DELTE_ITEM(state, action.item!);
+    case ActionType.DELETE_ITEM: return DELTE_ITEM(state, action.item!);
 
-    case ReducerActions.CREATE_LINE: return createLine(state, action.line!);
-    case ReducerActions.DELETE_LINE: return deleteLine(state, action.line!);
+    case ActionType.CREATE_LINE: return createLine(state, action.line!);
+    case ActionType.DELETE_LINE: return deleteLine(state, action.line!);
 
-    case ReducerActions.LOAD: return action.data;
+    case ActionType.LOAD: return action.data;
 
     default: console.error("undefined reducer action: " + action);
   }

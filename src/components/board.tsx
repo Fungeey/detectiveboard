@@ -3,7 +3,7 @@ import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
-import { ReducerActions } from '../state/boardstatereducer';
+import { ActionType } from '../state/boardstatereducer';
 import undoable, { OmniState } from '../hooks/undoable';
 import util, { Util } from '../util';
 import ContextMenu from './contextmenu';
@@ -15,7 +15,6 @@ import Scrap from './scrap';
 import UI from './ui';
 import { useGlobalContext, UserMode } from '../state/context';
 import { Point, NoteItem, State, ItemType, ImageItem, LineItem, Size, ScrapItem } from '../types/index';
-import { ActionType } from '../hooks/useundostack';
 import useDrag from '../hooks/usedrag';
 
 const debug = false;
@@ -138,7 +137,7 @@ export default function Board() {
       isConnected: false
     };
 
-    dispatch({ type: ReducerActions.CREATE_ITEM, item: item });
+    dispatch({ type: ActionType.CREATE_ITEM, item: item });
   }
 
   useEffect(() => {
@@ -170,11 +169,11 @@ export default function Board() {
       isConnected: false
     }
 
-    dispatch({ type: ReducerActions.CREATE_ITEM, item: img })
+    dispatch({ type: ActionType.CREATE_ITEM, item: img })
   });
 
   function onLoad(newData: State) {
-    dispatch({ type: ReducerActions.LOAD, data: newData });
+    dispatch({ type: ActionType.LOAD, data: newData });
   }
 
   function withinViewport(pos: Point, size: Size): boolean {

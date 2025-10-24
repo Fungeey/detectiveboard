@@ -1,8 +1,7 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import useKeyDown from './usekeydown';
-import { ReducerActions } from "../state/boardstatereducer";
+import { Action, ActionType } from "../state/boardstatereducer";
 import { Item } from "../types/index";
-import { Action } from "./useundostack";
 import useOnDocumentClick from "./useonclick";
 
 function useSelectionBehavior(
@@ -18,11 +17,11 @@ function useSelectionBehavior(
 }{
 
   const select = useCallback(() => {
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
   }, [dispatch, item.uuid]);
 
   const deSelect = useCallback(() => {
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
   }, [dispatch, item.uuid]);
 
   const onClickDocument = useCallback((e: Event) => {
@@ -50,7 +49,7 @@ function useSelectionBehavior(
 
   function deleteItem() {
     deSelect();
-    dispatch({ type: ReducerActions.DELETE_ITEM, item: item });
+    dispatch({ type: ActionType.DELETE_ITEM, item: item });
   }
 
   function renderSelection(

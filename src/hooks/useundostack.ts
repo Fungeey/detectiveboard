@@ -1,29 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ReducerActions } from "../state/boardstatereducer";
-import { Item, LineItem, State } from "../types/index";
-
-export enum ActionType {
-  UNDO = 'UNDO',
-  REDO = 'REDO'
-}
-
-export interface Action {
-  // do: () => void,
-  // undo: () => void,
-
-  type: ActionType | ReducerActions,
-  // If type = MANY, this action is a collection of multiple actions.
-  actions?: Action[], 
-
-  skipUndo?: boolean,
-  restorePresent?: boolean,
-
-  line?: LineItem,
-  item?: Item,
-  uuid?: string,
-  update?: (item: Item) => void,
-  data?: State
-}
+import { Action } from "../state/boardstatereducer";
 
 //
 // This hook is depreciated - the real logic is in undoable.ts 

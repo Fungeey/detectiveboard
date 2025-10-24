@@ -3,7 +3,7 @@ import useSaveLoad from '../hooks/usesaveload';
 import { useGlobalContext, UserMode } from '../state/context';
 import { State } from '../types/index';
 import { OmniState } from '../hooks/undoable';
-import { Action, ActionType } from '../hooks/useundostack';
+import { Action, ActionType } from '../state/boardstatereducer';
 
 interface uiProps{
   allData: OmniState, 

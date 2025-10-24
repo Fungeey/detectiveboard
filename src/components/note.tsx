@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
 import util from "../util";
-import { ReducerActions } from "../state/boardstatereducer";
+import { ActionType } from "../state/boardstatereducer";
 import { NoteItem } from "../types/index";
 
 const colors = [
@@ -35,7 +35,7 @@ export const Note: React.FC<NoteProps> = React.memo(({
     noteRef.current.contentEditable = 'true';
     noteRef.current.focus();
 
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.isFrozen = true });
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isFrozen = true });
 
     document.addEventListener('focusout', unfocus);
     document.addEventListener('keydown', finishEditing);
@@ -64,7 +64,7 @@ export const Note: React.FC<NoteProps> = React.memo(({
       note.text = noteRef.current?.innerText || ''; 
       note.isFrozen = false 
     }
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update:update });
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update:update });
   }
 
   function getSize() {
@@ -95,7 +95,7 @@ export const Note: React.FC<NoteProps> = React.memo(({
 
   function changeColor(color: string) {
     const update = (note: NoteItem) => note.color = color;
-    dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: update });
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: update });
   }
 
   function renderSelection(itemRef) {

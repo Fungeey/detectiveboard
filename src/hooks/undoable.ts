@@ -1,6 +1,5 @@
-import { ReducerActions, boardStateReducer } from "../state/boardstatereducer";
+import { Action, ActionType, boardStateReducer } from "../state/boardstatereducer";
 import util from "../util";
-import { Action } from "./useundostack";
 import { State } from "../types/index";
 
 export interface OmniState {
@@ -62,7 +61,7 @@ function doReducer(state: OmniState, action: Action): OmniState {
     present = util.clone(state.temporaryPresent);
 
   let newPresent = util.clone(present);
-  if(action.type === ReducerActions.MANY && action.actions){
+  if(action.type === ActionType.MANY && action.actions){
     for(const a of action.actions){
       newPresent = boardStateReducer(newPresent, a);
     }

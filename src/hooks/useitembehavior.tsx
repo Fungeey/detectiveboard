@@ -8,9 +8,8 @@ import useScale from './usescale';
 import util, { Util } from "../util";
 import useDrag from "./usedrag";
 import useSelectionBehavior from "./useselectionbehavior";
-import { ReducerActions, getExistingLine } from "../state/boardstatereducer";
+import { Action, ActionType, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
-import { Action } from './useundostack';
 import useOnWindowBlur from './useonwindowblur';
 
 let hoverUUID = "";
@@ -61,7 +60,7 @@ function useItemBehavior(
     const boardPos = util.subPos(getMousePos(), getBoardPos());
     itemCopy.pos = util.mulPos(boardPos, 1 / getScale());
 
-    dispatch({ type: ReducerActions.CREATE_ITEM, item: itemCopy });
+    dispatch({ type: ActionType.CREATE_ITEM, item: itemCopy });
   }
 
   useCopyPaste(copy, paste);
@@ -92,7 +91,7 @@ function useItemBehavior(
 
       // move the item to the drag position.
       const update = (item: Item) => item.pos = dragPositions[0];
-      dispatch({ type: ReducerActions.UPDATE_ITEM, skipUndo: true, uuid: item.uuid, update: update });
+      dispatch({ type: ActionType.UPDATE_ITEM, skipUndo: true, uuid: item.uuid, update: update });
 
       let i = 1;
       for (let uuid in data.items) {
@@ -103,7 +102,7 @@ function useItemBehavior(
           const newPosition = util.clone(dragPositions[i++]);
           const update = (item: Item) => item.pos = newPosition;
 
-          dispatch({ type: ReducerActions.UPDATE_ITEM, skipUndo: true, uuid: otherItem.uuid, update: update });
+          dispatch({ type: ActionType.UPDATE_ITEM, skipUndo: true, uuid: otherItem.uuid, update: update });
         }
       }
 
@@ -155,7 +154,7 @@ function useItemBehavior(
     if (newSize != null && !util.eqlSize(getSize(), startSize)) { // save new width
       // clientWidth includes padding, so need to subtract it away
 
-      dispatch({ type: ReducerActions.UPDATE_ITEM, uuid: item.uuid, update: item => item.size = newSize });
+      dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.size = newSize });
 
     } else if (dragButton === Util.MouseButton.LMB) { // lmb click = select
       if (dist < 2) {
@@ -168,7 +167,7 @@ function useItemBehavior(
 
       const actions: Action[] = [];
 
-      actions.push({ type: ReducerActions.UPDATE_ITEM, restorePresent: true, uuid: item.uuid, update: (item) => {
+      actions.push({ type: ActionType.UPDATE_ITEM, restorePresent: true, uuid: item.uuid, update: (item) => {
         item.pos = endPositions[0] 
       }});
 
@@ -179,11 +178,11 @@ function useItemBehavior(
         if (data.items[uuid].isSelected) {
           const newPosition = util.clone(endPositions[i++]);
           const updated = (item: Item) => item.pos = newPosition;
-          actions.push({ type: ReducerActions.UPDATE_ITEM, uuid: uuid, update: updated});
+          actions.push({ type: ActionType.UPDATE_ITEM, uuid: uuid, update: updated});
         }
       }
 
-      dispatch({ type: ReducerActions.MANY, restorePresent: true, actions: actions });
+      dispatch({ type: ActionType.MANY, restorePresent: true, actions: actions });
 
     } else if (dragButton === Util.MouseButton.RMB) {
       createLine();
@@ -207,9 +206,9 @@ function useItemBehavior(
     const other = getExistingLine(data.lines, line);
 
     if (!other)
-      dispatch({ type: ReducerActions.CREATE_LINE, line: line });
+      dispatch({ type: ActionType.CREATE_LINE, line: line });
     else
-      dispatch({ type: ReducerActions.DELETE_LINE, line: other });
+      dispatch({ type: ActionType.DELETE_LINE, line: other });
   }
 
   const { startDrag, dragButton } = useDrag(
