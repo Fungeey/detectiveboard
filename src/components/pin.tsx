@@ -10,7 +10,7 @@ interface PinProps{
   pos: Point
 }
 
-export const Pin: React.FC<PinProps> = ({pos}) => {
+export const Pin: React.FC<PinProps> = React.memo(({pos}) => {
 
   function getPos(): Point {
     return pos || { x: 0, y:0 };
@@ -25,6 +25,6 @@ export const Pin: React.FC<PinProps> = ({pos}) => {
         top: -pinSize / 2 + offset
       }} />
   )
-}
+});
 
 export default Pin;

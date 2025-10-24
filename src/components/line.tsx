@@ -12,7 +12,7 @@ const buffer = 5; // how much extra space to pad the svg area by
 const lineWidth = 5;
 const tension = 1;
 
-export const Line: React.FC<LineProps> = ({
+export const Line: React.FC<LineProps> = React.memo(({
   start:_start, end:_end
 }) => {
 
@@ -55,6 +55,6 @@ export const Line: React.FC<LineProps> = ({
         style={lineStyle()} />
     </svg>
   )
-}
+})
 
 export default Line;

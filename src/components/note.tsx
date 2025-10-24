@@ -18,7 +18,7 @@ interface NoteProps extends ItemProps {
   item: NoteItem
 }
 
-export const Note: React.FC<NoteProps> = ({
+export const Note: React.FC<NoteProps> = React.memo(({
   item,
   debug,
   dispatch,
@@ -116,6 +116,6 @@ export const Note: React.FC<NoteProps> = ({
   }
 
   return render(renderItem, renderSelection);
-}
+})
 
 export default Note;

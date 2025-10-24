@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo, useCallback } from 'react';
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
@@ -53,13 +53,13 @@ export default function Board() {
   }>({ pos: undefined, text: "" });
   const getMousePos = useMousePos(() => {});
 
-  function getBoardPos(): Point {
+  const getBoardPos = useCallback((): Point => {
     if(!boardRef || !boardRef.current)
       return { x: 0, y: 0 };
     
     const rect = boardRef.current.getBoundingClientRect();
     return { x: rect.left, y: rect.top };
-  }
+  }, []);
 
   function startPan(): Point[] {
     return [boardPos];
@@ -196,16 +196,16 @@ export default function Board() {
         y: Math.min(line.start.y, line.end.y)
       };
 
-      if (!withinViewport(topLeft, util.lineSize(line))) return null;
+      // if (!withinViewport(topLeft, util.lineSize(line))) return null;
 
       return <Line key={line.uuid} start={line.start} end={line.end} />
     });
-  }, [data.present.lines, withinViewport]);
+  }, [data.present.lines]);
 
   const renderItems = useMemo((): ReactNode[] => {
     return Object.values(data.present.items).map((item) => {
 
-      if (!withinViewport(item.pos, item.size)) return null;
+      // if (!withinViewport(item.pos, item.size)) return null;
 
       const props = {
         dispatch: dispatch,
@@ -223,7 +223,7 @@ export default function Board() {
       else
         return null;
     });
-  }, [data.present, withinViewport]);
+  }, [data.present]);
 
   return (
     <div 

@@ -46,8 +46,6 @@ function useSelectionBehavior(
     setShiftKey(true);
   }, ["Shift"]);
 
-  console.log(shiftKey)
-
   useKeyDown(deSelect, ["Enter", "Escape"]);
 
   function deleteItem() {

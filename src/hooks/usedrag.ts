@@ -36,13 +36,13 @@ export default function useDrag (
     markDragStart();
   }
 
-  const onDrag = Util.throttle((e: PointerEvent) => {
+  const onDrag = (e: PointerEvent) => {
     e.stopPropagation();
     const newPositions = offsets.map(offset => getActualPosition(e, offset));
 
     setPositions(newPositions);
     doOnDrag?.(newPositions, e);
-  }, 10);
+  };
 
   function getActualPosition(e: PointerEvent, offset: Point) {
     let scaleOff = Util.mulPos(offset, getScale())
