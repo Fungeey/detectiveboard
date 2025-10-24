@@ -16,8 +16,16 @@ export default function useSaveLoad(
 
     for (const uuid in data["items"]) {
       let item = data["items"][uuid];
+
       //Compatibility to old data
-      if(item.type === ItemType.NOTE && item.isFrozen == null) item.isFrozen = false 
+      if(item.type === ItemType.NOTE && item.isFrozen == null) 
+        item.isFrozen = false 
+
+      // oct 2025 migration: typescript update
+      if(item.type === ItemType.IMG){
+        item.imgSrc = item.src;
+        item.src = undefined;
+      }
 
       if (!item.pos) err(item.toString() + ": pos is missing");
       if ((!item.size || item.size) && (!item.size.width || !item.size.height)) {
@@ -28,6 +36,18 @@ export default function useSaveLoad(
         }
       }
     }
+
+    for(const uuid in data["lines"]){
+      const line = data["lines"][uuid];
+
+      // oct 2025 migration: typescript update 
+      line.startUuid = line.startRef;
+      line.startRef = undefined;
+      line.endUuid = line.endRef;
+      line.endRef = undefined;
+
+    }
+
   }, []);
 
   useEffect(() => {

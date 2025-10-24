@@ -3,6 +3,7 @@ import useKeyDown from '../hooks/usekeydown';
 import { ReducerActions } from "../state/boardstatereducer";
 import { Item } from "../types/index";
 import { Action } from "./useundostack";
+import useOnDocumentClick from "./useonclick";
 
 function useSelectionBehavior(
   item: Item,
@@ -35,10 +36,7 @@ function useSelectionBehavior(
       deSelect();
   }, [deSelect]);
 
-  useEffect(() => {
-    document.addEventListener('click', onClickDocument);
-    return () => document.removeEventListener('click', onClickDocument);
-  }, [onClickDocument]);
+  useOnDocumentClick(onClickDocument);
 
   const [shiftKey, setShiftKey] = useState<Boolean>(false)
 

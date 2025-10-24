@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useReducer, ReactNode } from 'react';
+import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo } from 'react';
 import useDrag from '../hooks/usedrag';
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
@@ -35,7 +35,13 @@ export default function Board() {
     lines: []
   }));
 
-  const scale = useScale();
+  const [, setTick] = React.useState(0);
+  const forceUpdate = React.useCallback(() => setTick(tick => tick + 1), []);
+  const debouncedForceUpdate = useRef(util.throttle(forceUpdate, 50)).current;
+  const getScale = useScale(() => {
+    debouncedForceUpdate();
+  });
+
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   const [isCreating, setIsCreating] = useState(false);
@@ -45,7 +51,7 @@ export default function Board() {
     pos?: Point,
     text: string
   }>({ pos: undefined, text: "" });
-  const mousePos = useMousePos();
+  const getMousePos = useMousePos(() => {});
 
   function getBoardPos(): Point {
     if(!boardRef || !boardRef.current)
@@ -90,7 +96,7 @@ export default function Board() {
     const boardPos = util.subPos(pos, getBoardPos());
 
     setInput({
-      pos: util.mulPos(boardPos, 1 / scale),
+      pos: util.mulPos(boardPos, 1 / getScale()),
       text: ''
     });
 
@@ -150,13 +156,13 @@ export default function Board() {
   }
 
   usePasteImage((src: string) => {
-    if(!mousePos) return;
-    const boardPos = util.subPos(mousePos, getBoardPos());
+    if(!getMousePos) return;
+    const boardPos = util.subPos(getMousePos(), getBoardPos());
 
     const img: ImageItem = {
       type: ItemType.IMG,
       uuid: util.getUUID(ItemType.IMG),
-      pos: util.mulPos(boardPos, 1 / scale),
+      pos: util.mulPos(boardPos, 1 / getScale()),
       size: { width: 300, height: 300 },
       imgSrc: src,
       isSelected: false,
@@ -170,46 +176,19 @@ export default function Board() {
     dispatch({ type: ReducerActions.LOAD, data: newData });
   }
 
-  return (
-    <div 
-      onPointerDown={onMouseDown} 
-      onClick={onLClick} 
-      onDoubleClick={onDoubleLClick} 
-      style={{ overflow: 'hidden' }}>
+  function withinViewport(pos: Point, size: Size): boolean {
+    const boardPos = util.addPos(util.mulPos(pos, getScale()), getBoardPos());
+    const scaledSize = { width: size.width * getScale(), height: size.height * getScale() };
 
-      <UI 
-        allData={data} 
-        onLoad={onLoad} 
-        dispatch={dispatch} 
-        />
+    return (
+      boardPos.x + scaledSize.width > 0 &&
+      boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth) &&
+      boardPos.y + scaledSize.height > 0 &&
+      boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight)
+    )
+  }
 
-      <div 
-        id='boardWrapper' 
-        className={ userMode === UserMode.CARD ? 'cursorCard':'' } 
-        style={util.scaleStyle(scale)} 
-        /*scale={scale}*/>
-        <BoardBackground scale={scale} boardPos={boardPos} />
-
-        <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
-          <ContextMenu /*boardPos={getBoardPos}*/ />
-          <p style={{ position: 'absolute' }}></p>
-
-          {isCreating && input.pos ?
-            <input 
-              style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} 
-              name="createTextBox" 
-              onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
-            </input>
-            : <></>}
-
-          {renderLines()}
-          {renderItems()}
-        </div>
-      </div>
-    </div>
-  );
-
-  function renderLines(): ReactNode[] {
+  const renderLines = useMemo((): ReactNode[] => {
     return data.present.lines.map((line: LineItem) => {
       const topLeft = {
         x: Math.min(line.start.x, line.end.x),
@@ -220,9 +199,9 @@ export default function Board() {
 
       return <Line key={line.uuid} start={line.start} end={line.end} />
     });
-  }
+  }, [data.present.lines, withinViewport]);
 
-  function renderItems(): ReactNode[] {
+  const renderItems = useMemo((): ReactNode[] => {
     return Object.values(data.present.items).map((item) => {
 
       if (!withinViewport(item.pos, item.size)) return null;
@@ -243,17 +222,44 @@ export default function Board() {
       else
         return null;
     });
-  }
+  }, [data.present, withinViewport]);
 
-  function withinViewport(pos: Point, size: Size): boolean {
-    const boardPos = util.addPos(util.mulPos(pos, scale), getBoardPos());
-    const scaledSize = { width: size.width * scale, height: size.height * scale };
+  return (
+    <div 
+      onPointerDown={onMouseDown} 
+      onClick={onLClick} 
+      onDoubleClick={onDoubleLClick} 
+      style={{ overflow: 'hidden' }}>
 
-    return (
-      boardPos.x + scaledSize.width > 0 &&
-      boardPos.x - scaledSize.width < (document.documentElement.clientWidth || window.innerWidth) &&
-      boardPos.y + scaledSize.height > 0 &&
-      boardPos.y - scaledSize.height < (window.innerHeight || document.documentElement.clientHeight)
-    )
-  }
+      <UI 
+        allData={data} 
+        onLoad={onLoad} 
+        dispatch={dispatch} 
+        />
+
+      <div 
+        id='boardWrapper' 
+        className={ userMode === UserMode.CARD ? 'cursorCard':'' } 
+        style={util.scaleStyle(getScale())} 
+        /*scale={scale}*/>
+        <BoardBackground scale={getScale} boardPos={boardPos} />
+
+        <div className='board' ref={boardRef} style={util.posStyle(boardPos)}>
+          <ContextMenu /*boardPos={getBoardPos}*/ />
+          <p style={{ position: 'absolute' }}></p>
+
+          {isCreating && input.pos ?
+            <input 
+              style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} 
+              name="createTextBox" 
+              onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
+            </input>
+            : <></>}
+
+          {renderLines}
+          {renderItems}
+        </div>
+      </div>
+    </div>
+  );
 }

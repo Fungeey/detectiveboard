@@ -1,53 +1,56 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import util from "../util";
 
-const useScale = () => {
-  const [scale, setScale] = useState(1);
+const scaleRef = { current: 1 };
+const listeners = new Set<(e: WheelEvent) => void>();
+let references = 0;
 
+function globalWheelHandler(e: WheelEvent) {
+  console.log('scroll')
+
+  const { ctrlKey } = e;
+  let spd = 1.25;
+
+  // scroll using mousepad pinch zoom
+  if (ctrlKey)
+    e.preventDefault();
+
+  spd = 1.25;
+  if (e.deltaY < 0)
+    scaleRef.current = util.round(Math.min(scaleRef.current * spd, 5), 4);
+  else if (e.deltaY > 0)
+    scaleRef.current = util.round(Math.max(scaleRef.current * (1 / spd), 0.0625), 4);
+
+  listeners.forEach((listener) => listener(e));
+}
+
+export function useScale(callback?: (e: WheelEvent) => void){
   useEffect(() => {
-    const board = document.getElementById("boardWrapper");
+    if(references !== 0) return;
 
+    const board = document.getElementById("boardWrapper");
     if(board)
-      setScale(parseInt(board.getAttribute("scale") || '1'));
+      scaleRef.current = parseInt(board.getAttribute("scale") || '1');
   }, [])
 
-  const onWheel = useCallback((e) => {
-    const { ctrlKey } = e;
-    if (ctrlKey) {
-      e.preventDefault();
+  useEffect(() => {
+    references += 1;
+    if(callback) listeners.add(callback);
 
-      // scroll using mousepad pinch zoom
-      const spd = 1.1;
-      if (e.deltaY < 0)
-        setScale(util.round(Math.min(scale * spd, 5), 4));
-      else if (e.deltaY > 0)
-        setScale(util.round(Math.max(scale * (1 / spd), 0.0625), 4));
-
-      return;
+    if(listeners.size === 1 || references === 1){
+      document.addEventListener('wheel', globalWheelHandler, { passive: false });
     }
 
-    const spd = 1.25;
-    if (e.deltaY < 0)
-      setScale(util.round(Math.min(scale * spd, 5), 4));
-    else if (e.deltaY > 0)
-      setScale(util.round(Math.max(scale * (1 / spd), 0.0625), 4));
-  }, [scale]);
+    return () => {
+      references -= 1;
+      if(callback) listeners.delete(callback);
+      if (listeners.size === 0 || references === 0) {
+        document.removeEventListener('wheel', globalWheelHandler);
+      }
+    };
+  }, [callback]);
 
-  useEffect(() => {
-
-    // element.addEventListener('wheel', event => {
-    //   const { ctrlKey } = event
-    //   if (ctrlKey) {
-    //     event.preventDefault();
-    //     return
-    //   }
-    // }, { passive: false })
-
-    document.addEventListener('wheel', onWheel, { passive: false });
-    return () => document.removeEventListener('wheel', onWheel);
-  }, [scale, onWheel])
-
-  return scale;
+  return () => scaleRef.current;
 }
 
 export default useScale;

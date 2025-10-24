@@ -27,7 +27,7 @@ function useDrag(
 
   // replace with useCallback?
   const firstUpdate = useRef(true);
-  const scale = useScale();
+  const getScale = useScale();
 
   useEffect(() => {
     if (firstUpdate.current) {
@@ -60,13 +60,13 @@ function useDrag(
   }
 
   function getActualPosition(e: PointerEvent): Point {
-    const scaleOff = util.mulPos(offset, scale)
+    const scaleOff = util.mulPos(offset, getScale())
     let newPos = util.addPos(util.getMousePos(e), scaleOff);
 
     // newpos - oldpos to get direction
     let vec = util.subPos(newPos, startPos);
     // multiply by scale factor
-    vec = util.mulPos(vec, 1 / scale);
+    vec = util.mulPos(vec, 1 / getScale());
 
     newPos = util.addPos(startPos, vec);
     newPos = util.roundPos(newPos);

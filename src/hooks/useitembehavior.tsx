@@ -11,6 +11,7 @@ import useSelectionBehavior from "./useselectionbehavior";
 import { ReducerActions, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
 import { Action } from './useundostack';
+import useOnWindowBlur from './useonwindowblur';
 
 let hoverUUID = "";
 
@@ -36,8 +37,8 @@ function useItemBehavior(
   const { select, renderSelection } = useSelectionBehavior(item, dispatch);
   const [previewLine, setPreviewLine] = useState<LineItem | null>(null);
   const [startSize, setStartSize] = useState<Size>({ width: 100, height: 100});
-  const scale = useScale();
-  const mousePos = useMousePos();
+  const getScale = useScale();
+  const getMousePos = useMousePos(() => {});
 
   const [copiedItem, setCopiedItem] = useState<Item | null>(null);
 
@@ -51,14 +52,14 @@ function useItemBehavior(
   }
 
   function paste() {
-    if (copiedItem == null || !mousePos) return;
+    if (copiedItem == null /*|| !mousePos*/) return;
 
     const itemCopy = { ...copiedItem };
     itemCopy.uuid = util.getUUID(itemCopy.type);
     itemCopy.isSelected = false;
 
-    const boardPos = util.subPos(mousePos, getBoardPos());
-    itemCopy.pos = util.mulPos(boardPos, 1 / scale);
+    const boardPos = util.subPos(getMousePos(), getBoardPos());
+    itemCopy.pos = util.mulPos(boardPos, 1 / getScale());
 
     dispatch({ type: ReducerActions.CREATE_ITEM, item: itemCopy });
   }
@@ -125,7 +126,7 @@ function useItemBehavior(
       const boardPos = util.subPos(util.getMousePos(e), getBoardPos());
       setPreviewLine({
         start: item.pos,
-        end: util.mulPos(boardPos, 1 / scale),
+        end: util.mulPos(boardPos, 1 / getScale()),
         uuid: 'preview_line'
       });
     }
@@ -142,11 +143,7 @@ function useItemBehavior(
   }
 
   // cancel preview line on window unfocus
-  useEffect(() => {
-    window.addEventListener('blur', () => setPreviewLine(null), false);
-    return () =>
-      window.removeEventListener('blur', () => setPreviewLine(null), false);
-  }, []);
+  useOnWindowBlur(() => setPreviewLine(null));
 
   function onEndDrag(
     dist: number, 
