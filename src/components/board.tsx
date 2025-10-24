@@ -107,7 +107,7 @@ export default function Board() {
     setIsCreating(false);
   }, ["Escape"]);
 
-  const { pos: boardPos, onMouseDown, dragButton } = useDrag(startPan, null, endPan);
+  const { pos: boardPos, onMouseDown } = useDrag(startPan, null, endPan);
 
   function addNote() {
     if (input.text === "" || !input.pos)
@@ -207,7 +207,7 @@ export default function Board() {
         </div>
       </div>
     </div>
-  )
+  );
 
   function renderLines(): ReactNode[] {
     return data.present.lines.map((line: LineItem) => {
@@ -216,7 +216,7 @@ export default function Board() {
         y: Math.min(line.start.y, line.end.y)
       };
 
-      if (!withinViewport(topLeft, util.lineSize(line))) return <></>;
+      if (!withinViewport(topLeft, util.lineSize(line))) return null;
 
       return <Line key={line.uuid} start={line.start} end={line.end} />
     });
@@ -225,7 +225,7 @@ export default function Board() {
   function renderItems(): ReactNode[] {
     return Object.values(data.present.items).map((item) => {
 
-      if (!withinViewport(item.pos, item.size)) return <></>;
+      if (!withinViewport(item.pos, item.size)) return null;
 
       const props = {
         dispatch: dispatch,
@@ -241,7 +241,7 @@ export default function Board() {
       else if (item.type === ItemType.SCRAP)
         return <Scrap key={item.uuid} item={item as ScrapItem} {...props} />;
       else
-        return <></>;
+        return null;
     });
   }
 
