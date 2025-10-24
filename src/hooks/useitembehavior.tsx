@@ -1,17 +1,17 @@
 import React, { ReactElement, ReactNode } from 'react';
 import { useRef, useState } from "react";
-import Line from "../components/Line";
-import Pin from "../components/Pin";
-import useCopyPaste from './useCopyPaste';
-import useMousePos from './useMousePos';
-import useScale from './useScale';
+import Line from "../components/line";
+import Pin from "../components/pin";
+import useCopyPaste from './usecopypaste';
+import useMousePos from './usemousepos';
+import useScale from './usescale';
 import util, { Util } from "../util";
-import useDrag from "./useDrag";
-import useSelectionBehavior from "./useSelectionBehavior";
-import { ReducerActions, getExistingLine } from "../state/boardStateReducer";
+import useDrag from "./usedrag";
+import useSelectionBehavior from "./useselectionbehavior";
+import { ReducerActions, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
-import { Action } from './useUndoStack';
-import useOnWindowBlur from './useOnWindowBlur';
+import { Action } from './useundostack';
+import useOnWindowBlur from './useonwindowblur';
 
 let hoverUUID = "";
 

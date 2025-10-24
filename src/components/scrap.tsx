@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useItemBehavior, { ItemProps } from "../hooks/useItemBehavior";
+import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
 import util from "../util";
 import { ScrapItem } from "../types/index";
 

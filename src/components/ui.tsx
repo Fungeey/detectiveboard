@@ -1,9 +1,9 @@
 import React from 'react';
-import useSaveLoad from '../hooks/useSaveLoad';
-import { useGlobalContext, UserMode } from '../state/Context';
+import useSaveLoad from '../hooks/usesaveload';
+import { useGlobalContext, UserMode } from '../state/context';
 import { State } from '../types/index';
 import { OmniState } from '../hooks/undoable';
-import { Action, ActionType } from '../hooks/useUndoStack';
+import { Action, ActionType } from '../hooks/useundostack';
 
 interface uiProps{
   allData: OmniState, 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ReducerActions } from "../state/boardStateReducer";
+import { ReducerActions } from "../state/boardstatereducer";
 import { Item, LineItem, State } from "../types/index";
 
 export enum ActionType {

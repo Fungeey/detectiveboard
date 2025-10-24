@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
-import useItemBehavior, { ItemProps } from "../hooks/useItemBehavior";
+import useItemBehavior, { ItemProps } from "../hooks/useitembehavior";
 import util from "../util";
-import { ReducerActions } from "../state/boardStateReducer";
+import { ReducerActions } from "../state/boardstatereducer";
 import { NoteItem } from "../types/index";
 
 const colors = [
