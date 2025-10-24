@@ -6,7 +6,6 @@ import { useEffect } from "react";
 const listeners = new Set<(e: WheelEvent) => void>();
 
 function globalWheelHandler(e: WheelEvent) {
-  console.log('scroll')
   listeners.forEach((listener) => listener(e));
 }
 

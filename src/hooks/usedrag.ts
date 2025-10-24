@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import useScale from '../hooks/usescale';
 import util, { Util } from "../util";
 import { Point } from "../types/index";
+import usePointer from "./usepointermove";
+import useOnWindowBlur from "./useonwindowblur";
 
 function useDrag(
   doStartDrag: (p: Point, e: React.PointerEvent) => Point, 
@@ -12,40 +14,12 @@ function useDrag(
   onMouseDown: (e: React.PointerEvent) => void,
   dragButton: Util.MouseButton
 }{
-
-  // when implementing useDrag, doStartDrag must return start position
-  // function defaultDoStartDrag(mousePos, e){
-  // return object's start position
-  // }
-
-  // doOnDrag and doEndDrag can be empty
-
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [dragButton, setDragButton] = useState(0);
 
-  // replace with useCallback?
-  const firstUpdate = useRef(true);
   const getScale = useScale();
-
-  useEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
-    }
-
-    document.addEventListener('pointermove', onDrag);
-    document.addEventListener('pointerup', endDrag);
-    window.addEventListener('blur', loseFocus, false);
-
-    return () => {
-      document.removeEventListener('pointermove', onDrag);
-      document.removeEventListener('pointerup', endDrag);
-      window.removeEventListener('blur', loseFocus, false);
-    }
-
-  }, [offset]);
 
   function startDrag(e: React.PointerEvent): void {
     e.stopPropagation();
@@ -57,6 +31,7 @@ function useDrag(
     setPos(newStartPos);
     setOffset(util.subPos(newStartPos, p));
     setStartPos(p);
+    markDragStart();
   }
 
   function getActualPosition(e: PointerEvent): Point {
@@ -80,11 +55,6 @@ function useDrag(
     doOnDrag?.(newPos, e);
   }, 10);
 
-  function loseFocus() {
-    document.removeEventListener('pointermove', onDrag);
-    document.removeEventListener('pointerup', endDrag);
-  }
-
   function endDrag(e: PointerEvent) {
     document.removeEventListener('pointermove', onDrag);
     document.removeEventListener('pointerup', endDrag);
@@ -93,14 +63,11 @@ function useDrag(
     const endPos = getActualPosition(e);
 
     doEndDrag?.(dist, e, endPos);
+    markDragEnd();
   }
 
-  // function onDragT(e){
-  //   let newPos = getActualPosition(e);
-
-  //   setPos(newPos);
-  //   if (doOnDrag) doOnDrag(newPos, e);
-  // }
+  const {markDragStart, markDragEnd} = usePointer(onDrag, endDrag);
+  useOnWindowBlur(() => markDragEnd());
 
   return {
     pos,

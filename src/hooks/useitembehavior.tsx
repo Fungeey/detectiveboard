@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Line from "../components/line";
 import Pin from "../components/pin";
 import useCopyPaste from './usecopypaste';

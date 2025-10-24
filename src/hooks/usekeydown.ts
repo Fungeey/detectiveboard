@@ -8,7 +8,6 @@ function globalKeyHandler(e: KeyboardEvent) {
   listeners.forEach((keys, callback) => {
     const wasAnyKeyPressed = keys.some((key) => e.key === key);
     if (wasAnyKeyPressed || keys.length === 0) {
-      console.log("ACTUAL")
       // e.preventDefault();
       callback(e);
     }
@@ -34,10 +33,8 @@ export function useKeyDown(
 
   useEffect(() => {
     listeners.set(stableCallback, keys);
-    console.log(listeners.size)
 
     if(listeners.size === 1){
-      console.log('setup')
       document.addEventListener('keydown', globalKeyHandler);
     }
 

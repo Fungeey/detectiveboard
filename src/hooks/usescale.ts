@@ -6,8 +6,6 @@ const listeners = new Set<(e: WheelEvent) => void>();
 let references = 0;
 
 function globalWheelHandler(e: WheelEvent) {
-  console.log('scroll')
-
   const { ctrlKey } = e;
   let spd = 1.25;
 
