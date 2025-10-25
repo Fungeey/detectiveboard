@@ -20,7 +20,7 @@ interface ScrapProps extends ItemProps {
   item: ScrapItem
 }
 
-export const Scrap: React.FC<ScrapProps> = ({
+export const Scrap: React.FC<ScrapProps> = React.memo(({
   item,
   debug,
   dispatch,
@@ -73,6 +73,6 @@ export const Scrap: React.FC<ScrapProps> = ({
   }
 
   return render(renderItem);
-}
+});
 
 export default Scrap;

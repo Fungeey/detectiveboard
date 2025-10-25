@@ -7,13 +7,14 @@ interface ImageProps extends ItemProps {
   item: ImageItem 
 }
 
-export const Img: React.FC<ImageProps> = ({
+export const Img: React.FC<ImageProps> = React.memo(({
   item,
   debug,
   dispatch,
   getBoardPos,
   data
 }) => {
+  console.log('image')
 
   const {render} = useItemBehavior(item, dispatch, getBoardPos, data);
 
@@ -32,6 +33,6 @@ export const Img: React.FC<ImageProps> = ({
 
   // no special rendering for selection
   return render(renderItem);
-}
+});
 
 export default Img;
