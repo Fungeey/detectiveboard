@@ -60,17 +60,95 @@ export default function Board() {
     return { x: rect.left, y: rect.top };
   }, []);
 
-  function startPan(): Point[] {
+  const [selectBox, setSelectBox] = useState<{pos:Point, size:Size}>();
+  const [boardPos, setBoardPos] = useState<Point>({x:0, y:0});
+  const [isGrabbing, setIsGrabbing] = useState(false);
+  const [elements, setElements] = useState<{rect: DOMRect, element: HTMLElement}[]>([]);
+
+  function startPan(p: Point, e: React.PointerEvent): Point[] {
+    const bounding: {rect: DOMRect, element: HTMLElement}[] = [];
+    document.querySelectorAll(".itemWrapper").forEach(el => {
+        bounding.push({rect:el.getBoundingClientRect(), element:(el as HTMLElement)});
+    });
+    setElements(bounding);
+
     return [boardPos];
   }
 
-  function endPan(dist: number, e: MouseEvent, endPositions: Point[]) {
-    if (dist < 2 && e.button === Util.MouseButton.LMB)
-      setIsCreating(false);
+  function isColliding(rect1, rect2) {
+    return !(
+      rect1.right < rect2.left ||
+      rect1.left > rect2.right ||
+      rect1.bottom < rect2.top ||
+      rect1.top > rect2.bottom
+    );
   }
+
+  function onDrag(newPos: Point[], e: PointerEvent, startPos: Point){
+    const mousePos = { x:e.clientX, y:e.clientY };
+
+    if(dragButton === Util.MouseButton.LMB){
+      // draw selection box
+
+      const pos = {...startPos}
+      const size = Util.asSize(Util.subPos(mousePos, startPos));
+
+      if(size.width < 0) 
+        pos.x = pos.x - Math.abs(size.width);
+      if(size.height < 0)
+        pos.y = pos.y - Math.abs(size.height)
+
+      const absSize = { width: Math.abs(size.width), height: Math.abs(size.height)}
+      setSelectBox({ pos, size:absSize });
+      const selectRect = new DOMRect(pos.x, pos.y, absSize.width, absSize.height);
+
+      elements.forEach(el => {
+          let isItemWrapper = Array.from(el.element.classList).filter(e=>e=="itemWrapper").length != 0;
+
+          if(isItemWrapper){
+            el.element = el.element.children[0] as HTMLElement;
+          }
+
+          const uuid = el.element.dataset.uuid;
+
+          if(isColliding(selectRect, el.rect)){
+            //el.item.classList is DOMTokenList
+            console.log(uuid)
+            if(uuid)
+              dispatch({ type: ActionType.UPDATE_ITEM, uuid: uuid, update: item => item.isSelected = true, skipUndo:true});
+          }else{
+              dispatch({ type: ActionType.UPDATE_ITEM, uuid: uuid, update: item => item.isSelected = false, skipUndo:true});
+          }
+      })
+
+    }else if(dragButton === Util.MouseButton.RMB){
+      // pan the board 
+      setBoardPos(newPos[0]);
+      setIsGrabbing(true);
+    }
+  }
+
+  function endPan(dist: number, e: MouseEvent, endPositions: Point[]) {
+    if(dragButton === Util.MouseButton.LMB){
+      // clear select box
+      setSelectBox(undefined);
+
+      if(dist < 2){ // click event
+        setIsCreating(false);
+        return;
+      }
+    }else if(dragButton === Util.MouseButton.RMB){
+      setIsGrabbing(false);
+    }
+  }
+
+  const { startDrag, dragButton } = useDrag(startPan, onDrag, endPan);
 
   function onDoubleLClick(e: React.MouseEvent) {
     if (e.button !== Util.MouseButton.LMB) return;
+
+    // surpress usual LMB drag
+    setSelectBox(undefined);
 
     // cancel out of creating, if clicked elsewhere
     if (isCreating && input.text === "") {
@@ -83,10 +161,10 @@ export default function Board() {
   }
 
   function onLClick(e: React.MouseEvent){
-    if(userMode === UserMode.CARD && setUserMode) {
+    if(userMode === UserMode.CARD) {
       const pos = { x: e.clientX, y: e.clientY };
       writeNote(pos);
-      setUserMode(UserMode.SELECT);
+      setUserMode?.(UserMode.SELECT);
     }
   }
 
@@ -111,9 +189,6 @@ export default function Board() {
   useKeyDown(() => {
     setIsCreating(false);
   }, ["Escape"]);
-
-  const { positions, startDrag } = useDrag(startPan, null, endPan);
-  const boardPos = positions[0] || { x: 0, y:0 };
 
   function addNote() {
     if (input.text === '' || !input.pos)
@@ -229,7 +304,9 @@ export default function Board() {
       onPointerDown={startDrag} 
       onClick={onLClick} 
       onDoubleClick={onDoubleLClick} 
-      style={{ overflow: 'hidden' }}>
+      style={{ overflow: 'hidden' }}
+      className={ isGrabbing ? 'cursorGrabbing' : '' }
+      >
 
       <UI 
         allData={data} 
@@ -250,7 +327,7 @@ export default function Board() {
 
           {isCreating && input.pos ?
             <input 
-              style={{ ...util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} 
+              style={{ ...Util.posStyle(input.pos), position: 'absolute' }} autoFocus={true} 
               name="createTextBox" 
               onChange={(e) => setInput({ pos: input.pos, text: e.target.value })}>
             </input>
@@ -259,6 +336,15 @@ export default function Board() {
           {renderLines}
           {renderItems}
         </div>
+        {selectBox && 
+          <div id='select_box' className='selected_box' style={{
+            position:`absolute`, 
+            top:`${selectBox.pos.y}px`, 
+            left:`${selectBox.pos.x}px`, 
+            width:`${selectBox.size.width}px`, 
+            height:`${selectBox.size.height}px` 
+          }}/>
+        }
       </div>
     </div>
   );
