@@ -141,6 +141,14 @@ export namespace Util {
     return ({ x: a.x + b.x, y: a.y + b.y });
   }
 
+  export function magPos(a: Point): number {
+    return Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
+  }
+
+  export function absPos(a: Point): Point {
+    return ({ x: Math.abs(a.x), y: Math.abs(a.y) });
+  }
+
   export function subPos(a: Point, b: Point): Point {
     return ({ x: a.x - b.x, y: a.y - b.y });
   }
@@ -155,6 +163,10 @@ export namespace Util {
 
   export function eqlSize(a: Size, b: Size): boolean {
     return (a.width === b.width && a.height === b.height);
+  }
+
+  export function asSize(p: Point): Size {
+    return {width: p.x, height:p.y}
   }
 
   export function lineSize(line: LineItem): Size {
