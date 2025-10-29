@@ -8,7 +8,7 @@ import useDrag from '../hooks/usedrag';
 
 // state
 import { ActionType } from '../state/boardstatereducer';
-import undoable, { OmniState } from '../hooks/undoable';
+import undoable, { OmniState } from '../state/undoable';
 import util, { Util } from '../util';
 
 // components
@@ -57,7 +57,7 @@ export default function Board() {
     pos?: Point,
     text: string
   }>({ pos: undefined, text: "" });
-  const getMousePos = useMousePos(() => {});
+  const getMousePos = useMousePos();
 
   const getBoardPos = useCallback((): Point => {
     if(!boardRef || !boardRef.current)
@@ -222,12 +222,7 @@ export default function Board() {
     dispatch({ type: ActionType.CREATE_ITEM, item: item });
   }
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleUndoRedo);
-    return () => document.removeEventListener('keydown', handleUndoRedo);
-  }, []);
-
-  function handleUndoRedo(e: KeyboardEvent) {
+  useKeyDown((e) => {
     if (e.ctrlKey && e.key === 'z') {
       e.preventDefault();
       dispatch({ type: ActionType.UNDO });
@@ -235,7 +230,7 @@ export default function Board() {
       e.preventDefault();
       dispatch({ type: ActionType.REDO });
     }
-  }
+  }, []);
 
   usePasteImage((src: string) => {
     if(!getMousePos) return;

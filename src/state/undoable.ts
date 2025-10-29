@@ -1,4 +1,4 @@
-import { Action, ActionType, boardStateReducer } from "../state/boardstatereducer";
+import { Action, ActionType, boardStateReducer } from "./boardstatereducer";
 import util from "../util";
 import { State } from "../types/index";
 

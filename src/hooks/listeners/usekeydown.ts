@@ -1,50 +1,17 @@
-import { useCallback, useEffect, useRef } from 'react';
-
-const listeners = new Map<(e: KeyboardEvent) => void, string[]>();
-
-function globalKeyHandler(e: KeyboardEvent) {
-  if(e.repeat) return;
-
-  listeners.forEach((keys, callback) => {
-    const wasAnyKeyPressed = keys.some((key) => e.key === key);
-    if (wasAnyKeyPressed || keys.length === 0) {
-      // e.preventDefault();
-      callback(e);
-    }
-  });
-}
+import useEventListener from './useeventlistener';
 
 export function useKeyDown(
   callback: (e: KeyboardEvent) => void, 
   keys: string[]
 ){
-  const callbackRef = useRef(callback);
+  useEventListener('keydown', (e) => {
+    if(e.repeat) return;
 
-  useEffect(() => {
-    callbackRef.current = callback
-  });
-
-  // Use a memoized callback that calls the latest callback
-  const stableCallback = useCallback((e: KeyboardEvent) => {
-    if (callbackRef.current) {
-      callbackRef.current(e);
+    const wasAnyKeyPressed = keys.some((key) => e.key === key);
+    if (wasAnyKeyPressed || keys.length === 0) {
+      callback(e);
     }
-  }, []);
-
-  useEffect(() => {
-    listeners.set(stableCallback, keys);
-
-    if(listeners.size === 1){
-      document.addEventListener('keydown', globalKeyHandler);
-    }
-
-    return () => {
-      listeners.delete(stableCallback);
-      if (listeners.size === 0) {
-        document.removeEventListener('keydown', globalKeyHandler);
-      }
-    };
-  }, [stableCallback]);
+  }, { stable: true});
 };
 
 export default useKeyDown;

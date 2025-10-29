@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useRef } from "react";
 
 // Store listeners by event type
 const listenersByEvent = new Map<string, Set<(e: Event) => void>>();
@@ -6,14 +6,14 @@ const listenersByEvent = new Map<string, Set<(e: Event) => void>>();
 // Global handlers by event type
 const globalHandlers = new Map<string, (e: Event) => void>();
 
-function getOrCreateListenerSet(eventName: string): Set<(e: Event) => void> {
+function getListenerSet(eventName: string): Set<(e: Event) => void> {
   if (!listenersByEvent.has(eventName)) {
     listenersByEvent.set(eventName, new Set());
   }
   return listenersByEvent.get(eventName)!;
 }
 
-function getOrCreateGlobalHandler(eventName: string): (e: Event) => void {
+function getGlobalHandler(eventName: string): (e: Event) => void {
   if (!globalHandlers.has(eventName)) {
     const handler = (e: Event) => {
       const listeners = listenersByEvent.get(eventName);
@@ -24,23 +24,40 @@ function getOrCreateGlobalHandler(eventName: string): (e: Event) => void {
   return globalHandlers.get(eventName)!;
 }
 
-export function useOnDocumentEvent<K extends keyof DocumentEventMap>(
+export function useEventListener<K extends keyof DocumentEventMap>(
   eventName: K,
-  callback: (e: DocumentEventMap[K]) => void
+  callback: (e: DocumentEventMap[K]) => void,
+  options?: { stable?: boolean }
 ) {
+  const callbackRef = useRef(callback);
+  
+  // Keep ref updated with latest callback
   useEffect(() => {
-    const listeners = getOrCreateListenerSet(eventName);
-    const handler = getOrCreateGlobalHandler(eventName);
+    callbackRef.current = callback;
+  });
+  
+  // Create stable callback that always calls the latest version
+  // Map event type (ie 'mousemove') to the proper Event type (MouseEvent)
+  const stableCallback = useCallback((e: DocumentEventMap[K]) => {
+    callbackRef.current(e);
+  }, []);
+  
+  // Use stable callback if requested, otherwise use the provided callback
+  const effectiveCallback = options?.stable ? stableCallback : callback;
+  
+  useEffect(() => {
+    const listeners = getListenerSet(eventName);
+    const handler = getGlobalHandler(eventName);
     
-    // Type assertion needed since we're using generic Event storage
-    listeners.add(callback as (e: Event) => void);
+    listeners.add(effectiveCallback as (e: Event) => void);
     
     if (listeners.size === 1) {
+      console.log('setup: ', eventName);
       document.addEventListener(eventName, handler);
     }
     
     return () => {
-      listeners.delete(callback as (e: Event) => void);
+      listeners.delete(effectiveCallback as (e: Event) => void);
 
       if (listeners.size === 0) {
         document.removeEventListener(eventName, handler);
@@ -48,7 +65,7 @@ export function useOnDocumentEvent<K extends keyof DocumentEventMap>(
         globalHandlers.delete(eventName);
       }
     };
-  }, [eventName, callback]);
+  }, [eventName, effectiveCallback]);
 }
 
-export default useOnDocumentEvent;
+export default useEventListener;

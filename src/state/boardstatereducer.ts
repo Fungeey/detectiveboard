@@ -49,7 +49,7 @@ function runReducer(state: State, action: Action){
     case ActionType.CREATE_ITEM: return CREATE_ITEM(state, action.item!);
     case ActionType.UPDATE_ITEM:
       return UPDATE_ITEM(state, action.uuid!, action.update!);
-    case ActionType.DELETE_ITEM: return DELTE_ITEM(state, action.item!);
+    case ActionType.DELETE_ITEM: return DELETE_ITEM(state, action.item!);
 
     case ActionType.CREATE_LINE: return createLine(state, action.line!);
     case ActionType.DELETE_LINE: return deleteLine(state, action.line!);
@@ -130,7 +130,7 @@ function UPDATE_ITEM(state: State, uuid: string, update: (item: Item) => void) {
   return { items: items, lines: lines }
 }
 
-function DELTE_ITEM(state: State, item: Item) {
+function DELETE_ITEM(state: State, item: Item) {
   let items = itemReducer.deleteItem(state.items, item);
   const lines = lineReducer.deleteLinesToItem(state.lines, item.uuid);
 
