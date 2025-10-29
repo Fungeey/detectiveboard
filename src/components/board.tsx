@@ -1,11 +1,19 @@
 import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo, useCallback } from 'react';
+
+// hooks
 import useKeyDown from '../hooks/usekeydown';
 import useMousePos from '../hooks/usemousepos';
 import usePasteImage from '../hooks/usepasteimage';
 import useScale from '../hooks/usescale';
+import useSelectionBehavior from "../hooks/useselectionbehavior";
+import useDrag from '../hooks/usedrag';
+
+// state
 import { ActionType } from '../state/boardstatereducer';
 import undoable, { OmniState } from '../hooks/undoable';
 import util, { Util } from '../util';
+
+// components
 import ContextMenu from './contextmenu';
 import BoardBackground from './boardbackground';
 import Img from './img';
@@ -15,7 +23,6 @@ import Scrap from './scrap';
 import UI from './ui';
 import { useGlobalContext, UserMode } from '../state/context';
 import { Point, NoteItem, State, ItemType, ImageItem, LineItem, Size, ScrapItem } from '../types/index';
-import useDrag from '../hooks/usedrag';
 
 const debug = false;
 
@@ -42,6 +49,8 @@ export default function Board() {
   });
 
   const boardRef = useRef<HTMLDivElement | null>(null);
+
+  useSelectionBehavior(data.present, dispatch);
 
   const [isCreating, setIsCreating] = useState(false);
   const { userMode, setUserMode } = useGlobalContext();
@@ -113,7 +122,7 @@ export default function Board() {
 
           if(isColliding(selectRect, el.rect)){
             //el.item.classList is DOMTokenList
-            console.log(uuid)
+            // console.log(uuid)
             if(uuid)
               dispatch({ type: ActionType.UPDATE_ITEM, uuid: uuid, update: item => item.isSelected = true, skipUndo:true});
           }else{

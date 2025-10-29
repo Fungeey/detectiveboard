@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, useCallback } from 'react';
 import { useRef, useState } from "react";
 import Line from "../components/line";
 import Pin from "../components/pin";
@@ -7,10 +7,10 @@ import useMousePos from './usemousepos';
 import useScale from './usescale';
 import util, { Util } from "../util";
 import useDrag from "./usedrag";
-import useSelectionBehavior from "./useselectionbehavior";
 import { Action, ActionType, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
 import useOnWindowBlur from './useonwindowblur';
+import useKeyDown from './usekeydown';
 
 let hoverUUID = "";
 
@@ -33,7 +33,6 @@ function useItemBehavior(
     renderItemSelection?: (itemRef: React.Ref<HTMLElement>) => ReactNode
   ) => ReactElement
 }{
-  const { select, renderSelection } = useSelectionBehavior(item, dispatch);
   const [previewLine, setPreviewLine] = useState<LineItem | null>(null);
   const [startSize, setStartSize] = useState<Size>({ width: 100, height: 100});
   const getScale = useScale();
@@ -149,19 +148,16 @@ function useItemBehavior(
     e: MouseEvent, 
     endPositions: Point[]
   ){
+    if(dist > 2) return;
     const newSize = getSize();
 
-    if (newSize != null && !util.eqlSize(getSize(), startSize)) { // save new width
+    if (newSize != null && !util.eqlSize(getSize(), startSize)) { 
+      // save new width
       // clientWidth includes padding, so need to subtract it away
 
       dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.size = newSize });
 
-    } else if (dragButton === Util.MouseButton.LMB) { // lmb click = select
-      if (dist < 2) {
-        select();
-        return;
-      }
-
+    } else if (dragButton === Util.MouseButton.LMB) {
       if(item.type === ItemType.NOTE && item.isFrozen)
         return;
 
@@ -235,6 +231,21 @@ function useItemBehavior(
     )
   }
 
+  const select = useCallback(() => {
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
+  }, [dispatch, item.uuid]);
+
+  const deSelect = useCallback(() => {
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
+  }, [dispatch, item.uuid]);
+
+  useKeyDown(deSelect, ["Enter", "Escape"]);
+
+  function deleteItem() {
+    deSelect();
+    dispatch({ type: ActionType.DELETE_ITEM, item: item });
+  }
+
   function render(
     renderItem: () => ReactNode, 
     renderItemSelection?: (itemRef: React.Ref<HTMLElement>) => ReactNode
@@ -256,8 +267,20 @@ function useItemBehavior(
             </div>
           </div>
 
-          {item.isSelected && renderItemSelection 
-          ? renderSelection(itemRef, renderItemSelection) : <></>}
+          {item.isSelected ?
+            <div className="itemActions">
+              <img 
+                src={require('../img/delete.png')} 
+                alt="delete icon"
+                data-name={'deleteButton'}
+                style={{
+                  width: 20,
+                  height: 20,
+                }} onClick={deleteItem} />
+
+              {renderItemSelection?.(itemRef)}
+            </div> : <></>
+          }
         </div>
       </div>
     </>
