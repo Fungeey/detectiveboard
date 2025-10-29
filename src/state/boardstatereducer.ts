@@ -46,10 +46,10 @@ export function boardStateReducer(state: State, action: Action) {
 
 function runReducer(state: State, action: Action){
   switch (action.type) {
-    case ActionType.CREATE_ITEM: return CREATE_ITEM(state, action.item!);
+    case ActionType.CREATE_ITEM: return createItem(state, action.item!);
     case ActionType.UPDATE_ITEM:
-      return UPDATE_ITEM(state, action.uuid!, action.update!);
-    case ActionType.DELETE_ITEM: return DELETE_ITEM(state, action.item!);
+      return updateItem(state, action.uuid!, action.update!);
+    case ActionType.DELETE_ITEM: return deleteItem(state, action.item!);
 
     case ActionType.CREATE_LINE: return createLine(state, action.line!);
     case ActionType.DELETE_LINE: return deleteLine(state, action.line!);
@@ -60,7 +60,7 @@ function runReducer(state: State, action: Action){
   }
 }
 
-function CREATE_ITEM(state: State, item: Item): State {
+function createItem(state: State, item: Item): State {
   const items = itemReducer.createItem(state.items, item);
   return { items: items, lines: state.lines }
 }
@@ -112,7 +112,7 @@ function deleteLine(state: State, line: LineItem) {
   return { items: items, lines: lines }
 }
 
-function UPDATE_ITEM(state: State, uuid: string, update: (item: Item) => void) {
+function updateItem(state: State, uuid: string, update: (item: Item) => void) {
   const items = itemReducer.updateItem(state.items, uuid, update);
   const item = items[uuid];
   let newPos = util.roundPos(item.pos);
@@ -130,7 +130,7 @@ function UPDATE_ITEM(state: State, uuid: string, update: (item: Item) => void) {
   return { items: items, lines: lines }
 }
 
-function DELETE_ITEM(state: State, item: Item) {
+function deleteItem(state: State, item: Item) {
   let items = itemReducer.deleteItem(state.items, item);
   const lines = lineReducer.deleteLinesToItem(state.lines, item.uuid);
 
@@ -152,31 +152,23 @@ function DELETE_ITEM(state: State, item: Item) {
   return { items: items, lines: lines }
 }
 
-// -- basic line operations --
-// create line
-// delete line
-// update line
+/*
+-- line operations --
+1. Create line
+    = create line
+    = update items: connect
+2. Update line
+3. Delete line
+    = remove line
+    = update items: disconnect
 
-// -- basic item operations --
-// create item
-// modify item
-// update item
-// delete item
-
-// -- joined operations --
-// create line
-// = create line
-// = update items: connect
-
-// delete line
-// = remove line
-// = update items: disconnect
-
-// update item
-// = update items: color, size, position
-// = update line: position
-
-// delete item
-// = delete item
-// = delete line: remove connections
-// = update item: disconnect
+-- item operations --
+1. Create item
+2. Update item
+    = update items: color, size, position
+    = update line: position
+3. Delete item
+    = delete item
+    = delete line: remove connections
+    = update item: disconnect
+*/

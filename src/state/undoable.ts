@@ -18,8 +18,8 @@ export default function undoable(state: OmniState, action: Action): OmniState {
   }
 
   switch (action.type) {
-    case 'UNDO': return undo(state);
-    case 'REDO': return redo(state);
+    case ActionType.UNDO: return undo(state);
+    case ActionType.REDO: return redo(state);
     default: return doReducer(state, action);
   }
 }
