@@ -72,9 +72,9 @@ function useItemBehavior(
     for (const uuid in data.items) {
       if (uuid === item.uuid) continue;
 
-      const otherItem = data.items[uuid];
-      if (otherItem.isSelected) 
-        startPositions.push(item.pos);
+      const other = data.items[uuid];
+      if (other.isSelected) 
+        startPositions.push(other.pos);
     }
 
     return startPositions;
@@ -148,7 +148,7 @@ function useItemBehavior(
     e: MouseEvent, 
     endPositions: Point[]
   ){
-    if(dist > 2) return;
+    if(dist < 2) return;
     const newSize = getSize();
 
     if (newSize != null && !util.eqlSize(getSize(), startSize)) { 
@@ -201,10 +201,10 @@ function useItemBehavior(
 
     const other = getExistingLine(data.lines, line);
 
-    if (!other)
-      dispatch({ type: ActionType.CREATE_LINE, line: line });
-    else
+    if (other)
       dispatch({ type: ActionType.DELETE_LINE, line: other });
+    else
+      dispatch({ type: ActionType.CREATE_LINE, line: line });
   }
 
   const { startDrag, dragButton } = useDrag(

@@ -14,8 +14,6 @@ export const Img: React.FC<ImageProps> = React.memo(({
   getBoardPos,
   data
 }) => {
-  console.log('image')
-
   const {render} = useItemBehavior(item, dispatch, getBoardPos, data);
 
   function renderItem() {
