@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
-import useKeyDown from './usekeydown';
+import useKeyDown from './listeners/usekeydown';
 import { Action, ActionType } from "../state/boardstatereducer";
 import { State } from "../types/index";
-import usePointer from "./usepointermove";
+import usePointer from "./listeners/usepointer";
 
 function useSelectionBehavior(
   state: State,

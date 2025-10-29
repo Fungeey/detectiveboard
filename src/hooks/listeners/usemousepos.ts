@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Point } from "../types";
+import { Point } from "../../types";
 
 const listeners = new Set<(mousePos: Point) => void>();
 const mousePosition = { current: { x: 0, y: 0 } };
