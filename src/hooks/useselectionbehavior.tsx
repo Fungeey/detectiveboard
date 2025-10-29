@@ -1,82 +1,46 @@
-import React, { ReactNode, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import useKeyDown from './usekeydown';
 import { Action, ActionType } from "../state/boardstatereducer";
-import { Item } from "../types/index";
-import useOnDocumentClick from "./useonclick";
+import { State } from "../types/index";
+import usePointer from "./usepointermove";
 
 function useSelectionBehavior(
-  item: Item,
+  state: State,
   dispatch: React.Dispatch<Action>,
-):{
-  select: () => void, 
-  deSelect: () => void, 
-  renderSelection: (
-    itemRef: React.Ref<HTMLElement>, 
-    renderItemSelection: (itemRef: React.Ref<HTMLElement>) => ReactNode
-  ) => ReactNode, 
-}{
+){
+  const selectAny = useCallback((uuid: string) => {
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid, update: item => item.isSelected = true });
+  }, [dispatch]);
 
-  const select = useCallback(() => {
-    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = true});
-  }, [dispatch, item.uuid]);
+  const deSelectAll = useCallback(() => {
+    Object.values(state.items).forEach((item) => {
+      if(item.isSelected){
+        dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
+      }
+    });
+  }, [dispatch, state]);
 
-  const deSelect = useCallback(() => {
-    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: item => item.isSelected = false});
-  }, [dispatch, item.uuid]);
-
-  const onClickDocument = useCallback((e: Event) => {
+  const onClickDocument = useCallback((e: PointerEvent) => {
     const target = e.target as HTMLElement;
-
     if (!target.parentElement) return;
+
     // deselect if click anywhere other than this note.
     const targetUuid = target.parentElement?.parentElement?.dataset.uuid;
 
     if (!targetUuid && target.dataset.name !== "deleteButton")
-      deSelect();
-  }, [deSelect]);
+      deSelectAll();
+    else if (targetUuid)
+      selectAny(targetUuid);
 
-  useOnDocumentClick(onClickDocument);
+  }, [deSelectAll]);
+
+  usePointer(undefined, undefined, onClickDocument);
 
   const [shiftKey, setShiftKey] = useState<Boolean>(false)
 
   useKeyDown(() => {
-    if(!item.isSelected) return;
-
     setShiftKey(true);
   }, ["Shift"]);
-
-  useKeyDown(deSelect, ["Enter", "Escape"]);
-
-  function deleteItem() {
-    deSelect();
-    dispatch({ type: ActionType.DELETE_ITEM, item: item });
-  }
-
-  function renderSelection(
-    itemRef: React.Ref<HTMLElement>, 
-    renderItemSelection: (itemRef: React.Ref<HTMLElement>) => ReactNode
-  ): ReactNode {
-    return (
-      <div className="itemActions">
-        <img 
-          src={require('../img/delete.png')} 
-          alt="delete icon"
-          data-name={'deleteButton'}
-          style={{
-            width: 20,
-            height: 20,
-          }} onClick={deleteItem} />
-
-        {renderItemSelection?.(itemRef)}
-      </div>
-    )
-  }
-
-  return {
-    select,
-    deSelect,
-    renderSelection
-  }
 }
 
 export default useSelectionBehavior;
