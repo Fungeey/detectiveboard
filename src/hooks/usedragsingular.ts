@@ -3,7 +3,7 @@ import useScale from './listeners/usescale';
 import util, { Util } from "../util";
 import { Point } from "../types/index";
 import usePointer from "./listeners/usepointer";
-import useOnWindowBlur from "./listeners/useonwindowblur";
+import { useEventListener } from "./listeners";
 
 // DEPRICATED
 
@@ -69,7 +69,7 @@ function useDragSingular(
   }
 
   const {markDragStart, markDragEnd} = usePointer(onDrag, endDrag);
-  useOnWindowBlur(() => markDragEnd());
+  useEventListener('blur', markDragEnd, { stable: true });
 
   return {
     pos,
