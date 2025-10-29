@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect, useReducer, ReactNode, useMemo, useCallback } from 'react';
 
 // hooks
-import useKeyDown from '../hooks/usekeydown';
-import useMousePos from '../hooks/usemousepos';
+import { useMousePos, useKeyDown, useScale } from "../hooks/listeners"
 import usePasteImage from '../hooks/usepasteimage';
-import useScale from '../hooks/usescale';
 import useSelectionBehavior from "../hooks/useselectionbehavior";
 import useDrag from '../hooks/usedrag';
 

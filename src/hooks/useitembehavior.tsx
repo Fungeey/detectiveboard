@@ -2,15 +2,11 @@ import React, { ReactElement, ReactNode, useCallback } from 'react';
 import { useRef, useState } from "react";
 import Line from "../components/line";
 import Pin from "../components/pin";
-import useCopyPaste from './usecopypaste';
-import useMousePos from './usemousepos';
-import useScale from './usescale';
+import { useCopyPaste, useMousePos, useScale, useKeyDown, useOnWindowBlur} from './listeners';
 import util, { Util } from "../util";
 import useDrag from "./usedrag";
 import { Action, ActionType, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
-import useOnWindowBlur from './useonwindowblur';
-import useKeyDown from './usekeydown';
 
 let hoverUUID = "";
 

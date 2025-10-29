@@ -1,9 +1,9 @@
 import { useState } from "react";
-import useScale from './usescale';
+import useScale from './listeners/usescale';
 import { Util } from "../util";
 import { Point } from "../types/index";
-import useOnWindowBlur from "./useonwindowblur";
-import usePointer from "./usepointermove";
+import useOnWindowBlur from "./listeners/useonwindowblur";
+import usePointer from "./listeners/usepointer";
 
 export default function useDrag (
   doStartDrag: (p: Point, e: React.PointerEvent) => Point[], 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Point } from "../types";
-import Util from "../util";
+import { Point } from "../../types";
+import Util from "../../util";
 
 const listeners = new Map<
   (e: PointerEvent) => void,
@@ -65,13 +65,12 @@ export function usePointer(
 
     const isClick = !startPosition || Util.distance(startPosition, { x: e.clientX, y: e.clientY }) < 3;
 
+    startPosition = undefined;
+
     if(isClick){
       stablePointerClick(e);
       return;
-    }else{
     }
-
-    startPosition = undefined;
   }, []);
 
   function markDragStart(){

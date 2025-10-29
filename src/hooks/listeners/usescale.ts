@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import util from "../util";
+import util from "../../util";
 
 const scaleRef = { current: 1 };
 const listeners = new Set<(e: WheelEvent) => void>();
