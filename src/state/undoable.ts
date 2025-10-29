@@ -1,4 +1,4 @@
-import { Action, ActionType, boardStateReducer } from "../state/boardstatereducer";
+import { Action, ActionType, boardStateReducer } from "./boardstatereducer";
 import util from "../util";
 import { State } from "../types/index";
 
@@ -18,8 +18,8 @@ export default function undoable(state: OmniState, action: Action): OmniState {
   }
 
   switch (action.type) {
-    case 'UNDO': return undo(state);
-    case 'REDO': return redo(state);
+    case ActionType.UNDO: return undo(state);
+    case ActionType.REDO: return redo(state);
     default: return doReducer(state, action);
   }
 }

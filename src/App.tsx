@@ -1,17 +1,13 @@
 import React, { useState  } from 'react';
 import Board from './components/board';
 import { UserMode, UserModeContext } from './state/context';
-import useKeyDown from './hooks/usekeydown';
-import useScale from './hooks/usescale';
-import useMousePos from './hooks/usemousepos';
-import usePointer from './hooks/usepointermove';
+import { useMousePos } from './hooks/listeners';
 
 const App = () => {
   const [userMode, setUserMode] = useState(UserMode.SELECT);
-  useKeyDown(() => {}, []);
-  useScale();
-  useMousePos(() => {});
-  usePointer(() => {}, () => {});
+
+  // call hooks once to add listeners to document
+  useMousePos()
 
   return (
     <UserModeContext.Provider value={{ userMode, setUserMode }}>

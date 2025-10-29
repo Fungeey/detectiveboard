@@ -2,15 +2,11 @@ import React, { ReactElement, ReactNode, useCallback } from 'react';
 import { useRef, useState } from "react";
 import Line from "../components/line";
 import Pin from "../components/pin";
-import useCopyPaste from './usecopypaste';
-import useMousePos from './usemousepos';
-import useScale from './usescale';
+import { useMousePos, useScale, useKeyDown, useEventListener } from './listeners';
 import util, { Util } from "../util";
 import useDrag from "./usedrag";
 import { Action, ActionType, getExistingLine } from "../state/boardstatereducer";
 import { Point, State, Item, LineItem, Size, ItemType } from '../types/index';
-import useOnWindowBlur from './useonwindowblur';
-import useKeyDown from './usekeydown';
 
 let hoverUUID = "";
 
@@ -36,7 +32,7 @@ function useItemBehavior(
   const [previewLine, setPreviewLine] = useState<LineItem | null>(null);
   const [startSize, setStartSize] = useState<Size>({ width: 100, height: 100});
   const getScale = useScale();
-  const getMousePos = useMousePos(() => {});
+  const getMousePos = useMousePos();
 
   const [copiedItem, setCopiedItem] = useState<Item | null>(null);
 
@@ -62,7 +58,12 @@ function useItemBehavior(
     dispatch({ type: ActionType.CREATE_ITEM, item: itemCopy });
   }
 
-  useCopyPaste(copy, paste);
+  useKeyDown((e) => {
+    if (e.ctrlKey && e.key === 'c')
+      copy();
+    else if (e.ctrlKey && e.key === 'v')
+      paste();
+  }, []);
 
   function onStartDrag(mousePos: Point, e: React.MouseEvent): Point[] {
     setStartSize(getSize());
@@ -141,7 +142,7 @@ function useItemBehavior(
   }
 
   // cancel preview line on window unfocus
-  useOnWindowBlur(() => setPreviewLine(null));
+  useEventListener('blur', () => setPreviewLine(null), { stable: true });
 
   function onEndDrag(
     dist: number, 
