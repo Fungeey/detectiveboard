@@ -1,13 +1,13 @@
 import { useState } from "react";
-import useScale from './usescale';
+import useScale from './listeners/usescale';
 import { Util } from "../util";
 import { Point } from "../types/index";
-import useOnWindowBlur from "./useonwindowblur";
-import usePointer from "./usepointermove";
+import usePointer from "./listeners/usepointer";
+import { useEventListener } from "./listeners";
 
 export default function useDrag (
   doStartDrag: (p: Point, e: React.PointerEvent) => Point[], 
-  doOnDrag: ((newPos: Point[], e: PointerEvent) => void) | null, 
+  doOnDrag: ((newPos: Point[], e: PointerEvent, startPos: Point) => void) | null, 
   doEndDrag: (dist: number, e: PointerEvent, endPos: Point[]) => void
 ):{
   positions: Point[],
@@ -41,7 +41,7 @@ export default function useDrag (
     const newPositions = offsets.map(offset => getActualPosition(e, offset));
 
     setPositions(newPositions);
-    doOnDrag?.(newPositions, e);
+    doOnDrag?.(newPositions, e, startPos);
   };
 
   function getActualPosition(e: PointerEvent, offset: Point) {
@@ -70,7 +70,7 @@ export default function useDrag (
   }
 
   const {markDragStart, markDragEnd} = usePointer(onDrag, endDrag);
-  useOnWindowBlur(() => markDragEnd());
+  useEventListener('blur', markDragEnd, { stable: true });
 
   return {
     positions,
