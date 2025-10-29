@@ -74,8 +74,8 @@ code {
 /* styling for itemHolder when selected*/
 .selected_box{
   position: absolute;
-  background-color: #0080ff25;
-  outline: 3px solid #0080ff;
+  background-color: #74747425;
+  outline: 3px solid gray;
   user-select: none;
 }
 .selected{
