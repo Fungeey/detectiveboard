@@ -1,4 +1,5 @@
 # detective board
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Fungeey/detectiveboard)
 
 an interactive web editor to organize ideas in the style of a detective's evidence board.
 
