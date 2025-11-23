@@ -25,12 +25,12 @@ export const Note: React.FC<NoteProps> = React.memo(({
   getBoardPos,
   data
 }) => {
-  const {render} = useItemBehavior(item, dispatch, getBoardPos, data);
+  const { render } = useItemBehavior(item, dispatch, getBoardPos, data);
   const noteRef = useRef<HTMLDivElement | null>(null);
 
   function doubleClick(e: React.MouseEvent) {
     e.stopPropagation();
-    if(!noteRef.current) return;
+    if (!noteRef.current) return;
 
     noteRef.current.contentEditable = 'true';
     noteRef.current.focus();
@@ -57,14 +57,14 @@ export const Note: React.FC<NoteProps> = React.memo(({
   }
 
   function stopEditing() {
-    if(!noteRef.current) return;
+    if (!noteRef.current) return;
     noteRef.current.contentEditable = 'false';
 
     const update = (note: NoteItem) => {
-      note.text = noteRef.current?.innerText || ''; 
-      note.isFrozen = false 
+      note.text = noteRef.current?.innerText || '';
+      note.isFrozen = false
     }
-    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update:update });
+    dispatch({ type: ActionType.UPDATE_ITEM, uuid: item.uuid, update: update });
   }
 
   function getSize() {
@@ -74,18 +74,18 @@ export const Note: React.FC<NoteProps> = React.memo(({
         height: item.size.height - padding * 2,
       });
     else
-      return util.sizeStyle({ width:150, height:100 });
+      return util.sizeStyle({ width: 150, height: 100 });
   }
 
   function renderItem() {
     return (
-      <div 
+      <div
         className="noteItem" style={{
           ...getSize(),
           background: item.color,
           resize: item.isSelected ? "both" : "none"
-        }} 
-        onDoubleClick={doubleClick} 
+        }}
+        onDoubleClick={doubleClick}
         ref={noteRef}>
         {item.text}
         {debug ? <><br /><br />{item.uuid}</> : <></>}
